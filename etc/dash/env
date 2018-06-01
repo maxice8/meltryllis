@@ -1,0 +1,98 @@
+#
+# Set path
+#
+PATH="$HOME"/bin:"$HOME"/.local/bin:"$PATH"
+
+export PATH
+#
+# Set misc variables
+#
+EDITOR="nvim"
+PAGER="less"
+VISUAL="nvim"
+BROWSER="firefox"
+TERMINAL="urxvt"
+LESSHISTFILE="-"
+
+export EDITOR PAGER VISUAL BROWSER TERMINAL LESSHISTFILE
+#
+# Set XGD Variables
+#
+XDG_CONFIG_HOME="$HOME/etc"
+XDG_DATA_HOME="$HOME/var/share"
+XDG_CACHE_HOME="$HOME/var/cache"
+TMPDIR="$XDG_RUNTIME_DIR"
+
+export XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME TMPDIR
+#
+# source XDG user dirs
+#
+# shellcheck source=../user-dirs.dirs
+test -e "$XDG_CONFIG_HOME"/user-dirs.dirs &&
+	. "$XDG_CONFIG_HOME"/user-dirs.dirs
+
+export XDG_DESKTOP_DIR XDG_DOWNLOADS_DIR XDG_TEMPLATES XDG_PUBLICSHARE_DIR \
+       XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR
+#
+# Applications variables
+#
+PASSWORD_STORE_DIR="$XDG_DATA_HOME/pass"
+WEECHAT_HOME="$XDG_CONFIG_HOME/weechat"
+GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
+MAIL="$HOME/var/mail"
+MAILDIR="$HOME/var/mail"
+INPUTRC="$XDG_CONFIG_HOME/inputrc"
+FZF_DEFAULT_COMMAND='fd --type f'
+
+export PASSWORD_STORE_DIR WEECHAT_HOME GNUPGHOME MAILDIR INPUTRC \
+	FZF_DEFAULT_COMMAND
+#
+# set utf8 locale
+#
+LANG="en_US.UTF-8"
+LANGUAGE="en_US:en"
+TZ="Brazil/East"
+
+export LANG LANGUAGE TZ
+#
+# Export JAVA stuff
+#
+#
+_JAVA_AWT_WM_NONREPARENTING=1
+_JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true'
+
+export _JAVA_OPTIONS _JAVA_AWT_WM_NONREPARENTING
+#
+# Export X11 stuff
+#
+ICEAUTHORITY="${XDG_RUNTIME_DIR}"/ICEauthority
+
+export ICEAUTHORITY
+#
+# bspwm specific
+#
+BSPWM_SOCKET=/tmp/bspwm_socket
+BSPWM_STATE="${XDG_RUNTIME_DIR:-'/tmp'}"/bspwm-state-"$(id -u)".json
+
+export BSPWM_SOCKET BSPWM_STATE
+#
+# if we log in on VT1 and there is no text in the kernel cmdline start sx
+#
+if [ "$(tty)" = /dev/tty1 ]; then
+  case " $(cat /proc/cmdline) " in
+    *' text '*)	;;
+    *) sx ;;
+  esac
+fi
+#
+# If we start a dash shell as interfactive we exec it as a fish shell
+#
+case $- in
+  *i* )
+    test -n "$NOFISH" && return
+    if command -v fish >/dev/null 2>&1; then
+      exec fish -l
+    fi ;;
+  * );;
+esac
+# vim: ft=sh

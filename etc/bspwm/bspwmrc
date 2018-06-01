@@ -1,0 +1,27 @@
+#!/bin/sh
+
+if [ -e "$BSPWM_STATE" ]; then
+	bspc wm -l "$BSPWM_STATE"
+	rm -f -- "$BSPWM_STATE"
+fi
+
+bspc monitor -d 1 2 3 4 5 6 7 8 9
+
+bspc config border_width 5
+bspc config pointer_follows_focus true
+
+bspc config normal_border_color '#528588'
+bspc config focused_border_color '#dee3e0'
+
+# Make all windows floating
+bspc rule -a "*" state=floating
+
+bspc rule -a Firefox desktop=^1 rectangle=1366x743+-5+-15
+
+# Adopt orphans
+bspc wm -o
+
+for area in desktop date clock mail memory battery volume music; do
+	pgrep "$area"-bar >/dev/null && pkill "$area"-bar
+	fork run-bar "$area"
+done

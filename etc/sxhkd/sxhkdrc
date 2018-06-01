@@ -1,0 +1,121 @@
+#
+# Configurations
+#
+
+# EXEC {{{
+
+super + d
+	thingylaunch
+
+super + e
+	edit
+
+super + Return
+	urxvt
+
+# }}}
+
+# SCREENSHOTS {{{
+
+super + p
+	maim -i $(xdotool getactivewindow) | xclip -selection clipboard -t image/png
+
+super + shift + p
+	maim | xclip -selection clipboard -t image/png
+
+super + o
+	maim -i $(xdotool getactivewindow) > ~/usr/screenshots/$(date +%T-%d).png
+
+super + shift + o
+	maim > ~/usr/screenshots/$(date +%T-%d).png
+
+# }}}
+
+# WALLPAPER {{{
+
+super + shift + w
+  rndw
+
+# }}}
+
+# MUSIC {{{
+
+XF86Audio{Lower,Raise}Volume
+  volume {lower,raise}
+
+XF86Audio{Prev,Next}
+  mpc {prev,next}
+
+XF86AudioMute
+  volume toggle
+
+XF86AudioPlay
+  mpc toggle
+
+# }}}
+
+# MISC {{{
+
+XF86MonBrightness{Up,Down}
+  xbacklight -{inc,dec} 1
+
+# }}}
+
+# PROCESS {{{
+
+super + shift + r
+	pkill -USR1 -x sxhkd
+
+# }}}
+
+# BSPWM {{{
+
+super + {_, shift + }Escape
+	{bspc wm -d > "$BSPWM_STATE" && bspc quit, \
+	 bspc quit 1}
+
+# focus next node
+super + {_, shift} + Tab
+	bspc node -f {next,prev}.local; \
+	xdo raise
+
+# set to fullscreen
+super + x
+	if [ -z "$(bspc query -N -n focused.floating)" ]; then \
+		bspc node focused -g private=off; \
+		bspc node focused -t floating; \
+	else \
+		bspc node focused -t fullscreen; \
+		bspc node focused -g private=on; \
+	fi
+
+# move a floating window
+super + {j,k,i,l}
+	bspc node -v {-30 0,0 30,0 -30,30 0}
+
+super + ctrl + {j,k,i,l}
+	bspc node -v {-10 0,0 10,0 -10,10 0}
+
+super + q
+	bspc node -c
+
+super + {1,2,3,4,5,6,7,8,9}
+	bspc desktop -f {1,2,3,4,5,6,7,8,9}
+
+super + shift + {1,2,3,4,5,6,7,8,9}
+	bspc node -d {1,2,3,4,5,6,7,8,9}
+
+super + shift + {i, k}
+	bspc node -z bottom {0 -20,0 20}
+
+super + shift + {l, j}
+	bspc node -z right {20 0,-20 0}
+
+super + ctrl + shift + {i, k}
+	bspc node -z bottom {0 -10,0 10}
+
+super + ctrl + shift + {l, j}
+	bspc node -z right {10 0,-10 0}
+
+super + {b,n,g,y,u}
+	snap {bl,br,md,tl,tr}

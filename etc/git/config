@@ -1,0 +1,19 @@
+[user]
+	email = thinkabit.ukim@gmail.com
+	name = maxice8
+[credential]
+	helper = cache --timeout=999999999 --socket=${XDG_RUNTIME_DIR}/git/credential-cache
+[alias]
+  ls = log --oneline --decorate --graph
+[core]
+  editor = nvim
+[github]
+	user = maxice8
+# for $deity's sake, check that anything we're getting is complete and sane on a regular basis
+# https://groups.google.com/forum/#!topic/binary-transparency/f-BI4o8HZW0
+[transfer]
+fsckobjects = true
+[fetch]
+fsckobjects = true
+[receive]
+fsckObjects = true
