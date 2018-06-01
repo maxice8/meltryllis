@@ -1,0 +1,15 @@
+setxkbmap br &
+xset +fp /usr/share/fonts/misc
+xset +fp ~/.fonts
+xset fp rehash
+xset r rate 300 50 &
+xrdb "${XDG_CONFIG_HOME}"/X11/xresources # Before the bars so they get correct colors.
+mpd &
+sxhkd &
+xbanish &
+wm &
+rndw &
+start-pulseaudio-x11 &
+sudo sh -c 'echo 100 > /sys/class/backlight/intel_backlight/brightness'
+export DISPLAY=:1 && exec dbus-launch --exit-with-x11 xwait
+# vim: ft=sh
