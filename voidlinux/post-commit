@@ -1,0 +1,10 @@
+#!/bin/sh
+if [ -e .commit.o ]; then
+	files="$(cat .commit.o)"
+	rm -- .commit.o
+	for file in $files; do
+		git add "$file"
+	done
+	git commit --amend --no-edit --no-verify
+fi
+exit

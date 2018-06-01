@@ -1,0 +1,86 @@
+#!/bin/sh
+#
+# this gets run when git commit is called and if it returns anything
+# other than 0 it will prevent the commit from being made.
+# Send output to stderr
+exec 1>&2
+
+git diff --cached --exit-code --quiet && exit 0
+
+porcelain="$(git status --porcelain)"
+
+get() {
+	path="$(git diff --staged --name-only | grep 'template$')"
+	sed -n "s/^$1=//p" "$path" 2>/dev/null ||
+	# if the sed fails then we get the basename of the dirname
+	# we give priority to the upmost result.
+	if [ "$1" = "pkgname" ]; then
+		basename "$(dirname "$(git diff --staged --name-only | grep srcpkgs/ | head -n 1)")"
+	fi
+}
+
+has() {
+	path="$(git diff --staged --name-only | grep 'template$' | head -n1)"
+	grep -q "^$1" "$path" 
+}
+
+out() {
+	printf "%s\\n" "$1"
+}
+
+# Checks if revision is 1 on the version bump
+check_vbump_rev() {
+	if out "$1" | grep -Eq '^+revision|^-revision' ; then
+		revision="$(out "$1" | tr -d ' ' |
+			grep '+revision=' | sed 's|^+revision=||g')"
+	else
+		revision="$(out "$1" | tr -d ' ' |
+			grep 'revision=' | sed 's|^revision=||g')"
+	fi
+
+	if [ ! "${revision:-0}" -eq 1 ]; then
+		out "$(get pkgname) being updated but revision isn't 1"
+		exit 1
+	fi
+}
+
+# Checks if checksum has changed in the version bump
+check_vbump_checksum() {
+	has checksum || return
+	if ! out "$1" | grep -Eq '^+checksum=|^-checksum='; then
+		out "$(get pkgname) being updated but checksum unchanged"
+		exit 1
+	fi
+}
+
+formalize_template() {
+	templates="$(git diff --staged --name-only)"
+	[ -z "$templates" ] && return
+	for template in $templates; do
+		sed -i "1 s|# Template.[^'\"]*|# Template file for |g ;
+				1 s|\"|'|g ;
+				1 s|\\.$||g ;
+				s|\\[ -n|\\[|g" "$template" 2>/dev/null
+		[ -z "$(git diff --name-only)" ] && return
+		printf "%s" "$templates" > .commit.o
+	done
+}
+
+if out "$porcelain" | grep -q 'template$'; then
+	[ "$IGNORE_XLINT" ] || if ! xlint "$(git diff --staged --name-only | grep 'template$')"; then
+		exit 1
+	fi
+fi
+
+# Check if update is done but checksum isn't changed
+if out "$porcelain" | grep -q 'M.*template$'; then
+	diffs="$(git diff --staged)"
+	if out "$diffs" | grep -Eq '^+version=|^-version='; then
+		check_vbump_rev "$diffs"
+		check_vbump_checksum "$diffs"
+	fi
+fi
+
+formalize_template
+
+exit 0

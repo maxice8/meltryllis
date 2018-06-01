@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+# Based on prepare-commit-msg from Alpine linux, available at
+# https://wiki.alpinelinux.org/wiki/Creating_an_Alpine_package
+#
+# This is a hook for Voidlinux commit rules
+# see: https://github.com/voidlinux/void-packages/blob/master/CONTRIBUTING.md#committing-your-changes
+#
+# It deals with
+# - New templates by adding 'New package: $pkgname-$version'
+# - Updates by adding '$pkgname: update to $version'
+# - For anything else it adds '$pkgname:' , leaving the user to fill the reason
+#
+# It detects new templates by checking if it has the A flag on git status --porcelain
+# It detects updates by checking if there is a -version and +version
+#
+# This is a function made by maxice8 <thinkabit.ukim@gmail.com> that reads the template file
+# and gets any information required by it, it recives 1 argument which is the name of the
+# attribute to search for, the attribute needs to be in the key=val format
+get() {
+	path="$(git diff --staged --name-only | grep 'template$')"
+	sed -n "s/^$1=//p" "$path"  2>/dev/null ||
+	# if the sed fails then we get the basename of the dirname
+	# we give priority to the upmost result.
+	if [ "$1" = "pkgname" ]; then
+		basename "$(dirname "$(git diff --staged --name-only | grep srcpkgs/ | head -n 1)")"
+	fi
+}
+
+out() {
+	printf "%s\\n\\n" "$1"
+}
+
+case "$2,$3" in
+  ,|template,)
+	# Grab the contents of the git message and delete until the first occourence of
+	# a hashtag, there shouldn't be a hashtag until the git header
+	content="$(awk '/^#/{i++}i' "$1")"
+
+	# get what was made to the first template.
+	# A -> Added, D -> deleted, M -> Modified
+	# we don't handle Modified when it is updated because 'xbump' does that better
+	case "$(git diff --name-status --cached | grep 'template$' | head -n1 | cut -c 1)" in
+		A|AM) out "New package: $(get pkgname)-$(get version)." > "$1" ;;
+		D) out "$(get pkgname): remove." > "$1" ;;
+		M)
+		if git diff --staged | grep -q '^+reverts='; then
+			out "$(get pkgname): revert to $(get version)." > "$1"
+		else
+			out "$(get pkgname):" > "$1"
+		fi ;;
+		*) printf "%s\\n\\n" "$(get pkgname): " > "$1" ;;
+	esac
+
+	printf "%s\\n" "$content" >> "$1" ;;
+esac
