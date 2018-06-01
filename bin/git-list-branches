@@ -1,0 +1,4 @@
+#!/bin/sh
+test  -e .git || exit 99
+
+git branch | awk -F ' +' '! /\(no branch\)/ { print $2 }'

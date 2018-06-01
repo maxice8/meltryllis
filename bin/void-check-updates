@@ -1,0 +1,13 @@
+#!/bin/sh
+cd $(xdistdir)
+
+for pkg in $( fd --exclude '*uboot*' \
+				 --exclude '*usbarmory*' \
+				 --exclude '*linux[0-9]' \
+				 --exclude '*i18n*' \
+				 --exclude '*kernel*' \
+				 --exclude '*python*' \
+				 --exclude '*cinnamon*' \
+				 --type directory --max-depth 1 . srcpkgs/ ); do
+./xbps-src update-check $pkg 2>&1 | grep -Ev '(^NO VERSION|^=>)'
+done

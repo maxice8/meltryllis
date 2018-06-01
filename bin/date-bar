@@ -1,0 +1,12 @@
+#!/bin/sh
+_bargeo="200x24+230+0"
+
+while :; do
+	echo "%{r} ${_t} DATE: ${_r}$(date '+%A. %d of %b. %Y') "
+	sleep 900
+done | lemonbar -f "${_barfont}" \
+				-f "${_barfont2}" \
+				-B "${_barbg}" \
+				-F "${_barfg}" \
+				-g "${_bargeo}" \
+				-b

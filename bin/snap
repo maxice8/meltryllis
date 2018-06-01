@@ -1,0 +1,24 @@
+#!/bin/sh
+
+CUR=${2:-$(pfw)}
+ROOT=$(lsw -r)
+SW=$(wattr w $ROOT)
+SH=$(( $(wattr h $ROOT) - 10))
+
+BW=$(wattr b $CUR)
+W=$(wattr w $CUR)
+H=$(wattr h $CUR)
+
+X=20
+Y=20
+
+case $1 in
+    tr) X=$((SW - W - BW*2 - 20)) ;;
+    bl) Y=$((SH - H - BW*2 - 20)) ;;
+    br) X=$((SW - W - BW*2 - 20))
+        Y=$((SH - H - BW*2 - 20)) ;;
+    md) X=$((SW/2 - W/2 - BW))
+        Y=$((SH/2 - H/2 - BW));;
+esac
+
+wtp $X $Y $W $H $CUR

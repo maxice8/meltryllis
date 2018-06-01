@@ -1,0 +1,18 @@
+#!/bin/sh
+bf="-lucy-tewi-medium-r-normal--11-90-100-100-c-60-iso10646-1"
+bf2="-wuncon-siji-medium-r-normal--10-100-75-75-c-80-iso10646-1"
+bbg="$(xrdb -query | awk '/background/{print $2}')"
+bfg="$(xrdb -query | awk '/foreground/{print $2}')"
+t="%{F#A7A7A7}"
+r="%{F#ffffff}"
+
+if [ "$TMPDIR" ]; then
+	ff="$TMPDIR"
+elif [ "$XDG_RUNTIME_DIR" ]; then
+	ff="$XDG_RUNTIME_DIR"
+else
+	ff="/tmp"
+fi
+ff="${ff}/bars/${1}.fifo"
+
+_barfont="$bf" _barfont2="$bf2" _barbg="$bbg" _barfg="$bfg" _t="$t" _r="$r" _fifo="$ff" exec nochildren "$1"-bar

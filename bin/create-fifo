@@ -1,0 +1,15 @@
+#!/bin/sh
+fifo="$1"
+fdir="$(dirname "$1")"
+
+if test -e "$fdir"; then
+	test -d "$fdir" || ( rm -rf -- "$fdir" ; mkdir -p "$fdir" )
+else
+	mkdir -p "$fdir"
+fi
+
+if test -e "$fifo"; then
+	test -p "$fifo" || ( rm -rf -- "$fifo" ; mkfifo "$fifo" )
+else
+	mkfifo "$fifo"
+fi

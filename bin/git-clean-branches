@@ -1,0 +1,22 @@
+#!/bin/sh
+delete_branch() {
+	git checkout master >/dev/null 2>&1
+	if git branch -D "$1" >/dev/null 2>&1 ; then
+		printf "[%s] local branch deleted\\n" "$1"
+	fi
+
+	if git show-ref --quiet --verify -- refs/remotes/origin/"$1" ; then
+		if git push origin --delete "$1" >/dev/null 2>&1 ; then
+			printf "[%s] remote branch deleted\\n" "$1"
+		fi
+	fi
+}
+if [ $# -eq 0 ] ; then
+	# shellcheck disable=SC2046
+	"$0" $(git branch --merged master | grep -v master | sed 's/^..//;s/ .*//')
+fi
+
+while [ $# -gt 0 ]; do
+	delete_branch "$1"
+	shift
+done

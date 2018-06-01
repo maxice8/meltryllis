@@ -1,0 +1,34 @@
+#!/bin/sh
+# it assumes the monitors are named 1 to 9
+_bargeo="230x24+0+0"
+
+create-fifo "$_fifo"
+
+trap "rm -f $_fifo" EXIT QUIT TERM
+
+# Wait for the bspwm socket to appear, path defined on BSPWM_SOCKET envvar
+wait-path socket "${BSPWM_SOCKET:-'/tmp/bspwm_socket'}"
+
+get_cur() {
+	bspc query -D -d focused --names
+}
+
+desktop_wait() {
+	get_cur > "$_fifo"
+	bspc subscribe desktop_focus |
+		while read -r _; do
+			get_cur > "$_fifo"
+		done
+}
+
+desktop_wait &
+_w="$(bspc query -D | wc -l)"
+
+while :; do
+	echo "%{r}    ${_t}WSP: ${_r}$(cat "$_fifo")/${_w} "
+done | lemonbar -f "${_barfont}" \
+				-f "${_barfont2}" \
+				-B "${_barbg}" \
+				-F "${_barfg}" \
+				-g "${_bargeo}" \
+				-b

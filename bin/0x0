@@ -1,0 +1,2 @@
+#!/bin/sh
+upload 0x0 "$1" | tee /dev/tty | xclip -selection clipboard

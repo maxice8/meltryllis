@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+if test -n "${1-}"; then
+  printf "%s" "$*" | xsel -bi
+  exit $?
+fi
+
+printf "%s" "$(cat)" | xsel -bi

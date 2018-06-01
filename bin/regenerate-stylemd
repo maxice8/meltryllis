@@ -1,0 +1,5 @@
+#!/bin/sh
+mandoc -Tmarkdown ./style.7 > STYLE.md
+
+git add STYLE.md
+git commit --amend --no-edit

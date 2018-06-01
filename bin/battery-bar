@@ -1,0 +1,44 @@
+#!/bin/sh
+_bargeo="70x24+905+0"
+
+create-fifo "$_fifo"
+
+trap "rm -f $_fifo" EXIT QUIT TERM
+
+get_battery() {
+	_cap="$(cat /sys/class/power_supply/BAT0/capacity)"
+	[ "$_cap" -gt 100 ] && echo "100%" || echo "$_cap%"
+}
+
+wait_battery() {
+	while :; do
+		_bat="$(get_battery)"
+		if acpi -a | grep -q on-line; then
+			_bat="${_bat}+"
+		fi
+		echo "$_bat" > "$_fifo"
+		sleep 30
+	done
+}
+
+wait_charger() {
+	acpi_listen | grep --line-buffered ac_adapter |
+		while read -r event; do
+			if [ "$(echo "$event" | tail -c 2)" = "1" ]; then
+				echo "$(get_battery)+" > "$_fifo"
+			else
+				get_battery > "$_fifo"
+			fi
+		done
+}
+
+wait_charger &
+wait_battery &
+
+while :; do
+	echo "%{c}${_t}BAT: ${_r}$(cat "$_fifo")"
+done | lemonbar -f "${_barfont}" \
+				-B "${_barbg}" \
+				-F "${_barfg}" \
+				-g "${_bargeo}" \
+				-b

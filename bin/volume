@@ -1,0 +1,35 @@
+#!/bin/sh
+set -eu
+
+running_sink() {
+	pactl list short | grep RUNNING | sed -e 's,^\([0-9][0-9]*\)[^0-9].*,\1,'
+}
+
+level() {
+	pactl list sinks |
+		grep '^[[:space:]]Volume:' |
+		head -n $(( $(running_sink) + 1 )) |
+		tail -n 1 |
+		sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'
+}
+
+ismuted() {
+	if amixer get Master | grep -qw '\[on\]' ; then
+		echo "Unmuted"
+	else
+		echo "Muted"
+	fi
+}
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+		toggle) amixer -q set Master toggle ; ismuted;;
+		raise) amixer -q set Master 5%+ ; level;;
+		lower) amixer -q set Master 5%- ; level;;
+		strong_raise) amixer -q set Master 10%+ ; level;;
+		strong_lower) amixer -q set Master 10%- ; level;;
+		level) level ;;
+		*) amixer "$1";;
+	esac
+	shift
+done

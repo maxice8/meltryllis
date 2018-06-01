@@ -1,0 +1,35 @@
+#!/bin/sh
+usage() {
+	cat <<EOF
+wait-path [type] <path>
+
+types:
+	- p|namedpipe   : named pipes
+	- s|socket	: sockets
+	- f|file	: regular files
+	- d|directory   : directories
+	- l|symlink	: symbolic links
+	- e|executable  : executable files
+EOF
+exit 1
+}
+
+[ "$#" -lt 1 ] && usage
+
+if [ "$#" = "1" ]; then
+	type="-e"
+else
+	case "$1" in
+		p|namedpipe) type="-p" ;;
+		s|socket) type="-S" ;;
+		f|file) type="-f" ;;
+		d|directory) type="-d" ;;
+		l|symlink) type="-l" ;;
+		e|executable) type="-x" ;;
+	esac
+	shift
+fi
+
+while ! test "$type" "$1" ; do
+	inotifywait -qq -e create -e moved_to "$(dirname "$1")"
+done

@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+cleanup() {
+	rm -f -- "$t"
+}
+trap cleanup EXIT QUIT INT TERM
+
+t="$(mktemp --suffix=.png)"
+
+xclip -selection clipboard -t image/png -o > "$t"
+
+$1 $t

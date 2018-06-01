@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+# depends: xev
+
+xev | grep -o 'keycode [^)]\+)'
+

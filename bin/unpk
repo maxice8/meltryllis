@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# extract archives
+# depends: unzip unrar 7z
+set -eu
+
+usage() {
+  cat <<EOF
+unpk <archives>
+EOF
+exit 0
+}
+
+test -z "${1-}" && usage
+
+while test -n "${1-}"; do
+  if [ -f "$1" ]; then
+    case "$1" in
+    *.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar)
+      tar xfv "$1"              ;;
+    *.lzma) unlzma -cd "$1"     ;;
+    *.bz2) bunzip2 -cd "$1"     ;;
+    *.rar) unrar x -ad "$1"     ;;
+    *.gz|*.zst) unzstd -cq "$1" ;;
+    *.zip) unzip "$1"	        ;;
+    *.Z) uncompress -c "$1"     ;;
+    *.7z|*.arj|*.cab|*.chm|*.deb|*.dmg|*.iso|*.lzh|*.msi|*.rpm|*.udf|*.wim|*.xar)
+      7z x "$1"                 ;;
+    *.xz) unxz -cd "$1"         ;;
+    *)
+    printf "%s\\n" "file format not supported: $1"
+    ;;
+    esac
+  fi
+  shift
+done
+

@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+set -eu
+
+# Check if we are in a git dir
+if [[ ! -e .git ]]; then
+	echo "not in git dir"
+	exit 1
+fi
+
+# Gets name of the commit
+#
+# branch -> branch we are on, uses getBranchName()
+# commits -> number of commits between HEAD and master
+# we call fzf to let the user pick which commit will be title in case
+# of various commits
+#
+# returns the title of the commit
+getCommitName() {
+	local branch
+	local commits
+
+	branch="$(getBranchName)"
+	commits="$(git rev-list --count master..."$branch")"
+
+	if (( commits == 1 )); then
+		git show -s --format=%s HEAD | head -1
+	else
+		fzf --print-query <<< "$(git cherry -v master "$branch" | cut -d' ' -f3-)" | tail -1
+	fi
+}
+
+# Gets name of branch
+#
+# returns the name of the current branch
+getBranchName() {
+	git rev-parse --abbrev-ref HEAD
+}
+
+# Checks if branch exist and change to it
+# otherwise return 1
+changeBranch() {
+	local branch="$1"
+
+	git checkout "$branch" >/dev/null 2>&1
+}
+
+check_vbump() {
+	if [[ "$CommitName" =~ (update[[:space:]]to) ]]; then
+		echo -n true
+	else
+		echo -n false
+	fi
+}
+
+check_npkg() {
+	if [[ "$CommitName" =~ (New[[:space:]]package) ]]; then
+		echo -n true
+	else
+		echo -n false
+	fi
+}
+
+getPkgName() {
+	local message="$1"
+
+	if [[ "$message" =~ (New[[:space:]]package:) ]]; then
+		message="${message#*:}" # Remove everything before :
+		message="${message// }" # Remove all spaces
+		echo -nE "${message/-[0-9]*/}" # Remove everything after -[0-9], this removes version numbers
+	else
+		if [[ "${message%:*}" == *"common/"* ]]; then
+			echo -nE "Void Linux infrastructure"
+		else
+			echo -nE "${message%:*}"
+		fi
+	fi
+}
+
+# uses getCommitName to get message name and creates a request on github
+# with the hub utility
+makePullRequest() {
+	local message pkgname is_vbump is_npkg
+
+	message="$1"
+	pkgname="$(getPkgName "$( echo -nE "$message" | head -1 )")"
+	is_vbump="$(check_vbump "$message" )"
+	is_npkg="$(check_npkg "$message" )"
+
+	prurl="$(hub pull-request -m "$message")"
+	prnum="${prurl##*/}"
+
+	(
+	echo -E "---"
+	echo -E "prnum: ${prnum}"
+	echo -E "title: >"
+	echo -E " ${message}"
+	echo -E "url: \"${prurl}\""
+	echo -E "pkg: \"${pkgname}\""
+	echo -E "vbump: ${is_vbump}"
+	echo -E "npkg: ${is_npkg}"
+	) | pygmentize -l yaml
+}
+
+syncBranch() {
+	git rebase master >/dev/null 2>&1
+	git push -uf >/dev/null 2>&1
+}
+
+# Make sure we are in contact with upstream before syncing
+git fetch upstream >/dev/null 2>&1
+
+[ $# -lt 1 ] && set -- "$(getBranchName)"
+
+# Declare an array that will hold the commit names
+declare -a CommitName
+for pr in "$@" ; do
+	changeBranch "$pr" || continue
+	syncBranch "$pr"
+	CommitName+=("$(getCommitName)")
+done
+
+# Declare a read-only variable that holds the branch we started on
+# shellcheck disable=SC2155
+declare -r first_branch="$(getBranchName)"
+
+# creates an pull request for each arg, each arg is a branch name
+c=0
+for pr in "$@" ; do
+	changeBranch "$pr" || continue
+	makePullRequest "${CommitName[$c]}"
+	c=$(( c + 1 ))
+done
+
+changeBranch "$first_branch"

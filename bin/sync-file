@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+[ "$#" -lt 2 ] && exit 4
+
+while inotifywait -e create,modify,delete "$1"; do
+	rsync -az "$1" "$2"
+done

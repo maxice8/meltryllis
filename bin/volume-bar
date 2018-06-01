@@ -1,0 +1,32 @@
+#!/bin/sh
+_bargeo="80x24+970+0"
+
+create-fifo "$_fifo"
+
+trap "rm -f $_fifo" EXIT QUIT TERM
+
+# Wait until pulseaudio socket is available
+wait-path socket /run/user/"$(id -u)"/pulse/native
+
+volume_wait() {
+	volume level > "$_fifo"
+	pactl subscribe | grep --line-buffered sink |
+		while read -r _; do
+			volume level | tr -d ' ' > "$_fifo"
+		done
+}
+
+volume_wait &
+
+while :; do
+	echo "%{l} ${_t}VOL: ${_r}$(cat "$_fifo") "
+done | lemonbar -f "${_barfont}" \
+				-f "${_barfont2}" \
+                -B "${_barbg}" \
+                -F "${_barfg}" \
+                -g "${_bargeo}" \
+                -b
+
+
+
+

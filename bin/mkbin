@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+bindir="$HOME"/bin
+
+while [ $# -gt 0 ]; do
+	e "${bindir}"/"$1"
+
+	if [ -f "${bindir}"/"$1" ]; then
+		chmod +x "${bindir}"/"$1"
+	fi
+	shift
+done

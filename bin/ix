@@ -1,0 +1,16 @@
+#!/bin/sh
+# depends: curl, xclip
+ix() {
+    [ -t 0 ] && {
+        _f="$1"
+        shift
+        [ "$_f" ] && {
+            curl -sF f:1=@"$_f" "$*" ix.io
+            return
+        }
+        echo "^C to cancel, ^D to send."
+    }
+    curl -sF f:1='<-' "$*" ix.io
+}
+
+ix "$*" | tee /dev/tty | xclip -selection clipboard

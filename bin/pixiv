@@ -1,0 +1,6 @@
+#!/bin/sh
+# Download images from pixiv, takes 2 args
+# url and final name with extension
+set -eu
+
+curl --referer "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=46157029" "$1" -o "${2:-.}"

@@ -1,0 +1,34 @@
+#!/bin/sh
+
+sockdir="${XDG_RUNTIME_DIR}/dtach"
+
+usage() {
+    cat <<EOF
+usage: dm [-hl] [-d alias] <alias> [command]
+
+<alias> : name of the socket used to communicate
+[command] : name of the program to run on the socket
+
+-h : show this message and exit
+-l : list sockets
+-d : delete a socket
+EOF
+exit
+}
+
+if [ $# -eq 0 ]; then
+	usage
+fi
+
+if [ ! -d "${sockdir}" ]; then
+	mkdir -p -- "${sockdir}"
+fi
+
+cmd="$1" ; shift
+
+case "$cmd" in
+	-h) usage;;
+	-l) ls -1 "${sockdir}";;
+	-d) rm -f -- "${sockdir}"/"$1";;
+	*) exec dtach -A "${sockdir}"/"${cmd}" -e '^f' "${@:-'false'}";;
+esac

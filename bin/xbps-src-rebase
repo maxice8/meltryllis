@@ -1,0 +1,25 @@
+#!/bin/sh
+checkneed() {
+	commits_behind="$(git rev-list --left-right --count upstream/master..."$1" | awk '{ print $1 }')"
+
+	if [ "$commits_behind" -eq 0 ]; then
+		printf "[%s] already synced\\n" "$1"
+		return 1
+	fi
+	return 0
+}
+
+cd "$HOME"/src/void-packages || exit 99
+git fetch upstream >/dev/null 2>&1
+
+while [ $# -gt 0 ]; do
+	git checkout "$1" >/dev/null 2>&1
+	if checkneed "$1"; then
+		if git rebase upstream/master >/dev/null 2>&1 && git push -uf origin "$1" >/dev/null 2>&1; then
+			printf "[%s] success\\n" "$1"
+		else
+			printf "[%s] failed\\n" "$1"
+		fi
+	fi
+	shift
+done

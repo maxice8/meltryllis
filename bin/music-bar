@@ -1,0 +1,35 @@
+#!/bin/sh
+_bargeo="316x24+1050+0"
+
+create-fifo "$_fifo"
+
+trap "rm -f $_fifo" EXIT QUIT TERM
+
+parse() {
+	state="$(mpc status | grep -o '\[.*\]')"
+	if [ "$state" = '[playing]' ];then
+		state="$(mpc current --format '%file%' | sed 's/.\(ogg\|opus\|mp3\).*//')"
+	else
+		state="MPD is ${state:-'Stopped'}"
+	fi
+
+	printf "%s\\n" "$state"
+}
+
+music_wait() {
+	parse > "$_fifo"
+	while :; do
+		parse > "$_fifo"
+		mpc idle
+	done
+}
+
+music_wait &
+
+while :; do
+	echo "%{c}$(head -c 45 < $_fifo)"
+done | lemonbar -f "${_barfont}" \
+				-B "${_barbg}" \
+				-F "${_barfg}" \
+				-g "${_bargeo}" \
+				-b

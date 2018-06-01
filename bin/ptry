@@ -1,0 +1,13 @@
+#!/bin/sh
+# print the command and it's output and also copy to clipboard
+# useful to show to people
+if [ "$(id -u)" = "0" ]; then
+	prompt="#"
+else
+	prompt="\$"
+fi
+(
+	printf "%s\\n" "$prompt $*"
+	"$@" 2>&1
+) | (if [ -t 1 ] ; then cat ; else tee /dev/tty ; fi)
+
