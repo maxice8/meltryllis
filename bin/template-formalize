@@ -19,24 +19,73 @@ unquote_field() {
 	 sed -ri "s|($1=)\"(.*)\"|\\1\\2|g" "$TEMPLATE_FILE"
 }
 
+quote_field() {
+	sed -ri "s|($1=)(.*)|\\1\"\\2\"|g" "$TEMPLATE_FILE"
+}
+
 rewrite_tests() {
 	# Replaces '[ -n' with '['
 	sed -i "s|\\[ -n|\\[|g" "$TEMPLATE_FILE"
+}
+
+_get_fields() {
+	grep '^[A-Za-z].*\=' "$TEMPLATE_FILE" | 
+		grep -Ev '^pkgname=|^version=' | cut -d= -f1
+}
+
+quote_varfields() {
+	# Quotes fields that have variables being expanded
+	# Grab the current variables declared
+	fields="$(_get_fields)"
+
+	for field in $fields; do
+		# Check if the field contain sigil ($), denoting a variable
+		# if it isn't found we skip since it doesn't matter to us
+		grep "^${field}\\=" "$TEMPLATE_FILE" | grep -q '\$' || continue
+		# Check if the field is already quoted
+		grep "^${field}\\=" "$TEMPLATE_FILE" | grep -q '"' && continue
+
+		quote_field "$field"
+	done
+}
+
+unquote_varfields() {
+	# quote fields that don't have variables being expanded and neither
+	# have spaces, this ignores variables that are mean't to be quoted like
+	# license=
+	fields="$(_get_fields)"
+
+	# Strip fields that are meant to be quoted, but may not have identifiers
+	# that we used to discard, like having spaces, expanding variables
+	fields="$(echo "$fields" |
+		grep -Ev 'configure_args|depends|homepage|license|distfiles')"
+
+	for field in $fields; do
+		# Check if the field contain sigil ($), denoting a variable
+		# if it isn't found we skip since it doesn't matter to us
+		grep "^${field}\\=" "$TEMPLATE_FILE" | grep -q '\$' && continue
+		# check if field contain spaces
+		grep "^${field}\\=" "$TEMPLATE_FILE" | grep -q '[[:space:]]' && continue
+		# check if the field is already unquoted
+		grep "^${field}\\=" "$TEMPLATE_FILE" | grep -q '"' || continue
+
+		unquote_field "$field"
+	done
 }
 
 while [ $# -gt 0 ]; do
 	pkgs="$(find "$1" -type f -iname template)"
 	for pkg in $pkgs; do
 		export TEMPLATE_FILE="$pkg"
-		unquote_field pkgname
-		unquote_field version
 		rewrite_header
 		rewrite_tests
-		replace_field maintainer "Christian Neukirchen <chneukirchen@gmail.com>"
+		quote_varfields
+		unquote_varfields
+		replace_field maintainer "Christian Neukirchen <chneukirchen@gmail.com>" \
 					  "Leah Neukirchen <leah@vuxu.org>"
-		replace_field maintainer "Toyam Cox <Vaelatern@gmail.com>"
+		replace_field maintainer "Toyam Cox <Vaelatern@gmail.com>" \
 					  "Toyam Cox <Vaelatern@voidlinux.eu>"
-		replace_field maintainer "Duncaen <mail@duncano.de>"
+		replace_field maintainer "Duncaen <mail@duncano.de>" \
 					  "Duncaen <duncaen@voidlinux.eu>"
 		replace_field license "Artistic, GPL-1" "Artistic-1.0-Perl, GPL-1.0-or-later"
 		unset TEMPLATE_FILE
