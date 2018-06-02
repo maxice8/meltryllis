@@ -2,43 +2,44 @@
 set -eu
 
 replace_field() {
-	sed -i "s|^$1=\"$2\"|$1=\"$3\"|g" "$4"
+	sed -i "s|^$1=\"$2\"|$1=\"$3\"|g" "$TEMPLATE_FILE"
 }
 
 rewrite_header() {
 	# Get the package name
-	pkgname="$( grep "^pkgname=" "$1" |
+	pkgname="$( grep "^pkgname=" "$TEMPLATE_FILE" |
 				tr -d '"' | tr -d "'" |
 				sed -e 's|pkgname=||g' )"
 	# Rewrites the header to conform to
 	# # Template file for '$pkgname'
-	sed -i "1 s|^.*$|# Template file for '$pkgname'|g" "$1"
+	sed -i "1 s|^.*$|# Template file for '$pkgname'|g" "$TEMPLATE_FILE"
 }
 
 unquote_field() {
-	 sed -ri "s|($1=)\"(.*)\"|\\1\\2|g" "$2"
+	 sed -ri "s|($1=)\"(.*)\"|\\1\\2|g" "$TEMPLATE_FILE"
 }
 
 rewrite_tests() {
 	# Replaces '[ -n' with '['
-	sed -i "s|\\[ -n|\\[|g" "$1"
+	sed -i "s|\\[ -n|\\[|g" "$TEMPLATE_FILE"
 }
 
 while [ $# -gt 0 ]; do
 	pkgs="$(find "$1" -type f -iname template)"
 	for pkg in $pkgs; do
-		rewrite_header "$pkg"
-		rewrite_tests "$pkg"
-		replace_field maintainer "Christian Neukirchen <chneukirchen@gmail.com>" \
-					  "Leah Neukirchen <leah@vuxu.org>" "$pkg"
-		replace_field maintainer "Toyam Cox <Vaelatern@gmail.com>" \
-					  "Toyam Cox <Vaelatern@voidlinux.eu>" "$pkg"
-		replace_field maintainer "Duncaen <mail@duncano.de>" \
-					  "Duncaen <duncaen@voidlinux.eu>" "$pkg"
-		replace_field license "Artistic, GPL-1" "Artistic-1.0-Perl, GPL-1.0-or-later" \
-					  "$pkg"
-		unquote_field pkgname "$pkg"
-		unquote_field version "$pkg"
+		export TEMPLATE_FILE="$pkg"
+		unquote_field pkgname
+		unquote_field version
+		rewrite_header
+		rewrite_tests
+		replace_field maintainer "Christian Neukirchen <chneukirchen@gmail.com>"
+					  "Leah Neukirchen <leah@vuxu.org>"
+		replace_field maintainer "Toyam Cox <Vaelatern@gmail.com>"
+					  "Toyam Cox <Vaelatern@voidlinux.eu>"
+		replace_field maintainer "Duncaen <mail@duncano.de>"
+					  "Duncaen <duncaen@voidlinux.eu>"
+		replace_field license "Artistic, GPL-1" "Artistic-1.0-Perl, GPL-1.0-or-later"
+		unset TEMPLATE_FILE
 	done
 	shift
 done
