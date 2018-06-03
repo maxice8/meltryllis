@@ -2,7 +2,50 @@
 set -eu
 
 replace_field() {
-	sed -i "s|^$1=\"$2\"|$1=\"$3\"|g" "$TEMPLATE_FILE"
+	sed -ri "s|(^$1=.*)$2(.*)|\\1$3\\2|gI" "$TEMPLATE_FILE"
+}
+
+replace_many() {
+	# Takes <field> <final> <replaced ...>
+	# replaces all the replaced with final on field
+	field="$1"
+	result="$2"
+	shift
+	shift
+
+	while [ $# -gt 0 ]; do
+		replace_field "$field" "$1" "$result"
+	done
+}
+
+# Replaces any amount of license strings with one string
+#
+# 1st arg -- string to replace
+# any other arg -- string to be replaced
+#
+# Process
+# 1. grab license line with grep
+# 2. grab everything between double-quotes
+# 3. transform every comma into a newline (comma is separator for licenses)
+# 4. remove spaces
+# 5. parse over args and replace license with proper license with sed
+# 6. rebuild the string with awk and sed, trasnform every newline into command
+# and a space, then replace the last space comma with a newline
+# 7. replace the license field using sed
+replace_license() {
+	licenses="$(grep '^license=' "$TEMPLATE_FILE" |
+				sed -r 's|license="(.*)"|\1|gI' |
+				tr , \\n | tr -d ' ')"
+
+	final="$1" ; shift
+
+	while [ $# -gt 0 ]; do
+		licenses="$(echo "$licenses" | sed "s|^$1$|$final|gI")"
+		shift
+	done
+	licenses="$(echo "$licenses" | awk 1 ORS=', ' | sed 's|, $|\n|g')"
+
+	sed -i "s|^license=.*|license=\"$licenses\"|g" "$TEMPLATE_FILE"
 }
 
 rewrite_header() {
@@ -29,8 +72,7 @@ rewrite_tests() {
 }
 
 _get_fields() {
-	grep '^[A-Za-z].*\=' "$TEMPLATE_FILE" | 
-		grep -Ev '^pkgname=|^version=' | cut -d= -f1
+	grep '^[A-Za-z].*\=' "$TEMPLATE_FILE" | cut -d= -f1
 }
 
 quote_varfields() {
@@ -58,7 +100,7 @@ unquote_varfields() {
 	# Strip fields that are meant to be quoted, but may not have identifiers
 	# that we used to discard, like having spaces, expanding variables
 	fields="$(echo "$fields" |
-		grep -Ev 'configure_args|depends|homepage|license|distfiles|replaces|provides|conflicts|reverts')"
+		grep -Ev 'configure_args|depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile')"
 
 	for field in $fields; do
 		# Check if the field contain sigil ($), denoting a variable
@@ -79,8 +121,7 @@ while [ $# -gt 0 ]; do
 		export TEMPLATE_FILE="$pkg"
 		rewrite_header
 		rewrite_tests
-		quote_varfields
-		unquote_varfields
+
 		replace_field maintainer "Christian Neukirchen <chneukirchen@gmail.com>" \
 					  "Leah Neukirchen <leah@vuxu.org>"
 		replace_field maintainer "Toyam Cox <Vaelatern@gmail.com>" \
@@ -88,6 +129,15 @@ while [ $# -gt 0 ]; do
 		replace_field maintainer "Duncaen <mail@duncano.de>" \
 					  "Duncaen <duncaen@voidlinux.eu>"
 		replace_field license "Artistic, GPL-1" "Artistic-1.0-Perl, GPL-1.0-or-later"
+		replace_license "BSD-2-Clause" "2-Clause-BSD" "BSD-2"
+		replace_license "BSD-3-Clause" "3-Clause-BSD" "BSD-3"
+		replace_license "Unlicense" "unlicense" "the unlicense"
+		replace_license "GPL-1.0-or-later" "GPL+" "GPL-1+"
+		replace_license "GPL-2.0-or-later" "GPL-2+"
+		replace_license "LGPL-2.0-or-later" "LGPL-2+"
+
+		quote_varfields
+		unquote_varfields
 		unset TEMPLATE_FILE
 	done
 	shift
