@@ -2,6 +2,7 @@
 set -eu
 
 replace_field() {
+	grep -q "^$1=.*$2" "$TEMPLATE_FILE" || return 0
 	sed -ri "s|(^$1=.*)$2(.*)|\\1$3\\2|gI" "$TEMPLATE_FILE"
 }
 
@@ -40,8 +41,9 @@ replace_license() {
 	final="$1" ; shift
 
 	while [ $# -gt 0 ]; do
-		licenses="$(echo "$licenses" | sed "s|^$1$|$final|gI")"
-		shift
+		lc="$1" ; shift
+		echo "$licenses" | grep -q "^$lc$" || continue
+		licenses="$(echo "$licenses" | sed "s|^$lc$|$final|gI")"
 	done
 	licenses="$(echo "$licenses" | awk 1 ORS=', ' | sed 's|, $|\n|g')"
 
@@ -53,6 +55,7 @@ rewrite_header() {
 	pkgname="$( grep "^pkgname=" "$TEMPLATE_FILE" |
 				tr -d '"' | tr -d "'" |
 				sed -e 's|pkgname=||g' )"
+	grep -q "# Template file for '$pkgname'" "$TEMPLATE_FILE" || return 0
 	# Rewrites the header to conform to
 	# # Template file for '$pkgname'
 	sed -i "1 s|^.*$|# Template file for '$pkgname'|g" "$TEMPLATE_FILE"
@@ -67,6 +70,7 @@ quote_field() {
 }
 
 rewrite_tests() {
+	grep -q '\\[ -n' "$TEMPLATE_FILE" || return 0
 	# Replaces '[ -n' with '['
 	sed -i "s|\\[ -n|\\[|g" "$TEMPLATE_FILE"
 }
