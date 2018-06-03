@@ -1,9 +1,6 @@
 [submodule "ps_mem"]
 	path = ps_mem
 	url = https://github.com/pixelb/ps_mem
-[submodule "xtools-devel"]
-	path = xtools-devel
-	url = https://github.com/maxice8/xtools-devel
 [submodule "pomfclip"]
 	path = pomfclip
 	url = https://github.com/ScoreUnder/pomfclip
