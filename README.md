@@ -5,3 +5,7 @@ THE ION WALL
 - somthing there
 - see docs/
 
+LICENSE
+=======
+
+GPL-2.0-only
