@@ -70,7 +70,7 @@ quote_field() {
 }
 
 rewrite_tests() {
-	grep -q '\\[ -n' "$TEMPLATE_FILE" || return 0
+	grep -q '\[ -n' "$TEMPLATE_FILE" || return 0
 	# Replaces '[ -n' with '['
 	sed -i "s|\\[ -n|\\[|g" "$TEMPLATE_FILE"
 }
@@ -104,7 +104,7 @@ unquote_varfields() {
 	# Strip fields that are meant to be quoted, but may not have identifiers
 	# that we used to discard, like having spaces, expanding variables
 	fields="$(echo "$fields" |
-		grep -Ev 'configure_args|depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|make_|_args|build_options|alternatives')"
+		grep -Ev 'configure_args|depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|make_|_args|build_options|alternatives|FLAGS')"
 
 	for field in $fields; do
 		# Check if the field contain sigil ($), denoting a variable
