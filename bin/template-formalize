@@ -100,7 +100,7 @@ unquote_varfields() {
 	# Strip fields that are meant to be quoted, but may not have identifiers
 	# that we used to discard, like having spaces, expanding variables
 	fields="$(echo "$fields" |
-		grep -Ev 'configure_args|depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile')"
+		grep -Ev 'configure_args|depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|make_|_args|build_options|alternatives')"
 
 	for field in $fields; do
 		# Check if the field contain sigil ($), denoting a variable
