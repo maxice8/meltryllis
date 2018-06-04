@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eu
+export LC_ALL=C
 
 replace_field() {
 	grep -q "^$1=.*$2" "$TEMPLATE_FILE" || return 0
@@ -34,9 +35,9 @@ replace_many() {
 # and a space, then replace the last space comma with a newline
 # 7. replace the license field using sed
 replace_license() {
-	licenses="$(grep '^license=' "$TEMPLATE_FILE" |
-				sed -r 's|license="(.*)"|\1|gI' |
-				tr , \\n | tr -d ' ')"
+	licenses="$(grep -Po '^license=[\"'\""]{0,1}\\K.*[^"'""]' "$TEMPLATE_FILE" |
+				sed 's|, |\\n|g')"
+				#tr , \\n | tr -d ' ')"
 
 	final="$1" ; shift
 
@@ -52,10 +53,8 @@ replace_license() {
 
 rewrite_header() {
 	# Get the package name
-	pkgname="$( grep "^pkgname=" "$TEMPLATE_FILE" |
-				tr -d '"' | tr -d "'" |
-				sed -e 's|pkgname=||g' )"
-	grep -q "# Template file for '$pkgname'" "$TEMPLATE_FILE" || return 0
+	pkgname="$( grep -Po '^pkgname=[\"'\""]{0,1}\\K.*[^"'""]' "$TEMPLATE_FILE" )"
+	grep -Fq "# Template file for '$pkgname'" "$TEMPLATE_FILE" || return 0
 	# Rewrites the header to conform to
 	# # Template file for '$pkgname'
 	sed -i "1 s|^.*$|# Template file for '$pkgname'|g" "$TEMPLATE_FILE"
@@ -70,7 +69,7 @@ quote_field() {
 }
 
 rewrite_tests() {
-	grep -q '\[ -n' "$TEMPLATE_FILE" || return 0
+	grep -Fq '[ -n' "$TEMPLATE_FILE" || return 0
 	# Replaces '[ -n' with '['
 	sed -i "s|\\[ -n|\\[|g" "$TEMPLATE_FILE"
 }
@@ -87,9 +86,9 @@ quote_varfields() {
 	for field in $fields; do
 		# Check if the field contain sigil ($), denoting a variable
 		# if it isn't found we skip since it doesn't matter to us
-		grep "^${field}\\=" "$TEMPLATE_FILE" | grep -q '\$' || continue
+		grep -F "${field}=" "$TEMPLATE_FILE" | grep -Fq '\$' || continue
 		# Check if the field is already quoted
-		grep "^${field}\\=" "$TEMPLATE_FILE" | grep -q '"' && continue
+		grep -F "${field}=" "$TEMPLATE_FILE" | grep -Fq '"' && continue
 
 		quote_field "$field"
 	done
@@ -104,16 +103,16 @@ unquote_varfields() {
 	# Strip fields that are meant to be quoted, but may not have identifiers
 	# that we used to discard, like having spaces, expanding variables
 	fields="$(echo "$fields" |
-		grep -Ev 'configure_args|depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|make_|_args|build_options|alternatives|FLAGS')"
+		grep -Ev 'configure_args|depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|make_|_args|build_options|alternatives|FLAGS|conf_files')"
 
 	for field in $fields; do
 		# Check if the field contain sigil ($), denoting a variable
 		# if it isn't found we skip since it doesn't matter to us
-		grep "^${field}\\=" "$TEMPLATE_FILE" | grep -q '\$' && continue
+		grep -F "${field}=" "$TEMPLATE_FILE" | grep -Fq '\$' && continue
 		# check if field contain spaces
-		grep "^${field}\\=" "$TEMPLATE_FILE" | grep -q '[[:space:]]' && continue
+		grep -F "${field}=" "$TEMPLATE_FILE" | grep -q '[[:space:]]' && continue
 		# check if the field is already unquoted
-		grep "^${field}\\=" "$TEMPLATE_FILE" | grep -q '"' || continue
+		grep -F "${field}=" "$TEMPLATE_FILE" | grep -Fq '"' || continue
 
 		unquote_field "$field"
 	done
@@ -139,6 +138,7 @@ while [ $# -gt 0 ]; do
 		replace_license "GPL-1.0-or-later" "GPL+" "GPL-1+"
 		replace_license "GPL-2.0-or-later" "GPL-2+"
 		replace_license "LGPL-2.0-or-later" "LGPL-2+"
+		replace_license "MPL-2.0" "MPL-2"
 
 		quote_varfields
 		unquote_varfields
