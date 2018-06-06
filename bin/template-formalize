@@ -4,7 +4,7 @@ export LC_ALL=C
 
 replace_field() {
 	grep -q "^$1=.*$2" "$TEMPLATE_FILE" || return 0
-	sed -ri "s|(^$1=.*)$2(.*)|\\1$3\\2|gI" "$TEMPLATE_FILE"
+	sed -ri "s|(^$1=.*)$2(.*)|\\1$3\\2|I" "$TEMPLATE_FILE"
 }
 
 replace_many() {
@@ -35,37 +35,36 @@ replace_many() {
 # and a space, then replace the last space comma with a newline
 # 7. replace the license field using sed
 replace_license() {
-	licenses="$(grep -Po '^license=[\"'\""]{0,1}\\K.*[^"'""]' "$TEMPLATE_FILE" |
-				sed 's|, |\\n|g')"
-				#tr , \\n | tr -d ' ')"
+	licenses="$(grep -Po -m 1 '^license=[\"'\""]{0,1}\\K.*[^"'""]' "$TEMPLATE_FILE" |
+				sed 's|, |\\n|')"
 
 	final="$1" ; shift
 
 	while [ $# -gt 0 ]; do
 		lc="$1" ; shift
 		echo "$licenses" | grep -q "^$lc$" || continue
-		licenses="$(echo "$licenses" | sed "s|^$lc$|$final|gI")"
+		licenses="$(echo "$licenses" | sed "s|^$lc$|$final|I")"
 	done
-	licenses="$(echo "$licenses" | awk 1 ORS=', ' | sed 's|, $|\n|g')"
+	licenses="$(echo "$licenses" | awk 1 ORS=', ' | sed 's|, $|\n|')"
 
-	sed -i "s|^license=.*|license=\"$licenses\"|g" "$TEMPLATE_FILE"
+	sed -i "s|^license=.*|license=\"$licenses\"|" "$TEMPLATE_FILE"
 }
 
 rewrite_header() {
 	# Get the package name
-	pkgname="$( grep -Po '^pkgname=[\"'\""]{0,1}\\K.*[^"'""]' "$TEMPLATE_FILE" )"
-	grep -Fq "# Template file for '$pkgname'" "$TEMPLATE_FILE" || return 0
+	pkgname="$( grep -Po -m 1 '^pkgname=[\"'\""]{0,1}\\K.*[^"'""]' "$TEMPLATE_FILE" )"
+	grep -Fq "# Template file for '$pkgname'" && return
 	# Rewrites the header to conform to
 	# # Template file for '$pkgname'
-	sed -i "1 s|^.*$|# Template file for '$pkgname'|g" "$TEMPLATE_FILE"
+	sed -i "1 s|^.*$|# Template file for '$pkgname'|" "$TEMPLATE_FILE"
 }
 
 unquote_field() {
-	 sed -ri "s|($1=)\"(.*)\"|\\1\\2|g" "$TEMPLATE_FILE"
+	 sed -ri "s|($1=)\"(.*)\"|\\1\\2|" "$TEMPLATE_FILE"
 }
 
 quote_field() {
-	sed -ri "s|($1=)(.*)|\\1\"\\2\"|g" "$TEMPLATE_FILE"
+	sed -ri "s|($1=)(.*)|\\1\"\\2\"|" "$TEMPLATE_FILE"
 }
 
 rewrite_tests() {
@@ -75,7 +74,7 @@ rewrite_tests() {
 }
 
 _get_fields() {
-	grep '^[A-Za-z].*\=' "$TEMPLATE_FILE" | cut -d= -f1
+	grep -Po '^[A-Za-z].*(?=\=)' "$TEMPLATE_FILE"
 }
 
 quote_varfields() {
@@ -86,7 +85,7 @@ quote_varfields() {
 	for field in $fields; do
 		# Check if the field contain sigil ($), denoting a variable
 		# if it isn't found we skip since it doesn't matter to us
-		grep -F "${field}=" "$TEMPLATE_FILE" | grep -Fq '\$' || continue
+		grep -F "${field}=" "$TEMPLATE_FILE" | grep -Fq '$' || continue
 		# Check if the field is already quoted
 		grep -F "${field}=" "$TEMPLATE_FILE" | grep -Fq '"' && continue
 
@@ -103,14 +102,13 @@ unquote_varfields() {
 	# Strip fields that are meant to be quoted, but may not have identifiers
 	# that we used to discard, like having spaces, expanding variables
 	fields="$(echo "$fields" |
-		grep -Ev 'configure_args|depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|make_|_args|build_options|alternatives|FLAGS|conf_files')"
+		grep -Ev 'depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|_args|build_options|alternatives|FLAGS|conf_files|triggers')"
 
 	for field in $fields; do
-		# Check if the field contain sigil ($), denoting a variable
-		# if it isn't found we skip since it doesn't matter to us
-		grep -F "${field}=" "$TEMPLATE_FILE" | grep -Fq '\$' && continue
-		# check if field contain spaces
-		grep -F "${field}=" "$TEMPLATE_FILE" | grep -q '[[:space:]]' && continue
+		# Check if the field contain sigil ($), denoting variable expansion
+		# also check for spaces, if any of those are found we skip since variable
+		# expansion and spaces must always be quoted
+		grep -F "${field}=" "$TEMPLATE_FILE" | grep -Eq '\$|[[:space:]]' && continue
 		# check if the field is already unquoted
 		grep -F "${field}=" "$TEMPLATE_FILE" | grep -Fq '"' || continue
 
@@ -122,26 +120,27 @@ while [ $# -gt 0 ]; do
 	pkgs="$(find "$1" -type f -iname template)"
 	for pkg in $pkgs; do
 		export TEMPLATE_FILE="$pkg"
-		rewrite_header
-		rewrite_tests
+		rewrite_header &
+		rewrite_tests &
 
 		replace_field maintainer "Christian Neukirchen <chneukirchen@gmail.com>" \
-					  "Leah Neukirchen <leah@vuxu.org>"
+					  "Leah Neukirchen <leah@vuxu.org>" &
 		replace_field maintainer "Toyam Cox <Vaelatern@gmail.com>" \
-					  "Toyam Cox <Vaelatern@voidlinux.eu>"
+					  "Toyam Cox <Vaelatern@voidlinux.eu>" &
 		replace_field maintainer "Duncaen <mail@duncano.de>" \
-					  "Duncaen <duncaen@voidlinux.eu>"
-		replace_field license "Artistic, GPL-1" "Artistic-1.0-Perl, GPL-1.0-or-later"
-		replace_license "BSD-2-Clause" "2-Clause-BSD" "BSD-2"
-		replace_license "BSD-3-Clause" "3-Clause-BSD" "BSD-3"
-		replace_license "Unlicense" "unlicense" "the unlicense"
-		replace_license "GPL-1.0-or-later" "GPL+" "GPL-1+"
-		replace_license "GPL-2.0-or-later" "GPL-2+"
-		replace_license "LGPL-2.0-or-later" "LGPL-2+"
-		replace_license "MPL-2.0" "MPL-2"
+					  "Duncaen <duncaen@voidlinux.eu>" &
+		replace_license "Artistic, GPL-1" "Artistic-1.0-Perl, GPL-1.0-or-later" &
+		replace_license "BSD-2-Clause" "2-Clause-BSD" "BSD-2" &
+		replace_license "BSD-3-Clause" "3-Clause-BSD" "BSD-3" &
+		replace_license "Unlicense" "unlicense" "the unlicense" &
+		replace_license "GPL-1.0-or-later" "GPL+" "GPL-1+" &
+		replace_license "GPL-2.0-or-later" "GPL-2+" &
+		replace_license "LGPL-2.0-or-later" "LGPL-2+" &
+		replace_license "MPL-2.0" "MPL-2" &
 
-		quote_varfields
-		unquote_varfields
+		quote_varfields &
+		unquote_varfields &
+		wait
 		unset TEMPLATE_FILE
 	done
 	shift
