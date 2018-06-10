@@ -2,11 +2,18 @@
 set -eu
 export LC_ALL=C
 
+# :param ::field field to be checked
+# :param ::replaced string to be replaced
+# :param ::replace string to replace
+#
+# Checks if ::replaced is present in ::field with 'grep' then replaces it
+# with ::replace
 replace_field() {
 	grep -q -- "^$1=.*$2" "$TEMPLATE_FILE" || return 0
 	sed -ri "s|(^$1=.*)$2(.*)|\\1$3\\2|I" "$TEMPLATE_FILE"
 }
 
+# TODO: rewrite this in the style of the others.
 # Replaces any amount of license strings with one string
 #
 # 1st arg -- string to replace
@@ -23,7 +30,9 @@ replace_field() {
 # 7. replace the license field using sed
 replace_license() {
 	licenses="$(grep -Po -m 1 -- '^license=[\"'\""]{0,1}\\K.*[^"'""]' "$TEMPLATE_FILE" |
-				sed 's|, |\\n|')"
+				sed 's|, |\\n|g')"
+
+	c=0
 
 	final="$1" ; shift
 
@@ -31,83 +40,133 @@ replace_license() {
 		lc="$1" ; shift
 		echo "$licenses" | grep -q -- "^$lc$" || continue
 		licenses="$(echo "$licenses" | sed "s|^$lc$|$final|I")"
+		c=1
 	done
-	licenses="$(echo "$licenses" | awk 1 ORS=', ' | sed 's|, $|\n|')"
+	[ $c -eq 0 ] && return
+	licenses="$(echo "$licenses" | paste -s -d ',' | sed 's|,|, |g')"
 
 	sed -i "s|^license=.*|license=\"$licenses\"|" "$TEMPLATE_FILE"
 }
 
+# uses 'grep' to get name of the package from pkgname= field, checks if the correct
+# header is present and if not rewrites it
 rewrite_header() {
-	# Get the package name
 	pkgname="$( grep -Po -m 1 -- '^pkgname=[\"'\""]{0,1}\\K.*[^"'""]' "$TEMPLATE_FILE" )"
 	grep -Fq -- "# Template file for '$pkgname'" && return
-	# Rewrites the header to conform to
-	# # Template file for '$pkgname'
 	sed -i "1 s|^.*$|# Template file for '$pkgname'|" "$TEMPLATE_FILE"
 }
 
+# :param ::field field to be unquoted
+# remove double-quotes after ::field and in the end of the line
+# this will fail for multiline fields
 unquote_field() {
 	 sed -ri "s|($1=)\"(.*)\"|\\1\\2|" "$TEMPLATE_FILE"
 }
 
+# :param ::field field to be quoted
+# put double-quotes after ::field and in the end of the line
+# this will fail for multiline fields
 quote_field() {
 	sed -ri "s|($1=)(.*)|\\1\"\\2\"|" "$TEMPLATE_FILE"
 }
 
+# rewrites all '[ -n' occourences with '[ '
 rewrite_tests() {
 	grep -Fq -- '[ -n' "$TEMPLATE_FILE" || return 0
-	# Replaces '[ -n' with '['
 	sed -i "s|\\[ -n|\\[|g" "$TEMPLATE_FILE"
 }
 
+# returns a newline delimitated list of posix sh variable names
+# that are on the start of the line, it includes the '=' sign
 _get_fields() {
-	grep -Po -- '^[A-Za-z].*(?=\=)' "$TEMPLATE_FILE"
+	grep -Po -- '^[A-Za-z][^ ].*?[^ ]=' "$TEMPLATE_FILE"
 }
 
-quote_varfields() {
-	# Quotes fields that have variables being expanded
-	# Grab the current variables declared
-	fields="$(_get_fields)"
+# :param ::field field to get the content from
+# grab all content from inside a variable between double-quotes or not
+# will fail on multiline variables
+_get_varcontent() {
+	grep -Po -- "^$1\\K(\")?.*" "$TEMPLATE_FILE"
+}
 
-	for field in $fields; do
+# TODO: rewrite this in the style of the others.
+# quotes fields that have variable expansion happening
+quote_varfields() {
+	for field in $(_get_fields); do
 		# Check if the field contain sigil ($), denoting a variable
 		# if it isn't found we skip since it doesn't matter to us
-		grep -F -- "${field}=" "$TEMPLATE_FILE" | grep -Fq -- '$' || continue
+		_get_varcontent "$field" | grep -Fq -- '$' || continue
 		# Check if the field is already quoted
-		grep -F -- "${field}=" "$TEMPLATE_FILE" | grep -Fq -- '"' && continue
+		_get_varcontent "$field" | grep -Fq -- '"' && continue
 
 		quote_field "$field"
 	done
 }
 
+# TODO: write documentation for this function
 unquote_varfields() {
-	# quote fields that don't have variables being expanded and neither
-	# have spaces, this ignores variables that are mean't to be quoted like
-	# license=
-	fields="$(_get_fields)"
-
 	# Strip fields that are meant to be quoted, but may not have identifiers
 	# that we used to discard, like having spaces, expanding variables
-	fields="$(echo "$fields" |
+	fields="$(_get_fields |
 		grep -Ev 'depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|_args|build_options|alternatives|FLAGS|conf_files|triggers|only_for_archs|system_accounts')"
 
 	for field in $fields; do
 		# Check if the field contain sigil ($), denoting variable expansion
 		# also check for spaces, if any of those are found we skip since variable
 		# expansion and spaces must always be quoted
-		grep -F -- "${field}=" "$TEMPLATE_FILE" | grep -Eq -- '\$|[[:space:]]' && continue
+		_get_varcontent "$field" | grep -Eq -- '\$|[[:space:]]' && continue
 		# check if the field is already unquoted
-		grep -F -- "${field}=" "$TEMPLATE_FILE" | grep -Fq -- '"' || continue
+		_get_varcontent "$field" | grep -Fq -- '"' || continue
 
 		unquote_field "$field"
 	done
 }
 
-replace_spaces_with_tabs() {
-	grep -q -- '^[[:space:]]\{4\}' "$TEMPLATE_FILE" || return 0
-	unexpand --first-only -t 4  "$TEMPLATE_FILE" | sponge "$TEMPLATE_FILE"
+# put braces '{}' around variable expansions that has other text in it
+#
+# :example 
+# distfiles="$homepage/$pkgname/$pkgname.tar.xz"
+# distfiles="${homepage}/${pkgname}/${pkgname}.tar.xz"
+bracket_varfields() {
+	# Put brackets in variable expansions
+	for field in $(_get_fields | grep -Fv '"'); do
+		_get_varcontent "$field" | grep -q -- '\$[A-Za-z0-9]' || continue
+
+		endof="$(grep -Po "^${field}\\K(\")?.*" "$TEMPLATE_FILE" | 
+			perl -pe 's|\$|\\n\$|g ;s|\$([^\{])(.*?)(-\|/\|\.)|\${\1\2}\3|g')"
+
+		endof="$(echo "$endof" | tr -d '\n')"
+
+		sed -i "s|^${field}.*|${field}${endof}|" "$TEMPLATE_FILE"
+	done
 }
 
+# remove braces '{}' around variable expansions when variable expansion is the whole
+# variable
+#
+# :example depends="${makedepends}" -> depends="$makedepends"
+unbracket_varfields() {
+	for field in $(_get_fields); do
+		# shellcheck disable=SC2016
+		_get_varcontent "$field" | grep -q -- '\${.*}' || continue
+		# match against only the first ending bracket, if there is more than one
+		# we can safely ignore it
+		# shellcheck disable=SC2016
+		_braced_var="$(_get_varcontent "$field" | grep -Po -- '\${.*?}')"
+		_unquoted_var="$(_get_varcontent "$field" | tr -d '"')"
+		if [ "$_braced_var" = "$_unquoted_var" ]; then
+			sed -i "s|^${field}.*|${field}$(_get_varcontent "$field" | tr -d '{' | tr -d '}')|g" "$TEMPLATE_FILE"
+		fi
+	done
+}
+
+# replace groups of 4 spaces that are on the start of the line with \t
+replace_spaces_with_tabs() {
+	grep -q -- '^[[:space:]]\{4\}' "$TEMPLATE_FILE" || return 0
+	sed -i 's|^    |\t|' "$TEMPLATE_FILE"
+}
+
+# remove all trailing whitespaces
 remove_trailing_whitespace() {
 	grep -q -- '[[:blank:]]$' "$TEMPLATE_FILE" || return 0
 	sed -i 's|[[:blank:]]*$||' "$TEMPLATE_FILE"
@@ -128,17 +187,22 @@ while [ $# -gt 0 ]; do
 					  "Toyam Cox <Vaelatern@voidlinux.eu>" &
 		replace_field maintainer "Duncaen <mail@duncano.de>" \
 					  "Duncaen <duncaen@voidlinux.eu>" &
+
 		replace_field license "Artistic, GPL-1" "Artistic-1.0-Perl, GPL-1.0-or-later" &
-		replace_license "BSD-2-Clause" "2-Clause-BSD" "BSD-2" &
-		replace_license "BSD-3-Clause" "3-Clause-BSD" "BSD-3" &
-		replace_license "Unlicense" "unlicense" "the unlicense" &
-		replace_license "GPL-1.0-or-later" "GPL+" "GPL-1+" &
-		replace_license "GPL-2.0-or-later" "GPL-2+" &
-		replace_license "LGPL-2.0-or-later" "LGPL-2+" &
-		replace_license "MPL-2.0" "MPL-2" &
+		(
+		replace_license "BSD-2-Clause" "2-Clause-BSD" "BSD-2"
+		replace_license "BSD-3-Clause" "3-Clause-BSD" "BSD-3"
+		replace_license "Unlicense" "unlicense" "the unlicense"
+		replace_license "GPL-1.0-or-later" "GPL+" "GPL-1+"
+		replace_license "GPL-2.0-or-later" "GPL-2+"
+		replace_license "LGPL-2.1-or-later" "LGPL-2+"
+		replace_license "MPL-2.0" "MPL-2"
+		) &
 
 		quote_varfields &
 		unquote_varfields &
+		bracket_varfields &
+		unbracket_varfields &
 		wait
 		unset TEMPLATE_FILE
 	done
