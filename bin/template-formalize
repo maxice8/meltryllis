@@ -60,14 +60,14 @@ rewrite_header() {
 # remove double-quotes after ::field and in the end of the line
 # this will fail for multiline fields
 unquote_field() {
-	 sed -ri "s|($1=)\"(.*)\"|\\1\\2|" "$TEMPLATE_FILE"
+	 sed -ri "s|($1)\"(.*)\"|\\1\\2|" "$TEMPLATE_FILE"
 }
 
 # :param ::field field to be quoted
 # put double-quotes after ::field and in the end of the line
 # this will fail for multiline fields
 quote_field() {
-	sed -ri "s|($1=)(.*)|\\1\"\\2\"|" "$TEMPLATE_FILE"
+	sed -ri "s|($1)(.*)|\\1\"\\2\"|" "$TEMPLATE_FILE"
 }
 
 # rewrites all '[ -n' occourences with '[ '
@@ -83,13 +83,13 @@ _get_fields() {
 }
 
 # :param ::field field to get the content from
-# grab all content from inside a variable between double-quotes or not
+# grab all content from ::field after the equal sign and between 
+# double-quotes or not, if from double-quotes it will include them
 # will fail on multiline variables
 _get_varcontent() {
 	grep -Po -- "^$1\\K(\")?.*" "$TEMPLATE_FILE"
 }
 
-# TODO: rewrite this in the style of the others.
 # quotes fields that have variable expansion happening
 quote_varfields() {
 	for field in $(_get_fields); do
@@ -103,12 +103,14 @@ quote_varfields() {
 	done
 }
 
-# TODO: write documentation for this function
+# Unquote variables that should be quoted, it tries to detect if the variable
+# has stuff that should be detected like variable expansion and spaces, it
+# also has a list of variables that should always be quoted regardless
 unquote_varfields() {
 	# Strip fields that are meant to be quoted, but may not have identifiers
 	# that we used to discard, like having spaces, expanding variables
 	fields="$(_get_fields |
-		grep -Ev 'depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|_args|build_options|alternatives|FLAGS|conf_files|triggers|only_for_archs|system_accounts')"
+		grep -Ev 'depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|args|build_options|alternatives|FLAGS|conf_files|triggers|only_for_archs|system_accounts|system_groups')"
 
 	for field in $fields; do
 		# Check if the field contain sigil ($), denoting variable expansion
@@ -128,15 +130,20 @@ unquote_varfields() {
 # distfiles="$homepage/$pkgname/$pkgname.tar.xz"
 # distfiles="${homepage}/${pkgname}/${pkgname}.tar.xz"
 bracket_varfields() {
+	# XXX: make it not bracket variables separated by space like depends="$makedepends python"
 	# Put brackets in variable expansions
 	for field in $(_get_fields | grep -Fv '"'); do
 		_get_varcontent "$field" | grep -q -- '\$[A-Za-z0-9]' || continue
 
+		# shellcheck disable=SC2016
+		_braced_var="$(_get_varcontent "$field" | grep -Po -- '\${.*?}')"
+		_unquoted_var="$(_get_varcontent "$field" | tr -d '"')"
+		[ "$_braced_var" = "$_unquoted_var" ] && continue
+
 		endof="$(grep -Po "^${field}\\K(\")?.*" "$TEMPLATE_FILE" | 
-			perl -pe 's|\$|\\n\$|g ;s|\$([^\{])(.*?)(-\|/\|\.)|\${\1\2}\3|g')"
+			perl -pe 's|\$|\\n\$|g ;s|\$([^\{])(.*?)(-\|/\|\.\|\"\| )|\${\1\2}\3|g')"
 
 		endof="$(echo "$endof" | tr -d '\n')"
-
 		sed -i "s|^${field}.*|${field}${endof}|" "$TEMPLATE_FILE"
 	done
 }
@@ -150,7 +157,7 @@ unbracket_varfields() {
 		# shellcheck disable=SC2016
 		_get_varcontent "$field" | grep -q -- '\${.*}' || continue
 		# match against only the first ending bracket, if there is more than one
-		# we can safely ignore it
+		# we can safely ignore it since the if condition wouldn't match
 		# shellcheck disable=SC2016
 		_braced_var="$(_get_varcontent "$field" | grep -Po -- '\${.*?}')"
 		_unquoted_var="$(_get_varcontent "$field" | tr -d '"')"
