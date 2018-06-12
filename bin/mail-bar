@@ -11,7 +11,7 @@ mcount() {
 
 mail_wait() {
 	mcount > "$_fifo"
-	inotifywait -q -m "${MAILDIR}/new" -e create -e delete |
+	inotifywait -q -m "${MAILDIR}/new" "${MAILDIR}/cur" -e create -e delete |
 		while read -r _; do
 			mcount > "$_fifo"
 		done
