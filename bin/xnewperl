@@ -19,11 +19,11 @@ wrksrc="\${pkgname/perl-/}-\${version}"
 build_style=perl-module
 hostmakedepends="perl"
 makedepends="perl"
-depends="\${makedepends}"
+depends="\$makedepends"
 short_desc=""
 maintainer="$(git config user.name) <$(git config user.email)>"
 license="Artistic-1.0-Perl, GPL-1.0-or-later"
-homepage="http://search.cpan.org/dist/${perlname}"
+homepage="https://metacpan.org/release/${perlname}"
 distfiles="\${CPAN_SITE}/$module/\${pkgname/perl-/}-\${version}.tar.gz"
 checksum=badbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadbadb
 EOF
