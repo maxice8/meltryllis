@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eu
+set -u
 export LC_ALL=C
 
 # :param ::field field to be checked
@@ -9,7 +9,7 @@ export LC_ALL=C
 # Checks if ::replaced is present in ::field with 'grep' then replaces it
 # with ::replace
 replace_field() {
-	grep -q -- "^$1=.*$2" "$TEMPLATE_FILE" || return 0
+	grep -qi -- "^$1=.*$2" "$TEMPLATE_FILE" || return 0
 	sed -ri "s|(^$1=.*)$2(.*)|\\1$3\\2|I" "$TEMPLATE_FILE"
 }
 
@@ -38,7 +38,7 @@ replace_license() {
 
 	while [ $# -gt 0 ]; do
 		lc="$1" ; shift
-		echo "$licenses" | grep -q -- "^$lc$" || continue
+		echo "$licenses" | grep -qi -- "^$lc$" || continue
 		licenses="$(echo "$licenses" | sed "s|^$lc$|$final|I")"
 		c=1
 	done
@@ -132,18 +132,19 @@ unquote_varfields() {
 bracket_varfields() {
 	# XXX: make it not bracket variables separated by space like depends="$makedepends python"
 	# Put brackets in variable expansions
-	for field in $(_get_fields | grep -Fv '"'); do
+	for field in $(_get_fields); do
 		_get_varcontent "$field" | grep -q -- '\$[A-Za-z0-9]' || continue
 
 		# shellcheck disable=SC2016
-		_braced_var="$(_get_varcontent "$field" | grep -Po -- '\${.*?}')"
+		_braced_var="$(_get_varcontent "$field" | grep -Po -- '\$[^{].*[^"]')"
 		_unquoted_var="$(_get_varcontent "$field" | tr -d '"')"
 		[ "$_braced_var" = "$_unquoted_var" ] && continue
 
-		endof="$(grep -Po "^${field}\\K(\")?.*" "$TEMPLATE_FILE" | 
-			perl -pe 's|\$|\\n\$|g ;s|\$([^\{])(.*?)(-\|/\|\.\|\"\| )|\${\1\2}\3|g')"
+		endof="$(_get_varcontent "$field" | 
+			perl -pe 's|\$|\\n\$|g ;s|\$([^\{])(.*?)(-\|/\|\.\|"\| )|\${\1\2}\3|g')"
 
 		endof="$(echo "$endof" | tr -d '\n')"
+
 		sed -i "s|^${field}.*|${field}${endof}|" "$TEMPLATE_FILE"
 	done
 }
