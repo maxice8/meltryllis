@@ -23,11 +23,17 @@ super + p
 super + shift + p
 	maim | xclip -selection clipboard -t image/png
 
+super + ctrl + p
+	maim -s | xclip -selection clipboard -t image/png
+
 super + o
-	maim -i $(xdotool getactivewindow) > ~/usr/screenshots/$(date +%T-%d).png
+	maim -i $(xdotool getactivewindow) > ~/usr/screenshots/$(date +%T-%d)-focused.png
 
 super + shift + o
 	maim > ~/usr/screenshots/$(date +%T-%d).png
+
+super + ctrl + p
+	maim -s > $(date +%T-%d)-selected.png
 
 # }}}
 
