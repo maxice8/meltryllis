@@ -67,18 +67,12 @@ function! LightlineMode()
   return winwidth(0) > 60 ? lightline#mode() : ''
 endfunction
 
-map <F2> :set et|retab<CR>
-map! <F2> :set et|retab<CR>
-
 " Signify
 let g:gitgutter_realtime = 1
 let g:gitgutter_override_sign_column_highlight = 0
 
 " Remove folding
 let g:vim_markdown_folding_disabled = 1
-
-" Configure material
-let g:material_theme_style = 'dark'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
@@ -164,7 +158,6 @@ nmap <leader>q :wq<cr>
 syntax enable
 syntax on
 
-
 if has("autocmd")
   " Highlight TODO, FIXME, NOTE, etc.
   autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\)')
@@ -205,7 +198,7 @@ set noswapfile
 " Be smart when using tabs ;)
 set smarttab
 
-" 1 tab == 2 spaces
+" 1 tab == 4 spaces
 set shiftwidth=4
 set tabstop=4
 set softtabstop=4
@@ -279,16 +272,11 @@ set number
 " Remap VIM 0 to first non-blank character
 map 0 ^
 
-" Open Goyo when pressing ,g
-map <leader>g :Goyo<Return>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Misc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
-
-" Quickly open a markdown buffer for scribble
-map <leader>x :e ~/buffer<cr>
 
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
@@ -321,7 +309,6 @@ endfunction
 " User funtions
 "
 set pastetoggle=<F2>
-map <F1> :GitGutterLineHighlightsToggle<cr>
 
 " Use ripgrep as grep if possible
 if executable('rg')
