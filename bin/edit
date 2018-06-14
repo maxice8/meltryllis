@@ -1,6 +1,0 @@
-#!/bin/sh
-dir="${XDG_RUNTIME_DIR}/vim-anywhere/"
-fn="$(date -Iseconds)"
-[ ! -d "$dir" ] && mkdir -p "$dir"
-urxvt -e vim -c 'startinsert' "$dir$fn"
-[ -f "$dir$fn" ] && xsel -b -i < "$dir$fn"
