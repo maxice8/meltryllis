@@ -2,15 +2,15 @@
 _bargeo="80x24+830+0"
 
 wait_mem() {
-	_t="$(grep 'MemTotal' /proc/meminfo |awk '{print $2}')"
-	_f="$(grep 'MemFree' /proc/meminfo | awk '{print $2}')"
-	_b="$(grep '^Buffers' /proc/meminfo | awk '{print $2}')"
-	_c="$(grep '^Cached' /proc/meminfo | awk '{print $2}')"
+	_t="$(awk '/MemTotal/ {print $2}' /proc/meminfo)"
+	_f="$(awk '/MemFree/ {print $2}' /proc/meminfo)"
+	_b="$(awk '/^Buffers/ {print $2}' /proc/meminfo)"
+	_c="$(awk '/^Cached/ {print $2}' /proc/meminfo)"
 	echo "100 * ($_t - $_f - $_c - $_b) / $_t" | bc
 }
 
 while :; do
-	echo "%{c} ${_t}MEM: ${_r}$(wait_mem) "
+	echo "%{c} ${_t}MEM: ${_r}$(wait_mem)%"
 	sleep 60
 done | lemonbar -f "${_barfont}" \
 				-f "${_barfont2}" \
