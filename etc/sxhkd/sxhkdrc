@@ -7,9 +7,6 @@
 super + d
 	thingylaunch
 
-super + e
-	edit
-
 super + Return
 	urxvt
 
