@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 checkneed() {
 	commits_behind="$(git rev-list --left-right --count upstream/master..."$1" | awk '{ print $1 }')"
 
