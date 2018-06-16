@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+distdir="$(xdistdir)"
+
+cd "$distdir"/srcpkgs || exit 1
+
+[ $# -lt 1 ] && set -- "$(git rev-parse --abbrev-ref HEAD)"
+
+pkgs="$(../xbps-src show "$1" | grep subpackages: | cut -d: -f2 | tr -d '\t')"
+
+for pkg in $pkgs; do
+	ln -Tsvf "$1" "$pkg" 2>/dev/null
+done
+
+cd - >/dev/null 2>&1
