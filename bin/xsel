@@ -1,0 +1,3 @@
+#!/bin/sh
+/usr/bin/xsel -l ~/var/cache/.xsel.log "$@"
+
