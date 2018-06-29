@@ -2,7 +2,7 @@
 _bargeo="200x24+230+0"
 
 while :; do
-	echo "%{r} ${_t} DATE: ${_r}$(date '+%A. %d of %b. %Y') "
+	echo "%{l}${_t} DATE: ${_r}$(date '+%a. %d of %b. %Y') "
 	sleep 900
 done | lemonbar -f "${_barfont}" \
 				-f "${_barfont2}" \
