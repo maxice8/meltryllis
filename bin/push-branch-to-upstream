@@ -1,0 +1,98 @@
+#!/bin/sh
+toupper() {
+	printf "%s\\n" "$1" | tr '[:lower:]' '[:upper:]'
+}
+
+err() {
+	ansi -n --red-intense -- "<<< $(toupper "$@")"
+}
+
+ok() {
+	ansi -n --green-intense -- "=== $(toupper "$@")"
+}
+
+noti() {
+	ansi -n --yellow-intense -- ">>> $(toupper "$@")"
+}
+
+ask() {
+	ansi --cyan-intense -- " ??? $(toupper "$@") ? [y/N] "
+	read -r yn
+	case "$yn" in
+		[Yy]* ) return 0 ;;
+		* ) return 1 ;;
+	esac
+}
+# 
+# :param ::branch branch that will have it's commits pushed to upstream
+# 
+# Checks how many commits we are behing upstream and if we are not behind then return 1
+checkneed() {
+	commits_behind="$(git rev-list --left-right --count upstream/master..."$1" | awk '{ print $1 }')"
+
+	if [ "$commits_behind" -eq 0 ]; then
+		return 1
+	fi
+	return 0
+}
+
+# Rebases to upstream/master
+rebase_upstream() {
+	git rebase upstream/master >/dev/null 2>&1 ||
+		{ err "FAILED TO REBASE TO UPSTREAM"; exit 1 ; }
+}
+
+# :param ::branch
+#
+# merges commit or commits from a ::branch with fast-forward so we just append
+# to the current master.
+# it checks if arguments are given and if the branch name exists
+merge_branch() {
+	[ -z "$1" ] && { err "NO BRANCHES GIVEN" ; return 1 ; }
+
+	git list-branches | grep -q "$1" || 
+		{ err "NO BRANCH WITH NAME $1" ; return 1 ; }
+
+	noti "MERGING BRANCH $1"
+	if git merge --no-edit "$1" >/dev/null 2>&1; then
+		ok "MERGED BRANCH $1"
+	else
+		err "FAILED TO MERGE BRANCH $1"
+		return 1
+	fi
+}
+
+# Check if don't have any arguments and if our current branch isn't master
+# if those conditions happen then we ask the user if he wants to push this
+# branch to master
+if [ $# -lt 1 ]; then
+	if ! [ "$(git rev-parse --abbrev-ref HEAD)" = "master" ]; then
+		ask "PUSH $(git rev-parse --abbrev-ref HEAD) TO MASTER" &&
+			set -- "$(git rev-parse --abbrev-ref HEAD)"
+	fi
+fi
+
+# Switch to master branch
+git checkout master >/dev/null 2>&1 ||
+	{ err "FAILED TO SWITCH TO MASTER BRANCH" ; exit 1 ; }
+
+# Notify user we are fetching upstream, then fetch it
+# notify if we are successfull or if we failed, if we
+# failed we alos exit the script
+noti "FETCHING UPSTREAM"
+if git fetch upstream >/dev/null 2>&1 ; then
+	ok "UPSTREAM FETCHED"
+else
+	err "FAILED TO FETCH UPSTREAM" 
+	exit 1
+fi
+
+# run over each argument and try to add it to the master branch
+while [ $# -gt 0 ]; do
+	merge_branch "$1"
+	rebase_upstream
+	shift
+done
+
+noti "COMMITS TO BE PUSHED"
+git log upstream/master..master --pretty='%C(yellow)%h %C(white)%s' 
