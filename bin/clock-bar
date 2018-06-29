@@ -2,7 +2,7 @@
 _bargeo="365x24+410+0"
 
 while :; do
-	echo "%{l} ${_t}CLOCK: ${_r}$(date "+%H:%M")  ${_t}SEATTLE: ${_r}$(TZ=America/Los_Angeles date "+%H:%M")  ${_t}BERLIN: ${_r}$(TZ=Europe/Berli date "+%H:%M")"
+	echo "%{l} ${_t}CLOCK: ${_r}$(date "+%H:%M")  ${_t}SEATTLE: ${_r}$(TZ=America/Los_Angeles date "+%H:%M")"
 	sleep 60
 done | lemonbar -f "${_barfont}" \
 				-f "${_barfont2}" \
