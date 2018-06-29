@@ -15,22 +15,22 @@ super + Return
 # SCREENSHOTS {{{
 
 super + p
-	maim -i $(xdotool getactivewindow) | xclip -selection clipboard -t image/png
+	maim -u -i $(xdotool getactivewindow) | xclip -selection clipboard -t image/png
 
 super + shift + p
-	maim | xclip -selection clipboard -t image/png
+	maim -u | xclip -selection clipboard -t image/png
 
 super + ctrl + p
-	maim -s | xclip -selection clipboard -t image/png
+	maim -s -u | xclip -selection clipboard -t image/png
 
 super + o
-	maim -i $(xdotool getactivewindow) > ~/usr/screenshots/$(date +%T-%d)-focused.png
+	maim -u -i $(xdotool getactivewindow) > ~/usr/screenshots/$(date +%T-%d)-focused.png
 
 super + shift + o
-	maim > ~/usr/screenshots/$(date +%T-%d).png
+	maim -u > ~/usr/screenshots/$(date +%T-%d).png
 
 super + ctrl + p
-	maim -s > $(date +%T-%d)-selected.png
+	maim -s -u > $(date +%T-%d)-selected.png
 
 # }}}
 
