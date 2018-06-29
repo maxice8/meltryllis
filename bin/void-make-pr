@@ -25,7 +25,7 @@ getCommitName() {
 	if (( commits == 1 )); then
 		git show -s --format=%s HEAD | head -1
 	else
-		fzf --print-query <<< "$(git cherry -v master "$branch" | cut -d' ' -f3-)" | tail -1
+		fzf --print-query <<< "$(git cherry -v upstream/master "$branch" | cut -d' ' -f3-)" | tail -1
 	fi
 }
 
