@@ -13,6 +13,7 @@ usage
 -r --rebuild : rebuild package
 -c --check : run the check phase after a cleanup
 -x --xgensum : run xgensum of template
+-X --Xgensum : run xgensum of template with -c
 -n --navigate : navigate srcpkgs dir of template
 -d --diff : see files removed and added between versions
 -l --lint : run xlint on template
@@ -42,6 +43,7 @@ case "$cmd" in
 	-r|--rebuild) ./xbps-src clean "$arg" && ./xbps-src pkg "$arg" "$@";;
 	-c|--check) ./xbps-src clean "$arg" && ./xbps-src check -Q "$arg" "$@";;
 	-x|--xgensum) xgensum -f -i srcpkgs/"$arg"/template "$@";;
+	-X|--Xgensum) xgensum -f -c -i srcpkgs/"$arg"/template "$@";;
 	-n|--navigate) f srcpkgs/"$arg" "$@";;
 	-d|--diff) xbps-query --repository=hostdir/binpkgs/"$arg" -f "$arg";;
 	-l|--lint) xlint srcpkgs/"$arg"/template;;
