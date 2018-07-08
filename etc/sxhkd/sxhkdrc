@@ -30,7 +30,7 @@ super + shift + o
 	maim -u > ~/usr/screenshots/$(date +%T-%d).png
 
 super + ctrl + p
-	maim -s -u > $(date +%T-%d)-selected.png
+	maim -s -u > ~/usr/screenshots/$(date +%T-%d)-selected.png
 
 # }}}
 
