@@ -2,6 +2,10 @@
 set -eu
 [ "$#" -lt 2 ] && exit 4
 
+# On startup if files are different then copy the first one
+# over the other
+cmp -s "$1" "$2" || rsync -az "$1" "$2"
+
 while inotifywait -e create,modify,delete "$1"; do
 	rsync -az "$1" "$2"
 done
