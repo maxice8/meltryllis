@@ -6,7 +6,7 @@ create-fifo "$_fifo"
 trap "rm -f $_fifo" EXIT QUIT TERM
 
 parse() {
-	state="$(mpc status | grep -o '\[.*\]')"
+	state="$(mpc status | tail -n2 | grep -o '\[.*\]')"
 	if [ "$state" = '[playing]' ];then
 		state="$(mpc current --format '%file%' | sed 's/.\(ogg\|opus\|mp3\).*//')"
 	else
@@ -32,4 +32,4 @@ done | lemonbar -f "${_barfont}" \
 				-B "${_barbg}" \
 				-F "${_barfg}" \
 				-g "${_bargeo}" \
-				-b
+				-b -n "${_n}"

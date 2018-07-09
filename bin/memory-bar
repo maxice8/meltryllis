@@ -17,4 +17,4 @@ done | lemonbar -f "${_barfont}" \
 				-B "${_barbg}" \
 				-F "${_barfg}" \
 				-g "${_bargeo}" \
-				-b
+				-b -n "${_n}"

@@ -15,4 +15,4 @@ else
 fi
 ff="${ff}/bars/${1}.fifo"
 
-_barfont="$bf" _barfont2="$bf2" _barbg="$bbg" _barfg="$bfg" _t="$t" _r="$r" _fifo="$ff" exec nochildren "$1"-bar
+_barfont="$bf" _barfont2="$bf2" _barbg="$bbg" _barfg="$bfg" _t="$t" _r="$r" _fifo="$ff" _n="$1-bar" exec nochildren "$1"-bar
