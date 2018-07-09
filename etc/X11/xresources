@@ -49,23 +49,55 @@ URxvt.font: xft:                            tewi:pixelsize=11:antialias=false
 
 !------------------------------------------------------------------------------
 
-*.foreground:	#dbdbdb
-*.background:	#303030
-*.color0:		#383838
-*.color1:		#a54242
-*.color2:		#8c9440
-*.color3:		#de935f
-*.color4:		#5f819d
-*.color5:		#85678f
-*.color6:		#5e8d87
-*.color7:		#c0c0c0
-*.color8:		#5f5f5f
-*.color9:		#cc6666
-*.color10:		#b5bd68
-*.color11:		#f0c674
-*.color12:		#81a2be
-*.color13:		#b294bb
-*.color14:		#8abeb7
-*.color15:		#dbdbdb
+! *.foreground:	#dbdbdb
+! *.background:	#303030
+! *.color0:		#383838
+! *.color1:		#a54242
+! *.color2:		#8c9440
+! *.color3:		#de935f
+! *.color4:		#5f819d
+! *.color5:		#85678f
+! *.color6:		#5e8d87
+! *.color7:		#c0c0c0
+! *.color8:		#5f5f5f
+! *.color9:		#cc6666
+! *.color10:		#b5bd68
+! *.color11:		#f0c674
+! *.color12:		#81a2be
+! *.color13:		#b294bb
+! *.color14:		#8abeb7
+! *.color15:		#dbdbdb
+
+
+*background:#2f343f
+*foreground: #d7d7d7
+*cursorColor: #c7c7c7
+*highlightTextColor: #383c4a
+*highlightColor: #c1ddff
+! black
+*.color0:       #383c4a
+*.color8:       #383c4a
+! red
+*.color1:       #e28d9d
+*.color9:       #e28d9d
+! green
+*.color2:       #bfd888
+*.color10:      #bfd888
+! yellow
+*.color3:       #df936c
+*.color11:      #df936c
+! blue
+*.color4:       #5294e2
+*.color12:      #5294e2
+! magenta
+*.color5:       #f74771
+*.color13:      #f74771
+! cyan
+*.color6:       #7c818c
+*.color14:      #7c818c
+! white
+*.color7:       #d7d7d7
+*.color15:      #d7d7d7
+
 
 ! vim: ft=xdefaults
