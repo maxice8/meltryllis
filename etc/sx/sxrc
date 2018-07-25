@@ -12,5 +12,5 @@ rndw &
 start-pulseaudio-x11 &
 xidle -timeout 900 -program /usr/bin/slock &
 sudo sh -c 'echo 100 > /sys/class/backlight/intel_backlight/brightness'
-export DISPLAY=:1 && exec dbus-launch --exit-with-x11 xwait
+export DISPLAY=:1 && exec dbus-launch --sh-syntax --exit-with-x11 xwait
 # vim: ft=sh
