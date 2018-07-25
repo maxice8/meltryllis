@@ -2,6 +2,8 @@
 set -u
 export LC_ALL=C
 
+[ "${NO_FORMALIZE:-}" ] && exit 0
+
 # :param ::field field to be checked
 # :param ::replaced string to be replaced
 # :param ::replace string to replace
@@ -110,7 +112,7 @@ unquote_varfields() {
 	# Strip fields that are meant to be quoted, but may not have identifiers
 	# that we used to discard, like having spaces, expanding variables
 	fields="$(_get_fields |
-		grep -Ev 'depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|args|build_options|alternatives|FLAGS|conf_files|triggers|only_for_archs|changelog|font_dirs|_homedir|_groups|_accounts')"
+		grep -Ev 'depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|args|build_options|alternatives|FLAGS|conf_files|triggers|only_for_archs|changelog|font_dirs|_homedir|_groups|_accounts|_shell')"
 
 	for field in $fields; do
 		# Check if the field contain sigil ($), denoting variable expansion
@@ -192,7 +194,7 @@ while [ $# -gt 0 ]; do
 					  "Leah Neukirchen <leah@vuxu.org>" &
 		replace_field maintainer "Toyam Cox <Vaelatern@gmail.com>" \
 					  "Toyam Cox <Vaelatern@voidlinux.eu>" &
-		replace_field maintainer "Duncaen <mail@duncano.de>" \
+		replace_field maintainer "Duncan Overbruck <mail@duncano.de>" \
 					  "Duncaen <duncaen@voidlinux.eu>" &
 
 		replace_field license "Artistic, GPL-1" "Artistic-1.0-Perl, GPL-1.0-or-later" &
