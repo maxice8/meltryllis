@@ -88,8 +88,8 @@ super + x
 		bspc node focused -g private=off; \
 		bspc node focused -t floating; \
 	else \
-		bspc node focused -t fullscreen; \
 		bspc node focused -g private=on; \
+		bspc node focused -t fullscreen; \
 	fi
 
 # move a floating window
