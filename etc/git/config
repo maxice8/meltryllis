@@ -17,3 +17,9 @@ fsckobjects = true
 fsckobjects = true
 [receive]
 fsckObjects = true
+[sendemail]
+	smtpuser = thinkabit.ukim@gmail.com
+	smtpserver = smtp.googlemail.com
+	smtpencryption = tls
+	smtpserverport = 587
+	suppresscc = self
