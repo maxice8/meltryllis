@@ -1,0 +1,2 @@
+#!/bin/sh
+mkchromecast --video --control --encoder-backend ffmpeg --youtube "$@"
