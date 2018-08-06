@@ -11,6 +11,8 @@ Plug 'tpope/vim-git'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'mhartington/oceanic-next'
+Plug 'matze/vim-meson'
+Plug 'Yggdroot/indentLine'
 
 " Add Plugins
 call plug#end()
