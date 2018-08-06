@@ -1,0 +1,41 @@
+#!/bin/sh
+set -eu
+
+for arg in "$@"; do
+	shift
+
+	# grab --push and -p from the args and set PUSH to true, this tells
+	# the script to also push the branches to upstream
+	[ "$arg" = "--push" ] || [ "$arg" = "-p" ] && PUSH=true && continue
+
+	# Trim out any non number from the arguments.
+	case $arg in
+		''|*[!0-9]*) continue ;;
+	esac
+	set -- "$@" "$arg"
+done
+
+# Change to master branch
+git checkout master >/dev/null 2>&1
+
+for pr in "$@"; do
+
+	# Fetch the pull request into FETCH_HEAD
+	git fetch --quiet upstream refs/pull/"$pr"/head
+
+	# merge the pull request into our branch, --no-edit to avoid opening an editor
+	# git merge FETCH_HEAD --no-edit 1>/dev/null
+	git merge FETCH_HEAD 1>/dev/null
+
+	# Rebase to upstream/master so we are connected with them and to remove the merge
+	# commit
+	git rebase --quiet upstream/master 1>/dev/null
+
+	# append closes void-linux/void-packages#$prnum to the message so that it will close the
+	# pull request
+	git commit --amend -m"$(git log --format=%B -n1)" -m"closes void-linux/void-packages#${pr}" 1>/dev/null
+
+	shift
+done
+
+git log upstream/master..master --pretty='%C(yellow)%h %C(white)%s' 
