@@ -10,15 +10,15 @@ Plug 'w0rp/ale'
 Plug 'tpope/vim-git'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
-Plug 'mhartington/oceanic-next'
 Plug 'matze/vim-meson'
-Plug 'Yggdroot/indentLine'
+Plug 'KeitaNakamura/neodark.vim'
+Plug 'crusoexia/vim-monokai'
 
 " Add Plugins
 call plug#end()
 
 let g:lightline = {
-    \ 'colorscheme': 'oceanicnext',
+    \ 'colorscheme': 'neodark',
     \ 'active': {
     \   'left': [ [ 'mode', 'paste' ], [ 'filename' ] ],
     \   'right': [ [ 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype'] ]
@@ -174,7 +174,7 @@ let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 set t_Co=256
 set background=dark
 
-colorscheme OceanicNext
+colorscheme neodark
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
