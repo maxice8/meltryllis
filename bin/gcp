@@ -1,0 +1,2 @@
+#!/bin/sh
+git log upstream/master..$(git rev-parse --abbrev-ref HEAD) --pretty='%C(yellow)%h %C(white)%s' 
