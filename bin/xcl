@@ -1,6 +1,30 @@
 #!/usr/bin/bash
 # xcl - show changelogs from xbps-src templates into the terminal
 
+read_from_tar() {
+	dirpath="${xdistdir}/hostdir/sources/${pkgname}-${version}"
+	changelogpath="${2:-'Changes'}"
+
+	# Check if we have the directory for the distfile, if not we use xbps-src
+	# to fetch them
+	if ! [ -d "$dirpath" ]; then
+		ansi --yellow-intense "FETCHING DISTFILE FOR "
+		ansi -n "${pkgname}"
+		./xbps-src fetch "${pkgname}" >/dev/null 2>&1
+	fi
+
+	# Check if there is a changelog with the name of the changelog provided to us
+	# by the function call, if not we return 1 ending the program
+	if ! tar -tf "${dirpath}/$1-${version}.tar.gz" "${wrksrc}/${changelogpath}" >/dev/null 2>&1; then
+		ansi --red-intense "NO CHANGELOG FOR "
+		ansi -n "${pkgname}"
+		return 1
+	fi
+
+	tar --to-stdout -xf "${dirpath}/$1-${version}.tar.gz" "${wrksrc}/${changelogpath}" \
+		| mdcat | less -R
+}
+
 # use xdistdir to find out where we are working with
 # if no arg is provided then use the current branch to try and guess
 xdistdir=$(xdistdir)
@@ -13,7 +37,8 @@ source "${xdistdir}"/srcpkgs/"${pkg}"/template >/dev/null 2>&1
 if [ -z "$changelog" ]; then
 	# Try to guess changelog url for certain sites like metacpan.org
 	case "$homepage" in
-		*'://metacpan.org'*) changelog="https://metacpan.org/changes/distribution/${pkgname#perl-}" ;;
+		*'://metacpan.org'*) # changelog="https://metacpan.org/changes/distribution/${pkgname#perl-}" ;;
+			read_from_tar "${pkgname#perl-}" Changes ; exit $? ;;
 		*) 
 			ansi --red-intense "NO CHANGELOG FOR "
 			ansi -n "$pkg" ; exit 1 ;;
@@ -39,7 +64,7 @@ esac
 
 if $raw; then
 	# Fetch the plaintext raw file and process it with markdown
-	curl -Ls "$changelog" | pandoc | lynx -dump -stdin | less -R
+	curl -Ls "$changelog" | pandoc --to=html | elinks -dump -dump-color-mode 1 | less -R
 else
 	curl -Ls "$changelog" | lynx -stdin
 fi
