@@ -25,12 +25,14 @@ fi
 case "$changelog" in
 	*'://github.com'*) 
 		# if we have a github.com user url try to convert it to raw.githubusercontent
+		# it is possible to do like gitlab.com and just switch from 'blob' to 'raw' but
+		# that causes a redirect which is slower and it is nice to avoid slowness.
 		changelog="${changelog/github.com/raw.githubusercontent.com}"
 		changelog="${changelog/\/blob/}" ; raw=true ;;
 	*'://gitlab'*'/blob'*)
 		# If we have a gitlab.com user url try to convert blob to raw
 		changelog="${changelog/\/blob/\/raw}" ; raw=true ;;
-	*) raw=false ;;
+	*) ;;
 esac
 
 # echo $changelog ; exit 0
