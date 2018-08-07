@@ -18,6 +18,10 @@ find_changelog() {
 	# but there are packages like NetAuth that use it
 	changelogs+=" ROADMAP"
 
+	# Perl packages have a set changelog
+	[[ -z "${pkgname##perl-*}" ]] &&
+		changelogs="Changes"
+
 	# if changelog is defined on the template then just use it
 	[[ "$changelog" ]] && changelogs="$(basename "$changelog")"
 
@@ -28,7 +32,7 @@ find_changelog() {
 	if ! [ -d "$dirpath" ] || ! find "$dirpath" -type f ! -empty; then
 		ansi --yellow-intense "FETCHING DISTFILE FOR "
 		ansi -n "${pkgname}"
-		./xbps-src fetch "${pkgname}" >/dev/null 2>&1
+		xgensum -f -i srcpkgs/"${pkgname}" >/dev/null 2>&1
 	fi
 
 	# List of files, we grep it to find the changelog
@@ -39,7 +43,7 @@ find_changelog() {
 		# search for the changelog name in the filelist, the slash on the start
 		# is to guarantee that the name of the directory/file is matched from the
 		# beggining
-		clf="$(grep -i "/$cl" <<< "$filelist")"
+		clf="$(grep -i "/$cl" <<< "$filelist" | head -1)"
 		if [[ "$clf" ]]; then
 			# Filter all matches that have a slash after the changelog name
 			# which indicates that it is a directory (which we don't care about)
