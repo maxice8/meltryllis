@@ -1,28 +1,64 @@
 #!/usr/bin/bash
 # xcl - show changelogs from xbps-src templates into the terminal
 
-read_from_tar() {
-	dirpath="${xdistdir}/hostdir/sources/${pkgname}-${version}"
-	changelogpath="${2:-'Changes'}"
+find_changelog() {
+	local changelogs dirpath filelist archive
 
+	# filenames of changelogs, the ordering decides the priority
+	# the names are case insesitive
+	changelogs="Changes NEWS history ReleaseNotes release-notes history changelog"
+
+	# This one is specific for mesa, our libGL package
+	changelogs+=" relnotes/${version}"
+
+	# This one is specific for python-Django
+	changelogs+=" releases/${version}"
+
+	# This is troubling since it is normally used for future versions
+	# but there are packages like NetAuth that use it
+	changelogs+=" ROADMAP"
+
+	# if changelog is defined on the template then just use it
+	[[ "$changelog" ]] && changelogs="$(basename "$changelog")"
+
+	dirpath="${xdistdir}/hostdir/sources/${pkgname}-${version}"
+	
 	# Check if we have the directory for the distfile, if not we use xbps-src
-	# to fetch them
-	if ! [ -d "$dirpath" ]; then
+	# to fetch them, we also check if the dir is empty
+	if ! [ -d "$dirpath" ] || ! find "$dirpath" -type f ! -empty; then
 		ansi --yellow-intense "FETCHING DISTFILE FOR "
 		ansi -n "${pkgname}"
 		./xbps-src fetch "${pkgname}" >/dev/null 2>&1
 	fi
 
-	# Check if there is a changelog with the name of the changelog provided to us
-	# by the function call, if not we return 1 ending the program
-	if ! tar -tf "${dirpath}/$1-${version}.tar.gz" "${wrksrc}/${changelogpath}" >/dev/null 2>&1; then
-		ansi --red-intense "NO CHANGELOG FOR "
-		ansi -n "${pkgname}"
-		return 1
-	fi
+	# List of files, we grep it to find the changelog
+	archive="$(find "${dirpath}" -iname '*.tar.*' -type f -print -quit)"
+	filelist="$(tar --list --file="$archive")"
 
-	tar --to-stdout -xf "${dirpath}/$1-${version}.tar.gz" "${wrksrc}/${changelogpath}" \
-		| mdcat | less -R
+	for cl in $changelogs; do
+		# search for the changelog name in the filelist, the slash on the start
+		# is to guarantee that the name of the directory/file is matched from the
+		# beggining
+		clf="$(grep -i "/$cl" <<< "$filelist")"
+		if [[ "$clf" ]]; then
+			# Filter all matches that have a slash after the changelog name
+			# which indicates that it is a directory (which we don't care about)
+			# and not a file
+			grep -iq "$cl/" <<< "$clf" && continue
+			if grep -q '.html$' <<< "$clf"; then
+				tar --to-stdout --extract --file="$archive" "$clf" \
+					| elinks -dump -dump-color-mode 1 | less -R
+			else
+				tar --to-stdout --extract --file="$archive" "$clf" \
+					| less -R
+			fi
+			echo $clf
+			return 0
+		fi
+	done
+
+	# We reach here if no changelog files are found
+	return 1
 }
 
 # use xdistdir to find out where we are working with
@@ -30,42 +66,14 @@ read_from_tar() {
 xdistdir=$(xdistdir)
 pkg="${1:-$(git rev-parse --abbrev-ref HEAD)}"
 
-# Source the template to get the changelog url
+[ -f "${xdistdir}"/srcpkgs/"${pkg}"/template ] ||
+	{
+		ansi --red-intense "PACKAGE "
+		ansi "$pkg"
+		ansi -n --red-intense " DOESN'T EXIST"
+		exit 1
+	}
+# Source the template to get the changelog url and other information
 source "${xdistdir}"/srcpkgs/"${pkg}"/template >/dev/null 2>&1
 
-# if there is no changelog just warn the user and exit
-if [ -z "$changelog" ]; then
-	# Try to guess changelog url for certain sites like metacpan.org
-	case "$homepage" in
-		*'://metacpan.org'*) # changelog="https://metacpan.org/changes/distribution/${pkgname#perl-}" ;;
-			read_from_tar "${pkgname#perl-}" Changes ; exit $? ;;
-		*) 
-			ansi --red-intense "NO CHANGELOG FOR "
-			ansi -n "$pkg" ; exit 1 ;;
-	esac
-fi
-
-# Do transformative changes into the URL for changelog, we try to guess
-# some stuff we can do to thelp
-case "$changelog" in
-	*'://github.com'*) 
-		# if we have a github.com user url try to convert it to raw.githubusercontent
-		# it is possible to do like gitlab.com and just switch from 'blob' to 'raw' but
-		# that causes a redirect which is slower and it is nice to avoid slowness.
-		changelog="${changelog/github.com/raw.githubusercontent.com}"
-		changelog="${changelog/\/blob/}" ; raw=true ;;
-	*'://gitlab'*'/blob'*)
-		# If we have a gitlab.com user url try to convert blob to raw
-		changelog="${changelog/\/blob/\/raw}" ; raw=true ;;
-	*) ;;
-esac
-
-# echo $changelog ; exit 0
-
-if $raw; then
-	# Fetch the plaintext raw file and process it with markdown
-	curl -Ls "$changelog" | pandoc --to=html | elinks -dump -dump-color-mode 1 | less -R
-else
-	curl -Ls "$changelog" | lynx -stdin
-fi
-
+find_changelog "$(echo $wrksrc | sed 's|-[0-9].*||g')"
