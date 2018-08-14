@@ -1,5 +1,11 @@
 #!/usr/bin/bash
 # xcl - show changelogs from xbps-src templates into the terminal
+goto_fail() {
+	# We reach here if no changelog files are found
+	ansi --red-intense "NO CHANGELOGS FOUND FOR "
+	ansi -n "${pkgname}"
+	return 1
+}
 
 find_changelog() {
 	local changelogs dirpath filelist archive
@@ -23,7 +29,7 @@ find_changelog() {
 		changelogs="Changes"
 
 	# if changelog is defined on the template then just use it
-	[[ "$changelog" ]] && changelogs="$(basename "$changelog")"
+	[[ "$changelog" ]] && changelogs="${changelog##*/}"
 
 	dirpath="${xdistdir}/hostdir/sources/${pkgname}-${version}"
 	
@@ -36,7 +42,8 @@ find_changelog() {
 	fi
 
 	# List of files, we grep it to find the changelog
-	archive="$(find "${dirpath}" -iname '*.tar.*' -type f -print -quit)"
+	archive="$(find "${dirpath}" -type f \( -iname '*.tar.*' -o -iname '*.tgz' \) -print -quit)"
+	[ -z "$archive" ] && goto_fail "${pkgname}"
 	filelist="$(tar --list --file="$archive")"
 
 	for cl in $changelogs; do
@@ -61,8 +68,7 @@ find_changelog() {
 		fi
 	done
 
-	# We reach here if no changelog files are found
-	return 1
+	goto_fail "${pkgname}"
 }
 
 # use xdistdir to find out where we are working with
