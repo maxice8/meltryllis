@@ -1,0 +1,2 @@
+#!/bin/sh
+xbps-query -Rs '' -p shlib-requires | grep -- "$@"
