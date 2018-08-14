@@ -91,6 +91,7 @@ fi
 while [ $# -gt 0 ]; do
 	merge_branch "$1"
 	rebase_upstream
+	echo "$1" >> "${XDG_RUNTIME_DIR}/push-to-void"
 	shift
 done
 
