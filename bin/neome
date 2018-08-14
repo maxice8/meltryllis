@@ -2,7 +2,7 @@
 #
 # depends: neofetch, w3m with imlib2, with png support
 
-USER='Saber Alter' \
-HOSTNAME=DarkHolyGrail \
+USER='Terran' \
+HOSTNAME=SummerFestival2018 \
 SHELL=/usr/bin/fish \
 neofetch --crop_mode fit --loop --w3m "$@"
