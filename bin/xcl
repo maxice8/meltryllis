@@ -56,13 +56,18 @@ find_changelog() {
 			# which indicates that it is a directory (which we don't care about)
 			# and not a file
 			grep -iq "$cl/" <<< "$clf" && continue
-			if grep -q '.html$' <<< "$clf"; then
-				tar --to-stdout --extract --file="$archive" "$clf" \
-					| elinks -dump -dump-color-mode 1 | less -R
-			else
-				tar --to-stdout --extract --file="$archive" "$clf" \
-					| less -R
+			if grep -q '.' <<< "$clf"; then
+				suffix="${clf##*.}"
 			fi
+
+			case "$suffix" in
+				html) tar --to-stdout --extract --file="$archive" "$clf" \
+					| elinks -dump -dump-color-mode 1 | less -R ;;
+				md) tar --to-stdout --extract --file="$archive" "$clf" \
+					| pandoc | lynx -stdin -dump | less -R ;;
+				*) tar --to-stdout --extract --file="$archive" "$clf" \
+					| less -R ;;
+			esac
 			echo $clf
 			return 0
 		fi
