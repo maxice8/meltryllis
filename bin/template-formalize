@@ -15,6 +15,15 @@ replace_field() {
 		sed -ri "s|(^$1=.*)$2(.*)|\\1$3\\2|I" "$TEMPLATE_FILE"
 }
 
+# :param ::oldfield field to be rewritten
+# :param ::newfield name to replace the field with
+#
+# checks if ::oldfield is present and rewrites it with ::newfield
+rewrite_field() {
+	grep -qi -- "$1=" "$TEMPLATE_FILE" &&
+		sed -i "s|$1=|$2=|g" "$TEMPLATE_FILE"
+}
+
 # TODO: rewrite this in the style of the others.
 # Replaces any amount of license strings with one string
 #
@@ -112,7 +121,7 @@ unquote_varfields() {
 	# Strip fields that are meant to be quoted, but may not have identifiers
 	# that we used to discard, like having spaces, expanding variables
 	fields="$(_get_fields |
-		grep -Ev 'depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|args|build_options|alternatives|FLAGS|conf_files|triggers|only_for_archs|changelog|font_dirs|_homedir|_groups|_accounts|_shell|_files|lib32files|lib32symlinks|shlib_requires')"
+		grep -Ev 'depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|args|build_options|alternatives|FLAGS|conf_files|triggers|only_for_archs|changelog|font_dirs|_homedir|_groups|_accounts|_shell|_files|lib32files|lib32symlinks|shlib_requires|subpackages')"
 
 	for field in $fields; do
 		# Check if the field contain sigil ($), denoting variable expansion
@@ -207,6 +216,8 @@ while [ $# -gt 0 ]; do
 		replace_license "LGPL-2.1-or-later" "LGPL-2+"
 		replace_license "MPL-2.0" "MPL-2"
 		) &
+
+		rewrite_field pycompile_modules pycompile_module &
 
 		quote_varfields &
 		unquote_varfields &
