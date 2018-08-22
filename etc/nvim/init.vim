@@ -160,6 +160,13 @@ nmap <leader>q :wq<cr>
 syntax enable
 syntax on
 
+" Set spellchecker on Markdown files and git commits
+autocmd BufRead,BufNewFile *.md setlocal spell
+autocmd FileType gitcommit setlocal spell
+
+" Get free word completion
+set complete+=kspell
+
 if has("autocmd")
   " Highlight TODO, FIXME, NOTE, etc.
   autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\)')
