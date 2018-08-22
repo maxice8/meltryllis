@@ -10,7 +10,6 @@ checkneed() {
 	return 0
 }
 
-cd "$HOME"/src/void-packages || exit 99
 git fetch upstream >/dev/null 2>&1
 
 while [ $# -gt 0 ]; do
