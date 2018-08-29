@@ -6,11 +6,16 @@ wait_mem() {
 	_f="$(awk '/MemFree/ {print $2}' /proc/meminfo)"
 	_b="$(awk '/^Buffers/ {print $2}' /proc/meminfo)"
 	_c="$(awk '/^Cached/ {print $2}' /proc/meminfo)"
-	echo "100 * ($_t - $_f - $_c - $_b) / $_t" | bc
+	mem="$(echo "100 * ($_t - $_f - $_c - $_b) / $_t" | bc)"
+	if [ $mem -gt 9 ]; then
+		echo "$mem%"
+	else
+		echo "$mem% "
+	fi
 }
 
 while :; do
-	echo "%{c} ${_t}MEM: ${_r}$(wait_mem)%"
+	echo "%{c} ${_t}MEM: ${_r}$(wait_mem)"
 	sleep 60
 done | lemonbar -f "${_barfont}" \
 				-f "${_barfont2}" \
