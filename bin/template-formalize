@@ -215,6 +215,7 @@ while [ $# -gt 0 ]; do
 		replace_license "GPL-2.0-or-later" "GPL-2+"
 		replace_license "LGPL-2.1-or-later" "LGPL-2+"
 		replace_license "MPL-2.0" "MPL-2"
+		replace_license "Apache-2.0" "Apache 2.0"
 		) &
 
 		rewrite_field pycompile_modules pycompile_module &
