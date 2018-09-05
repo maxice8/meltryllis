@@ -161,7 +161,8 @@ syntax enable
 syntax on
 
 " Set spellchecker on Markdown files and git commits
-autocmd BufRead,BufNewFile *.md *.1 *.2 *.3 *.4 *.5 *.6 *.7 *.8 *.9 setlocal spell
+autocmd BufRead,BufNewFile *.md setlocal spell
+autocmd BufRead,BufNewFile *.7 setlocal spell
 autocmd FileType gitcommit setlocal spell
 
 " Get free word completion
