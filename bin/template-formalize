@@ -121,7 +121,7 @@ unquote_varfields() {
 	# Strip fields that are meant to be quoted, but may not have identifiers
 	# that we used to discard, like having spaces, expanding variables
 	fields="$(_get_fields |
-		grep -Ev 'depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|args|build_options|alternatives|FLAGS|conf_files|triggers|only_for_archs|changelog|font_dirs|_homedir|_groups|_accounts|_shell|_files|lib32files|lib32symlinks|shlib_requires|subpackages')"
+		grep -Ev 'depends|homepage|license|distfiles|replaces|provides|conflicts|reverts|pycompile|configure_script|args|build_options|alternatives|FLAGS|conf_files|triggers|only_for_archs|changelog|font_dirs|_homedir|_groups|_accounts|_shell|_files|lib32files|lib32symlinks|shlib_requires|subpackages|nocross')"
 
 	for field in $fields; do
 		# Check if the field contain sigil ($), denoting variable expansion
