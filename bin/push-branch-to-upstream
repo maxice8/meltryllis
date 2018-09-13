@@ -4,15 +4,15 @@ toupper() {
 }
 
 err() {
-	ansi -n --red-intense -- "<<< $(toupper "$@")"
+	ansi --red-intense -- "<<< $(toupper "$@")"
 }
 
 ok() {
-	ansi -n --green-intense -- "=== $(toupper "$@")"
+	ansi --green-intense -- "=== $(toupper "$@")"
 }
 
 noti() {
-	ansi -n --yellow-intense -- ">>> $(toupper "$@")"
+	ansi --yellow-intense -- ">>> $(toupper "$@")"
 }
 
 ask() {
@@ -68,7 +68,8 @@ merge_branch() {
 if [ $# -lt 1 ]; then
 	if ! [ "$(git rev-parse --abbrev-ref HEAD)" = "master" ]; then
 		ask "PUSH $(git rev-parse --abbrev-ref HEAD) TO MASTER" &&
-			set -- "$(git rev-parse --abbrev-ref HEAD)"
+			set -- "$(git rev-parse --abbrev-ref HEAD)" ||
+			exit 1
 	fi
 fi
 
