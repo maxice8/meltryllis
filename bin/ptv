@@ -2,27 +2,27 @@
 branch="$(git rev-parse --abbrev-ref HEAD)"
 
 push_to() {
-	ansi --cyan-intense -n "== PUSHING TO $1"
+	ansi --cyan-intense "== PUSHING TO $1"
 	git push "$1" >/dev/null 2>&1 ||
-		ansi --red-intense -n "<= FAILED TO PUSH $1" &&
-		ansi --green-intense -n "=> $1 PUSHED"
+		ansi --red-intense "<= FAILED TO PUSH $1" &&
+		ansi --green-intense "=> $1 PUSHED"
 }
 
 if [ "$branch" != "master" ]
 then
-	ansi --red-intense -n "<= NEEDS TO BE IN BRANCH MASTER"
+	ansi --red-intense "<= NEEDS TO BE IN BRANCH MASTER"
 	exit 1
 fi
 
-ansi --yellow-intense -n "== COMMITS TO BE PUSHED"
+ansi --yellow-intense "== COMMITS TO BE PUSHED"
 gcp
 
 if [ -f "${XDG_RUNTIME_DIR}/push-to-void" ]
 then
-	ansi --yellow-intense -n "== BRANCHES TO BE CLEARED"
+	ansi --yellow-intense "== BRANCHES TO BE CLEARED"
 	cat "${XDG_RUNTIME_DIR}/push-to-void"
 else
-	ansi --yellow-intense -n "== NO BRANCHES TO BE CLEANED"
+	ansi --yellow-intense "== NO BRANCHES TO BE CLEANED"
 fi
 
 push_to origin
@@ -33,8 +33,8 @@ then
 	while read -r branch
 	do
 		git-clean-branches "$branch" >/dev/null 2>&1 ||
-			ansi --red-intense -n "<= FAILED TO CLEAN BRANCH $branch" &&
-			ansi --green-intense -n "=> CLEANED BRANCH $branch"
+			ansi --red-intense "<= FAILED TO CLEAN BRANCH $branch" &&
+			ansi --green-intense "=> CLEANED BRANCH $branch"
 	done < "${XDG_RUNTIME_DIR}/push-to-void"
 	rm -f "${XDG_RUNTIME_DIR}/push-to-void"
 fi
