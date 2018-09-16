@@ -39,8 +39,8 @@ branch="$(git rev-parse --abbrev-ref HEAD)"
 case "$cmd" in
 	-o|--off-load) ./xbps-src -I extract "$arg" "$@";;
 	-e|--edit) e srcpkgs/"$arg"/template;;
-	-b|--build) ./xbps-src -C pkg "$arg" "$@";;
-	-r|--rebuild) ./xbps-src clean "$arg" && ./xbps-src pkg "$arg" "$@";;
+	-b|--build) ./xbps-src -f -C pkg "$arg" "$@";;
+	-r|--rebuild) ./xbps-src clean "$arg" && ./xbps-src -f pkg "$arg" "$@";;
 	-c|--check) ./xbps-src clean "$arg" && ./xbps-src check -Q "$arg" "$@";;
 	-x|--xgensum) xgensum -f -i srcpkgs/"$arg"/template "$@";;
 	-X|--Xgensum) xgensum -f -c -i srcpkgs/"$arg"/template "$@";;
