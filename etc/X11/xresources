@@ -89,19 +89,19 @@ URxvt.font: xft:                            tewi:pixelsize=11:antialias=false
 *foreground:        #eeeeee
 *cursorColor:       #eeeeee
 *background:		#1a1a1a
-    *color0:		#333333
-    *color8:		#565656
-    *color1:		#cc5947
-    *color9:		#e24b34
-    *color2:		#5c8f42
-    *color10:		#77b557
-    *color3:		#ffaa45
-    *color11:		#ffbd70
-    *.color4:       #395b73
-    *.color12:      #3f769d
-    *color5:		#803e66
-    *color13:		#ba5b95
-    *color6:		#357a66
-    *color14:		#68b09a
-    *color7:		#ddeedd
-    *color15:		#eeffee
+*color0:		#333333
+*color8:		#565656
+*color1:		#cc5947
+*color9:		#e24b34
+*color2:		#5c8f42
+*color10:		#77b557
+*color3:		#ffaa45
+*color11:		#ffbd70
+*.color4:       #395b73
+*.color12:      #3f769d
+*color5:		#803e66
+*color13:		#ba5b95
+*color6:		#357a66
+*color14:		#68b09a
+*color7:		#ddeedd
+*color15:		#eeffee
