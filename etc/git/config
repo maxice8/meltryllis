@@ -6,6 +6,7 @@
 	helper = cache --timeout=999999999 --socket=${XDG_RUNTIME_DIR}/git/credential-cache
 [alias]
   ls = log --oneline --decorate --graph
+	g = grep --break --heading --line-number
 [core]
   editor = nvim
 [github]
@@ -29,3 +30,5 @@ fsckObjects = true
 	verbose = true
 [gpg]
 	program = gpg2
+[pull]
+	rebase = true
