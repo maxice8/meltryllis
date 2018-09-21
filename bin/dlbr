@@ -18,6 +18,11 @@ delete_remote_branch() {
 }
 
 delete_local_branch() {
+	if ! git rev-parse --verify "$1" >/dev/null 2>&1
+	then
+		return 0
+	fi
+
 	if [ "$1" = "$(git rev-parse --abbrev-ref HEAD)" ]
 	then
 		git checkout master >/dev/null 2>&1
