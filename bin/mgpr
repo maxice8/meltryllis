@@ -1,0 +1,30 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+# mgpr PR-NUM - Merges a pull request by number
+#
+# It is required to have a netrc file with the following structure present
+# machine api.github.com
+# login USER
+# password PASSWORD
+user=$(git config --get user.name)
+branches=""
+
+while [ $# -gt 0 ]
+do
+	label="$(curl --silent \
+		  --request GET https://api.github.com/repos/void-linux/void-packages/pulls/"$1" |
+		  jq --raw-output .head.label)"
+	
+	curl --netrc --request PUT \
+		 --data '{"merge_method":"rebase"}' \
+		 https://api.github.com/repos/void-linux/void-packages/pulls/"$1"/merge ||
+		 exit 1
+	
+	shift
+	if [ "$(echo "$label" | cut -d : -f1)" = "$user" ]
+	then
+		branches="${branches} $(echo "$label" | cut -d : -f2)"
+	fi
+done
+
+dlbr $branches

@@ -1,0 +1,10 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+# opr [-c] PR-NUM - Open or optionally send to clipboard the URL of a github issue
+for arg; do
+	shift
+	[ "$arg" = "-c" ] && opts="-c" && continue
+	set -- "$@" "$arg"
+done
+
+hub browse $opts -- issues/"${1:?'need a PR-NUM'}"
