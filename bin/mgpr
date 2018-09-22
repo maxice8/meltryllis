@@ -24,7 +24,7 @@ do
 			 continue ;
 		 } &&
 		 {
-			printok "Merged branch $1" ;
+			printok "Merged Pull Request #$1" ;
 		 }
 	
 	shift
