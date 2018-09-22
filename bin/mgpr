@@ -17,8 +17,15 @@ do
 	
 	curl --netrc --fail --request PUT \
 		 --data '{"merge_method":"rebase"}' \
-		 https://api.github.com/repos/void-linux/void-packages/pulls/"$1"/merge ||
-		 return 1
+		 https://api.github.com/repos/void-linux/void-packages/pulls/"$1"/merge \
+		 >/dev/null 2>&1 ||
+		 {
+			 printerr "Failed to merge $1" ;
+			 continue ;
+		 } &&
+		 {
+			printok "Merged branch $1" ;
+		 }
 	
 	shift
 
