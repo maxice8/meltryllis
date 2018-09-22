@@ -8,23 +8,27 @@
 # password PASSWORD
 user=$(git config --get user.name)
 branches=""
+r=0
 
 while [ $# -gt 0 ]
 do
 	label="$(curl --silent \
 		  --request GET https://api.github.com/repos/void-linux/void-packages/pulls/"$1" |
 		  jq --raw-output .head.label)"
-	
+
 	curl --netrc --fail --request PUT \
 		 --data '{"merge_method":"rebase"}' \
 		 https://api.github.com/repos/void-linux/void-packages/pulls/"$1"/merge \
 		 >/dev/null 2>&1 ||
 		 {
 			 printerr "Failed to merge $1" ;
+			 r++
+			 [ $r -gt 3 ] && exit $r
 			 continue ;
 		 } &&
 		 {
 			printok "Merged Pull Request #$1" ;
+			r=0
 		 }
 	
 	shift
