@@ -1,11 +1,18 @@
 #!/bin/sh
 [ "$#" -lt 1 ] && set "$(git rev-parse --abbrev-ref HEAD)"
+selectcommit() {
+	git show -s --format=%B $(git log upstream/master.."$1" --pretty='%h %s' |
+							  fzy |
+							  cut -d ' ' -f1)
+
+}
 pr() {
 	git rebase upstream/master >/dev/null 2>&1
 	git push -uf origin "$1" >/dev/null 2>&1
 	if [ "$(git rev-list --count master.."$1")" -gt 1 ]
 	then
-		hub pull-request -h "$1" --edit
+		msg="$(selectcommit "$1")"
+		hub pull-request -h "$1" -m "$msg" --edit
 	else
 		hub pull-request -h "$1" --no-edit
 	fi
