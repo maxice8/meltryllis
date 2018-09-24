@@ -7,7 +7,6 @@
 # login USER
 # password PASSWORD
 user=$(git config --get user.name)
-branches=""
 r=0
 
 while [ $# -gt 0 ]
@@ -22,7 +21,7 @@ do
 		 >/dev/null 2>&1 ||
 		 {
 			 printerr "Failed to merge $1" ;
-			 r++
+			 r=$((r+1))
 			 [ $r -gt 3 ] && exit $r
 			 continue ;
 		 } &&
@@ -36,14 +35,12 @@ do
 
 	if [ "$(echo "$label" | cut -d : -f1)" = "$user" ]
 	then
-		branches="${branches} $(echo "$label" | cut -d : -f2)"
+		dlbr $(echo "$label" | cut -d : -f2)
 	fi
 
 	branch="$(echo "$label" | cut -d : -f2)"
 	if git rev-parse --verify "$repo" >/dev/null 2>&1
 	then
-		branches="${branches} $branch"
+		dlbr $branch
 	fi
 done
-
-dlbr $branches
