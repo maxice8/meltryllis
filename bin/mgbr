@@ -39,12 +39,23 @@ git rebase upstream/master >/dev/null 2>&1 ||
 		exit 1 ;
 	}
 
-#git push origin >/dev/null 2>&1 ||
-#	{ printerr "Failed to push to origin" ; } &&
-#	{ printok "Pushed to origin" ; }
+(
+	if git push origin >/dev/null 2>&1
+	then
+		printok "Pushed to origin"
+	else
+		printerr "Failed to push to origin"
+	fi
+) &
 
-#git push upstream >/dev/null 2>&1 ||
-#	{ printerr "Failed to push to upstream" ; } &&
-#	{ printok "Pushed to upstream" ; }
+(
+	if git push upstream >/dev/null 2>&1
+	then
+		printok "Pushed to upstream"
+	else
+		printerr "Failed to push to upstream"
+	fi
+) &
 
+wait 
 dlbr $branches
