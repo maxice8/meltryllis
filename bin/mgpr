@@ -11,6 +11,11 @@ r=0
 
 while [ $# -gt 0 ]
 do
+	case $1 in
+		''|*[!0-9]*) shift ; continue;;
+		*) ;;
+	esac
+
 	label="$(curl --silent \
 		  --request GET https://api.github.com/repos/void-linux/void-packages/pulls/"$1" |
 		  jq --raw-output .head.label)"
