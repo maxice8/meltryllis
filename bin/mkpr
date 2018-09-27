@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+# mkpr [BRANCH] ... - mgbr merge branches
 [ "$#" -lt 1 ] && set "$(git rev-parse --abbrev-ref HEAD)"
 selectcommit() {
 	git show -s --format=%B $(git log upstream/master.."$1" --pretty='%h %s' |
