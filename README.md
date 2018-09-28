@@ -1,4 +1,4 @@
 LICENSE
 =======
 
-GPL-2.0-only
+GPL-3.0-or-later
