@@ -12,13 +12,15 @@ Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'matze/vim-meson'
 Plug 'KeitaNakamura/neodark.vim'
-Plug 'crusoexia/vim-monokai'
+Plug 'morhetz/gruvbox'
+Plug 'shinchu/lightline-gruvbox.vim'
 
 " Add Plugins
+"
 call plug#end()
 
 let g:lightline = {
-    \ 'colorscheme': 'neodark',
+    \ 'colorscheme': 'gruvbox',
     \ 'active': {
     \   'left': [ [ 'mode', 'paste' ], [ 'filename' ] ],
     \   'right': [ [ 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype'] ]
