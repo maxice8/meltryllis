@@ -218,6 +218,8 @@ while [ $# -gt 0 ]; do
 		replace_license "Apache-2.0" "Apache 2.0"
 		) &
 
+		replace_field hostmakedepends "pkg-config" "pkgconf"
+
 		rewrite_field pycompile_modules pycompile_module &
 
 		quote_varfields &
