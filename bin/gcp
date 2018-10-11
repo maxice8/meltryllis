@@ -1,2 +1,11 @@
 #!/bin/sh
-git log upstream/master..$(git rev-parse --abbrev-ref HEAD) --pretty='%C(yellow)%h %C(white)%s' 
+if [ -z "$1" ]
+then
+	set $@ -- $(git rev-parse --abbrev-ref HEAD)
+fi
+
+while [ $# -gt 0 ]
+do
+	git log upstream/master..$1 --pretty='%C(yellow)%h %C(white)%s' 
+	shift
+done
