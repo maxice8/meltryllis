@@ -1,5 +1,5 @@
 #!/bin/sh
-_bargeo="60x24+775+0"
+_bargeo="55x24+770+0"
 
 create-fifo "$_fifo"
 

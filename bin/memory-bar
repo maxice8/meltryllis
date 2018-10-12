@@ -1,5 +1,5 @@
 #!/bin/sh
-_bargeo="80x24+830+0"
+_bargeo="80x24+825+0"
 
 wait_mem() {
 	_t="$(awk '/MemTotal/ {print $2}' /proc/meminfo)"
@@ -10,12 +10,12 @@ wait_mem() {
 	if [ $mem -gt 9 ]; then
 		echo "$mem%"
 	else
-		echo "$mem% "
+		echo "$mem%"
 	fi
 }
 
 while :; do
-	echo "%{c} ${_t}MEM: ${_r}$(wait_mem)"
+	echo "%{c} ${_t}MEM: ${_r}$(wait_mem) "
 	sleep 60
 done | lemonbar -f "${_barfont}" \
 				-f "${_barfont2}" \
