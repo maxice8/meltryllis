@@ -5,6 +5,9 @@
 for arg; do
 	shift
 	[ "$arg" = "-e" ] || [ "$arg" = "--edit" ] && EDIT="--edit" && continue
+	[ -z "${arg##*-a=*}" ] && ASSIGN="-a ${arg##*=}" && continue
+	[ -z "${arg##*-r=*}" ] && REVIEW="-r ${arg##*=}" && continue
+	[ -z "${arg##*-l=*}" ] && LABEL="-l ${arg##*=}" && continue
 	set -- "$@" "$arg"
 done
 [ "$#" -lt 1 ] && set "$(git rev-parse --abbrev-ref HEAD)"
@@ -17,12 +20,12 @@ selectcommit() {
 pr() {
 	git rebase upstream/master >/dev/null 2>&1
 	git push -uf origin "$1" >/dev/null 2>&1
-	if [ "$(git rev-list --count master.."$1")" -gt 1 ]
+	if [ "$(git rev-list --count upstream/master.."$1")" -gt 1 ]
 	then
 		msg="$(selectcommit "$1")"
-		hub pull-request -h "$1" -m "$msg" $EDIT
+		hub pull-request -h "$1" -m "$msg" $EDIT $ASSIGN $REVIEW $LABEL
 	else
-		hub pull-request -h "$1" $EDIT
+		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL
 	fi
 }
 while [ $# -gt 0 ]
