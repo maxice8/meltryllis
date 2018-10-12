@@ -33,7 +33,7 @@ URxvt.skipBuiltinGlyphs:                    true
 *.cursorBlink:                              false
 *.cursorUnderline:                          true
 *.scrollColor:                              #151515
-URxvt.font: xft:                            tewi:pixelsize=11:antialias=false
+URxvt.font: xft:                            tewi:pixelsize=11:antialias=true
 *.boldFont:
 *.italicFont:
 *.bolditalicFont:
