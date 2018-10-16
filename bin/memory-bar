@@ -7,11 +7,11 @@ wait_mem() {
 	_b="$(awk '/^Buffers/ {print $2}' /proc/meminfo)"
 	_c="$(awk '/^Cached/ {print $2}' /proc/meminfo)"
 	mem="$(echo "100 * ($_t - $_f - $_c - $_b) / $_t" | bc)"
-	if [ $mem -gt 9 ]; then
-		echo "$mem%"
-	else
-		echo "$mem%"
+	if [ $mem -gt 90 ]; then
+		notify-send "High memory usage!" -a "$mem%"
 	fi
+
+	echo "$mem%"
 }
 
 while :; do
