@@ -3,7 +3,7 @@
 CUR=${2:-$(pfw)}
 ROOT=$(lsw -r)
 SW=$(wattr w $ROOT)
-SH=$(( $(wattr h $ROOT) - 10))
+SH=$(( $(wattr h $ROOT) - 5))
 
 BW=$(wattr b $CUR)
 W=$(wattr w $CUR)
