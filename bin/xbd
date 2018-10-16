@@ -1,0 +1,41 @@
+#!/bin/sh
+set -eu
+
+dir=$(xdistdir)
+
+str=""
+args=""
+arch=""
+
+while [ $# -gt 0 ]
+do
+	if [ "$1" = "-a" ]
+	then
+		arch="-a $2"
+		shift
+	else
+		args="$args $1"
+	fi
+	shift
+done
+
+for pkg in $args
+do
+	if ./xbps-src pkg $arch "${pkg}"
+	then
+		str="$str$pkg:ok\\n"
+	else
+		str="$str$pkg:fail\\n"
+	fi
+done
+
+echo "$str" | while IFS=":" read -r pkg status
+do
+	if [ "$status" = "ok" ]
+	then
+		printok "$pkg"
+	elif [ "$status" = "fail" ]
+	then
+		printerr "$pkg"
+	fi
+done
