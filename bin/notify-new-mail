@@ -1,0 +1,9 @@
+#!/bin/sh
+nmcount() {
+	fcount "${MAILDIR}/new"
+}
+
+inotifywait -q -m "${MAILDIR}/new" -e create |
+	while read -r _; do
+		notify-send "New mail!" -a "$(nmcount)"
+	done

@@ -1,0 +1,9 @@
+#!/bin/sh
+case "$2" in
+	CONNECTED)
+		notify-send "Connected to $WPA_ID" -a "WiFi"
+		;;
+	DISCONNECTED)
+		notify-send "Disconnected" -a "WIFI"
+		;;
+esac
