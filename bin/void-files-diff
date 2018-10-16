@@ -6,7 +6,7 @@ while [ $# -gt 0 ]; do
 	pkgs="$(xsubpkg "$1")"
 	for pkg in $pkgs ; do
 		printf ">>> %s\\n" "$pkg"
-		colordiff <(xbps-query -Rf "${pkg}" | sort) <(xbps-query --repository=hostdir/binpkgs/"$branch" -f "$pkg" | sort)
+		diff --color <(xbps-query -Rf "${pkg}" | sort) <(xbps-query --repository=hostdir/binpkgs/"$branch" -f "$pkg" | sort)
 	done
 	shift
 done
