@@ -1,0 +1,5 @@
+#!/bin/sh
+for pkg in "$@"
+do
+	void-files-diff "$pkg"
+done
