@@ -10,7 +10,7 @@ parse() {
 	if [ "$state" = '[playing]' ];then
 		state="$(mpc current --format '%file%' | sed 's/.\(ogg\|opus\|mp3\).*//')"
 	else
-		state="MPD is ${state:-'Stopped'}"
+		state="$(echo ${state:-'Stopped'} | tr -d '[' | tr -d ']')"
 	fi
 
 	printf "%s\\n" "$state"
@@ -19,8 +19,9 @@ parse() {
 music_wait() {
 	parse > "$_fifo"
 	while :; do
-		parse > "$_fifo"
 		mpc idle
+		parse > "$_fifo"
+		notify-send "$(parse)" -a "MPD"
 	done
 }
 
