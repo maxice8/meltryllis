@@ -1,3 +1,3 @@
 function rm
-  command rm -i $argv
+  command rm -v $argv
 end
