@@ -29,6 +29,7 @@ do
 	fi
 done
 
+echo ""
 echo "$str" | while IFS=":" read -r pkg status
 do
 	if [ "$status" = "ok" ]
