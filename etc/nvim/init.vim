@@ -14,6 +14,7 @@ Plug 'matze/vim-meson'
 Plug 'KeitaNakamura/neodark.vim'
 Plug 'morhetz/gruvbox'
 Plug 'shinchu/lightline-gruvbox.vim'
+Plug 'vmchale/ion-vim'
 
 " Add Plugins
 "
