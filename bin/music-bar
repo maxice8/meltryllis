@@ -21,7 +21,7 @@ music_wait() {
 	while :; do
 		mpc idle
 		parse > "$_fifo"
-		notify-send "$(parse)" -a "MPD"
+		notify-send.sh --replace=13211993 "$(parse)" -a "MPD"
 	done
 }
 

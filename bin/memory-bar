@@ -8,7 +8,7 @@ wait_mem() {
 	_c="$(awk '/^Cached/ {print $2}' /proc/meminfo)"
 	mem="$(echo "100 * ($_t - $_f - $_c - $_b) / $_t" | bc)"
 	if [ $mem -gt 90 ]; then
-		notify-send "High memory usage!" -a "$mem%"
+		notify-send.sh --replace=13513 "High memory usage!" -a "$mem%"
 	fi
 
 	echo "$mem%"
