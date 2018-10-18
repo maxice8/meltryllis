@@ -5,5 +5,5 @@ nmcount() {
 
 inotifywait -q -m "${MAILDIR}/new" -e create |
 	while read -r _; do
-		notify-send "New mail!" -a "$(nmcount)"
+		notify-send.sh --replace=131912 "New mail!" -a "$(nmcount)"
 	done
