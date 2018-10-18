@@ -2,15 +2,29 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # mkpr [BRANCH] ... - mgbr merge branches
 [ "$EDIT" ] && EDIT="--edit" || EDIT="--no-edit"
-for arg; do
+
+while [ $# -gt 0 ]
+do
+	if [ "$1" = "-r" ]
+	then
+		REVIEW="-r $2"
+		shift
+	elif [ "$1" = "-a" ]
+	then
+		ASSIGN="-a $2"
+		shift
+	elif [ "$1" = "-l" ]
+	then
+		LABEL="-l $2"
+		shift
+	else
+		args="$args $1"
+	fi
 	shift
-	[ "$arg" = "-e" ] || [ "$arg" = "--edit" ] && EDIT="--edit" && continue
-	[ -z "${arg##*-a=*}" ] && ASSIGN="-a ${arg##*=}" && continue
-	[ -z "${arg##*-r=*}" ] && REVIEW="-r ${arg##*=}" && continue
-	[ -z "${arg##*-l=*}" ] && LABEL="-l ${arg##*=}" && continue
-	set -- "$@" "$arg"
 done
-[ "$#" -lt 1 ] && set "$(git rev-parse --abbrev-ref HEAD)"
+
+[ -z "$args" ] && args="$(git rev-parse --abbrev-ref HEAD)"
+
 selectcommit() {
 	git show -s --format=%B $(git log upstream/master.."$1" --pretty='%h %s' |
 							  fzy |
