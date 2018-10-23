@@ -17,6 +17,9 @@ do
 	then
 		LABEL="-l $2"
 		shift
+	elif [ "$1" = "-e" ]
+	then
+		EDIT="--edit"
 	else
 		args="$args $1"
 	fi
@@ -29,7 +32,6 @@ selectcommit() {
 	git show -s --format=%B $(git log upstream/master.."$1" --pretty='%h %s' |
 							  fzy |
 							  cut -d ' ' -f1)
-
 }
 pr() {
 	git rebase upstream/master >/dev/null 2>&1
@@ -42,8 +44,7 @@ pr() {
 		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL
 	fi
 }
-while [ $# -gt 0 ]
+for arg in $args
 do
-	pr "$1"
-	shift
+	pr "$arg"
 done
