@@ -1,5 +1,5 @@
 #!/bin/sh
-_bargeo="316x24+1050+0"
+_bargeo="266x30+1100+0"
 
 create-fifo "$_fifo"
 
@@ -28,7 +28,7 @@ music_wait() {
 music_wait &
 
 while :; do
-	echo "%{c}$(head -c 45 < $_fifo)"
+	echo "%{c}$(head -c 40 < $_fifo)"
 done | lemonbar -f "${_barfont}" \
 				-B "${_barbg}" \
 				-F "${_barfg}" \
