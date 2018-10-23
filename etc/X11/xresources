@@ -4,7 +4,7 @@
 *.termName: rxvt-unicode-256color
 *.urgentOnBell: false
 *.visualBell:   false
-*.internalBorder: 15
+*.internalBorder: 20
 *.externalBorder: 2
 *.intensityStyle: false
 *.secondaryScroll:  true
@@ -15,11 +15,12 @@
 !------------------------------------------------------------------------------
 ! XFT Settings
 
-Xft*dpi:                                        96
-Xft*antialias:                                  1
-Xft*rgba:                                       rgb
-Xft*hinting:                                    1
-Xft*hintstyle:                                  hintfull
+Xft.autohint:           1
+Xft.lcdfilter:          lcddefault
+Xft.hinting:            1
+Xft.hintstyle:          hintslight
+Xft.antialias:          1
+Xft.rgba:               rgb
 
 !------------------------------------------------------------------------------
 ! URXVT - Settings
@@ -27,13 +28,12 @@ Xft*hintstyle:                                  hintfull
 *.geometry:                                 119x32
 URxvt.depth:                                0
 URxvt.skipBuiltinGlyphs:                    true
-*.iso14755:                                 true
 *.borderLess:                               false
 *.scrollBar:                                false
 *.cursorBlink:                              false
 *.cursorUnderline:                          true
 *.scrollColor:                              #151515
-URxvt.font: xft:                            tewi:pixelsize=11:antialias=true
+URxvt.font: xft:                            tewi:pixelsize=11
 *.boldFont:
 *.italicFont:
 *.bolditalicFont:
@@ -41,6 +41,10 @@ URxvt.font: xft:                            tewi:pixelsize=11:antialias=true
 *.lineSpace:                                -1
 *.underlineURLs:                            true
 *.imLocale:                                 "en_US.utf8"
+
+! disable ctrl+shift
+*.iso14755:             false
+*.iso14755_52:          false
 
 !--------------------------------------------------------------------------------
 ! Perl
