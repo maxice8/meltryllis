@@ -1,12 +1,16 @@
 #!/bin/sh
-_bargeo="55x24+770+0"
+_bargeo="100x30+650+0"
 
 create-fifo "$_fifo"
 
 trap "rm -f $_fifo" EXIT QUIT TERM
 
 mcount() {
-	echo $(( $(fcount "${MAILDIR}/new" ) + $(fcount "${MAILDIR}/cur") ))
+	mail_count="$(( $(fcount "${MAILDIR}/new" ) + $(fcount "${MAILDIR}/cur") ))"
+	case "$mail_count" in
+		0) echo 'no new mail' ;;
+		*) echo "$mail_count new mail" ;;
+	esac
 }
 
 mail_wait() {
@@ -21,7 +25,7 @@ mail_wait() {
 mail_wait &
 
 while :; do
-	echo "%{c}${_t}MAIL: ${_r}$(cat "$_fifo") "
+	echo "%{c}$(cat "$_fifo")"
 done | lemonbar -f "${_barfont}" \
 				-B "${_barbg}" \
 				-F "${_barfg}" \
