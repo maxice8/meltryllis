@@ -1,5 +1,5 @@
 #!/bin/sh
-_bargeo="80x24+825+0"
+_bargeo="140x30+750+0"
 
 wait_mem() {
 	_t="$(awk '/MemTotal/ {print $2}' /proc/meminfo)"
@@ -11,11 +11,15 @@ wait_mem() {
 		notify-send.sh --replace=13513 "High memory usage!" -a "$mem%"
 	fi
 
-	echo "$mem%"
+	case "$mem" in
+		[0-9]|1[0-9]|2[0-9]|3[0-9]|40) echo "low ($mem%) memory usage" ;;
+		4[1-9]|5[0-9]|6[0-9]|70) echo "avg ($mem%) memory usage" ;;
+		7[1-9]|8[0-9]|9[0-9]|100) echo "high ($mem%) memory usage" ;;
+	esac
 }
 
 while :; do
-	echo "%{c} ${_t}MEM: ${_r}$(wait_mem) "
+	echo "%{c}$(wait_mem)"
 	sleep 60
 done | lemonbar -f "${_barfont}" \
 				-f "${_barfont2}" \
