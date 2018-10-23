@@ -1,6 +1,6 @@
 #!/bin/sh
 # it assumes the monitors are named 1 to 9
-_bargeo="230x24+0+0"
+_bargeo="100x30+130+0"
 
 create-fifo "$_fifo"
 
@@ -14,10 +14,20 @@ get_cur() {
 }
 
 desktop_wait() {
-	get_cur > "$_fifo"
+	cur="$(get_cur)"
+	case "$cur" in
+		1) echo '1st' > "$_fifo" ;;
+		2) echo '2nd' > "$_fifo" ;;
+		*) echo "${cur}th" > "$_fifo" ;;
+	esac
 	bspc subscribe desktop_focus |
 		while read -r _; do
-			get_cur > "$_fifo"
+			cur="$(get_cur)"
+			case "$cur" in
+				1) echo '1st' > "$_fifo" ;;
+				2) echo '2nd' > "$_fifo" ;;
+				*) echo "${cur}th" > "$_fifo" ;;
+			esac
 		done
 }
 
@@ -25,7 +35,7 @@ desktop_wait &
 _w="$(bspc query -D | wc -l)"
 
 while :; do
-	echo "%{r}    ${_t}WSP: ${_r}$(cat "$_fifo")/${_w} "
+	echo "%{c}$(cat "$_fifo") wrkspace"
 done | lemonbar -f "${_barfont}" \
 				-f "${_barfont2}" \
 				-B "${_barbg}" \
