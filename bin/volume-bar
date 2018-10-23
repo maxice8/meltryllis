@@ -1,5 +1,5 @@
 #!/bin/sh
-_bargeo="80x24+970+0"
+_bargeo="70x30+1030+0"
 
 create-fifo "$_fifo"
 
@@ -18,7 +18,7 @@ volume_wait() {
 volume_wait &
 
 while :; do
-	echo "%{l} ${_t}VOL: ${_r}$(cat "$_fifo") "
+	echo "%{l} vol: $(cat "$_fifo")"
 done | lemonbar -f "${_barfont}" \
 				-f "${_barfont2}" \
                 -B "${_barbg}" \
