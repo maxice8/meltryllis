@@ -1,8 +1,12 @@
 #!/bin/sh
-_bargeo="360x24+410+0"
+_bargeo="280x30+310+0"
+_barfg="#010101"
+_barbg="#d2d2d2"
+_r="${_barfg}"
+_t="${_barfg}"
 
 while :; do
-	echo "%{l} ${_t}CLOCK: ${_r}$(date "+%H:%M")  ${_t}SEATTLE: ${_r}$(TZ=America/Los_Angeles date "+%H:%M")  ${_t}BERLIN: ${_r}$(TZ=Europe/Berlin date "+%H:%M")"
+	echo "%{c}clock: $(date "+%H:%M")  seattle: $(TZ=America/Los_Angeles date "+%H:%M")  berlin: $(TZ=Europe/Berlin date "+%H:%M")"
 	sleep 60
 done | lemonbar -f "${_barfont}" \
 				-f "${_barfont2}" \
