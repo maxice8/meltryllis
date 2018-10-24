@@ -20,7 +20,7 @@ title_wait() {
 			'm '*) echo 'mail client' > "$_fifo" ;;
 			'i '*) echo 'irc client' > "$_fifo" ;;
 			'f '*) echo 'file manager' > "$_fifo" ;;
-			'mkbin '*|'e '*|'ga '*) echo 'text editor' > "$_fifo" ;;
+			'mkbin '*|'e '*|'ga '*|'gc '*) echo 'text editor' > "$_fifo" ;;
 			'void-check-updates '*) echo 'update checker' > "$_fifo" ;;
 			'') echo 'the void' > "$_fifo" ;;
 			*) echo "$title" | awk '{ print tolower($1) }' > "$_fifo" ;;
