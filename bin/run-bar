@@ -1,8 +1,8 @@
 #!/bin/sh
 bf="-lucy-tewi-medium-r-normal--11-90-100-100-c-60-iso10646-1"
 bf2="-wuncon-siji-medium-r-normal--10-100-75-75-c-80-iso10646-1"
-bbg="$(xrdb -query | awk '/background/{print $2}')"
-bfg="$(xrdb -query | awk '/foreground/{print $2}')"
+bbg="#d2d2d2"
+bfg="#010101"
 t="%{F#A7A7A7}"
 r="%{F#ffffff}"
 
