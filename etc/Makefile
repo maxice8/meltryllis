@@ -1,4 +1,4 @@
-LN := ln -sfv
+LN := ln -rsfv
 MKDIR := mkdir -pv
 
 ETCDIR = $(XDG_CONFIG_HOME)
@@ -7,13 +7,10 @@ ETCFILES = $(shell find . -type f -o -type l -not -name Makefile)
 
 .PHONY: $(ETCDIRS) $(ETCFILES)
 
-all:
-	@echo Run make from parent directory
-
 symlink: $(ETCDIRS) $(ETCFILES)
 
 $(ETCDIRS):
 	@$(MKDIR) $(ETCDIR)/$@
 
 $(ETCFILES):
-	@$(LN) $(PWD)/etc/$@ $(ETCDIR)/$@
+	@$(LN) $(PWD)/$@ $(ETCDIR)/$@
