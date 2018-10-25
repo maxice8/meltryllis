@@ -2,7 +2,7 @@ LN := ln -sfv
 MKDIR := mkdir -pv
 
 DOTFILES = profile
-SUBDIRS = etc bin
+SUBDIRS = etc bin usr
 
 .PHONY: $(DOTFILES) $(SUBDIRS)
 
@@ -13,7 +13,7 @@ symlink: $(DOTFILES)
 subdirs: $(SUBDIRS)
 
 $(SUBDIRS):
-	$(MAKE) -C $@ symlink
+	cd $@ && $(MAKE)
 
 $(DOTFILES):
 	@$(LN) $(PWD)/$@ $(HOME)/.$@
