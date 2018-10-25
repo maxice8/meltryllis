@@ -1,2 +1,0 @@
-#!/bin/sh
-mandoc -Tlint $1

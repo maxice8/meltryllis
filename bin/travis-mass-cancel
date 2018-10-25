@@ -1,4 +1,0 @@
-#!/bin/sh
-while [ $# -gt 0 ]; do
-	travis cancel "$1" ; shift
-done
