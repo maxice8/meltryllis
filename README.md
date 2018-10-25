@@ -8,6 +8,7 @@ They are used by the makefiles to create the tree in my home, only files are sym
 TREE
 ====
 
+```
 .
 ├── bin
 ├── etc
@@ -33,6 +34,7 @@ TREE
     ├── backup
     ├── Music
     └── Images
+```
 
 LICENSE
 =======
