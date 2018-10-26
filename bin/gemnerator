@@ -11,11 +11,11 @@ gem="${1?'no gem name given'}" # Name from rubygems
 pkgname="ruby-$1" # Name for the template
 
 # Get our xdistdir
-templatedir=$(xdistdir)/srcpkgs/$pkgname/template
+templatedir=$(xdistdir)/srcpkgs/$pkgname
 
 # Stop early if the gem is already packaged, we expect this script
 # to run recursively and walk the whole dependency tree of a gem
-if [ -f "$templatedir" ]; then
+if [ -d "$templatedir" ]; then
 	printf "gem %s already packaged.\\n" "$gem"
 	return 0
 fi
@@ -67,12 +67,17 @@ do
 	"$0" "$d"
 done
 
+# Everything seems ready to go!
+printf "Creating gem for %s.\\n" "$gem"
+
+mkdir -p "$templatedir" 
 # Output our template
-cat <<EOF
+cat >"$templatedir/template" <<EOF
 # Template file for '$pkgname'
 pkgname=$pkgname
 version=$version
 revision=1
+noarch=yes
 build_style=gem
 $(test -z "$depends" || echo depends+=\" $depends\")
 short_desc=""
