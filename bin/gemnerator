@@ -1,0 +1,83 @@
+#!/bin/sh
+#
+# gemnerator <GEMS...> - Make templates for gems from rubygems
+#
+# Depends on:
+# - xdistdir (xtools)
+# - curl
+# - jq
+#
+gem="${1?'no gem name given'}" # Name from rubygems
+pkgname="ruby-$1" # Name for the template
+
+# Get our xdistdir
+templatedir=$(xdistdir)/srcpkgs/$pkgname/template
+
+# Stop early if the gem is already packaged, we expect this script
+# to run recursively and walk the whole dependency tree of a gem
+if [ -f "$templatedir" ]; then
+	printf "gem %s already packaged.\\n" "$gem"
+	return 0
+fi
+
+# Use the rubygems API to get all information in json format
+# we will use 'jq' to parse it
+data="$(curl --silent https://rubygems.org/api/v1/gems/${gem}.json)"
+
+if [ -z "$data" ]; then
+	printf "Failed to get gem data for %s from rubygems API.\\n" "$gem"
+	exit 1
+fi
+
+# Get the values from the JSON data given to us
+version="$(printf "%s" "$data" | jq -r .version)"
+
+# If homepage is null, which it can be, then return empty which is an empty string
+homepage="$(printf "%s" "$data" | jq -r '.homepage_uri // empty')"
+
+# Depends can be multiple values and due to jq we get them in multiple lines, use paste to
+# join them with space between them.
+depends="$(printf "%s" "$data" |
+		jq -r '.dependencies.runtime | .[].name' |
+		paste -sd ' ')"
+
+# Licenses can be mulitple values and due to jq we get them in multiple lines, but unlike
+# depends we need to have a comma-space separating them, so also pass a sed after using
+# paste to join the lines
+licenses="$(printf "%s" "$data" |
+			jq -r 'select(.licenses != null).licenses | .[]' |
+			paste -sd ' ' |
+			sed 's| |, |g')"
+
+# Checksum is always there and very conveniently it is the sha256sum of the gem file
+# just what we need
+checksum="$(printf "%s" "$data" | jq -r '.sha')"
+
+# If homepage is an empty string then we recieved null, we set it to the rubygems
+# page of the gem
+if [ -z "$homepage" ]
+then
+	homepage="https://rubygems.org/gems/$gem"
+fi
+
+# Run gemnerator against each dependency, this is recursive and it will walk
+# the whole dependency chain
+for d in $depends
+do
+	"$0" "$d"
+done
+
+# Output our template
+cat <<EOF
+# Template file for '$pkgname'
+pkgname=$pkgname
+version=$version
+revision=1
+build_style=gem
+$(test -z "$depends" || echo depends+=\" $depends\")
+short_desc=""
+maintainer="$(git config user.name) <$(git config user.email)>"
+license="$licenses"
+homepage="$homepage"
+checksum=$checksum
+EOF
