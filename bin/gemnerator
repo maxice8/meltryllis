@@ -44,7 +44,7 @@ homepage="$(printf "%s" "$data" | jq -r '.homepage_uri // empty')"
 
 # Depends can be multiple values and due to jq we get them in multiple lines, use paste to
 # join them with space between them.
-depends="$(printf "%s" "$data" |
+deps="$(printf "%s" "$data" |
 		jq -r '.dependencies.runtime | .[].name' |
 		paste -sd ' ')"
 
@@ -69,13 +69,19 @@ fi
 
 # Run gemnerator against each dependency, this is recursive and it will walk
 # the whole dependency chain
-for d in $depends
+depends=""
+for d in $deps
 do
+	printf "Found dependency: %s of %s.\\n" "$d" "$gem"
 	"$0" "$d"
+	if [ -z "${dist_gems##*$d*}" ]; then
+		continue
+	fi
+	depends="${depends} $d"
 done
 
 # Everything seems ready to go!
-printf "Creating gem for %s.\\n" "$gem"
+printf "Creating template for %s.\\n" "$gem"
 
 mkdir -p "$templatedir" 
 # Output our template
