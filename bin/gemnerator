@@ -13,6 +13,13 @@ pkgname="ruby-$1" # Name for the template
 # Get our xdistdir
 templatedir=$(xdistdir)/srcpkgs/$pkgname
 
+# Don't try to package gems that are part of ruby
+dist_gems="bigdecimal json minitest net-telnet psych rake rdoc test-unit"
+if [ -z "${dist_gems##*$gem*}" ]; then
+	printf "gem %s is part of ruby.\\n" "$gem"
+	return 0
+fi
+
 # Stop early if the gem is already packaged, we expect this script
 # to run recursively and walk the whole dependency tree of a gem
 if [ -d "$templatedir" ]; then
