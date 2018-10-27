@@ -33,7 +33,7 @@ data="$(curl --silent https://rubygems.org/api/v1/gems/${gem}.json)"
 
 if [ -z "$data" ]; then
 	printf "Failed to get gem data for %s from rubygems API.\\n" "$gem"
-	exit 1
+	return 1
 fi
 
 # Get the values from the JSON data given to us
@@ -76,13 +76,20 @@ case "$distfiles" in
 		# Use github API to get all tags, get the latest one.
 		tag="$(curl -Ls https://api.github.com/repos/"${user}"/"${repo}"/git/refs/tags |
 				jq -r '.[] | .ref' |
-				tail -1)"
+				grep -o "refs/tags/${version}")"
 		tag="${tag##*/}"
 		distfiles="https://github.com/${user}/${repo}/archive/${tag}.tar.gz"
 		distfiles="$(echo "$distfiles" | sed -e "s|${version}|\${version}|g")"
 
 		# Most Ruby distfiles don't have the ruby suffix we use
-		wrksrc="${pkgname#ruby-}-\${version}"
+		wrksrc="${gem}-\${version}"
+
+		# Reset checksum, it can be set with xgensum
+		checksum=
+		;;
+	'')
+		# We couldn't get a source_code_uri, default to rubygems
+		distfiles="https://rubygems.org/downloads/${gem}-\${version}.gem"
 		;;
 esac
 
@@ -96,7 +103,7 @@ depends=""
 for d in $deps
 do
 	printf "Found dependency: %s of %s.\\n" "$d" "$gem"
-	"$0" "$d"
+	"$0" "$d" || printf "Failed to make template for %s.\\n" "$gem"
 	if [ -z "${dist_gems##*$d*}" ]; then
 		continue
 	fi
@@ -116,11 +123,11 @@ revision=1
 $(test -z "$wrksrc" || echo wrksrc=\"$wrksrc\")
 noarch=yes
 build_style=gem
-$(test -z "$depends" || echo depends+=\" $depends\")
+$(test -z "$depends" || echo depends=\"$depends\" | tr -d ' ')
 short_desc=""
 maintainer="$(git config user.name) <$(git config user.email)>"
 license="$licenses"
 homepage="$homepage"
-$(test -z "$distfiles" || echo distfiles=\"$distfiles\")
+distfiles="$distfiles"
 checksum=$checksum
 EOF
