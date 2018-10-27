@@ -76,13 +76,13 @@ case "$distfiles" in
 		# Use github API to get all tags, get the latest one.
 		tag="$(curl -Ls https://api.github.com/repos/"${user}"/"${repo}"/git/refs/tags |
 				jq -r '.[] | .ref' |
-				grep -o "refs/tags/${version}")"
+				grep -o ".*${version}.*")"
 		tag="${tag##*/}"
 		distfiles="https://github.com/${user}/${repo}/archive/${tag}.tar.gz"
 		distfiles="$(echo "$distfiles" | sed -e "s|${version}|\${version}|g")"
 
 		# Most Ruby distfiles don't have the ruby suffix we use
-		wrksrc="${gem}-\${version}"
+		wrksrc="\${pkgname#ruby-}-\${version}"
 
 		# Reset checksum, it can be set with xgensum
 		checksum=
@@ -123,7 +123,7 @@ revision=1
 $(test -z "$wrksrc" || echo wrksrc=\"$wrksrc\")
 noarch=yes
 build_style=gem
-$(test -z "$depends" || echo depends=\"$depends\" | tr -d ' ')
+$(test -z "$depends" || echo depends=\"$depends\" | sed 's|^ ||')
 short_desc=""
 maintainer="$(git config user.name) <$(git config user.email)>"
 license="$licenses"
