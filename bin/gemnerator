@@ -39,9 +39,6 @@ fi
 # Get the values from the JSON data given to us
 version="$(printf "%s" "$data" | jq -r .version)"
 
-# If homepage is null, which it can be, then return empty which is an empty string
-homepage="$(printf "%s" "$data" | jq -r '.homepage_uri // empty')"
-
 # Depends can be multiple values and due to jq we get them in multiple lines, use paste to
 # join them with space between them.
 deps="$(printf "%s" "$data" |
@@ -56,9 +53,8 @@ licenses="$(printf "%s" "$data" |
 			paste -sd ' ' |
 			sed 's| |, |g')"
 
-# Checksum is always there and very conveniently it is the sha256sum of the gem file
-# just what we need
-checksum="$(printf "%s" "$data" | jq -r '.sha')"
+# If homepage is null, which it can be, then return empty which is an empty string
+homepage="$(printf "%s" "$data" | jq -r '.homepage_uri // empty')"
 
 # If homepage is an empty string then we recieved null, we set it to the rubygems
 # page of the gem
@@ -66,6 +62,17 @@ if [ -z "$homepage" ]
 then
 	homepage="https://rubygems.org/gems/$gem"
 fi
+
+# Try to get source_code_uri for the distfiles
+distfiles="$(printf "%s" "$data" | jq -r '.source_code_uri // empty')"
+
+case "$distfiles" in
+	*github.com*) distfiles="$distfiles/archive/v${version}.tar.gz" ;;
+esac
+
+# Checksum is always there and very conveniently it is the sha256sum of the gem file
+# just what we need
+checksum="$(printf "%s" "$data" | jq -r '.sha')"
 
 # Run gemnerator against each dependency, this is recursive and it will walk
 # the whole dependency chain
@@ -77,7 +84,7 @@ do
 	if [ -z "${dist_gems##*$d*}" ]; then
 		continue
 	fi
-	depends="${depends} $d"
+	depends="${depends} ruby-$d"
 done
 
 # Everything seems ready to go!
@@ -97,5 +104,6 @@ short_desc=""
 maintainer="$(git config user.name) <$(git config user.email)>"
 license="$licenses"
 homepage="$homepage"
+$(test -z "$distfiles" || echo distfiles=\"$distfiles\")
 checksum=$checksum
 EOF
