@@ -66,8 +66,24 @@ fi
 # Try to get source_code_uri for the distfiles
 distfiles="$(printf "%s" "$data" | jq -r '.source_code_uri // empty')"
 
+# Try to guess distfiles if source_code_uri is available
 case "$distfiles" in
-	*github.com*) distfiles="$distfiles/archive/v${version}.tar.gz" ;;
+	*github.com*) 
+		# Get repos and user
+		repo="${distfiles##*/}" ; distfiles="${distfiles%/*}"
+		user="${distfiles##*/}"
+
+		# Use github API to get all tags, get the latest one.
+		tag="$(curl -Ls https://api.github.com/repos/"${user}"/"${repo}"/git/refs/tags |
+				jq -r '.[] | .ref' |
+				tail -1)"
+		tag="${tag##*/}"
+		distfiles="https://github.com/${user}/${repo}/archive/${tag}.tar.gz"
+		distfiles="$(echo "$distfiles" | sed -e "s|${version}|\${version}|g")"
+
+		# Most Ruby distfiles don't have the ruby suffix we use
+		wrksrc="${pkgname#ruby-}-\${version}"
+		;;
 esac
 
 # Checksum is always there and very conveniently it is the sha256sum of the gem file
@@ -97,6 +113,7 @@ cat >"$templatedir/template" <<EOF
 pkgname=$pkgname
 version=$version
 revision=1
+$(test -z "$wrksrc" || echo wrksrc=\"$wrksrc\")
 noarch=yes
 build_style=gem
 $(test -z "$depends" || echo depends+=\" $depends\")
