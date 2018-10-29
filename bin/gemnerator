@@ -16,6 +16,7 @@ templatedir=$(xdistdir)/srcpkgs/$pkgname
 # Don't try to package gems that are part of ruby
 dist_gems="bigdecimal json minitest net-telnet psych rake rdoc test-unit"
 if [ -z "${dist_gems##*$gem*}" ]; then
+	printf "[WARN] %s part of ruby.\\n" "$gem"
 	return 0
 fi
 
@@ -23,7 +24,7 @@ fi
 # dependency tree of a gem so just return when a package is
 # already packaged
 if [ -d "$templatedir" ]; then
-	printf "gem %s already packaged.\\n" "$gem"
+	printf "[WARN] %s already packaged.\\n" "$gem"
 	return 0
 fi
 
@@ -32,7 +33,7 @@ fi
 data="$(curl --silent https://rubygems.org/api/v1/gems/${gem}.json)"
 
 if [ -z "$data" ]; then
-	printf "Failed to get gem data for %s from rubygems API.\\n" "$gem"
+	printf "[ERR] Can't fetch data for %s.\\n" "$gem"
 	return 1
 fi
 
@@ -74,8 +75,8 @@ checksum="$(printf "%s" "$data" | jq -r '.sha //empty')"
 depends=""
 for d in $deps
 do
-	printf "Found dependency: %s of %s.\\n" "$d" "$gem"
-	"$0" "$d" || printf "Failed to make template for %s.\\n" "$gem"
+	printf "[DEPENDENCY]: %s -> %s.\\n" "$d" "$gem"
+	"$0" "$d" || printf "[WARN] Failed to make template for %s.\\n" "$gem"
 	if [ -z "${dist_gems##*$d*}" ]; then
 		continue
 	fi
@@ -83,7 +84,7 @@ do
 done
 
 # Everything seems ready to go!
-printf "Creating template for %s.\\n" "$gem"
+printf "[OK] Creating template for %s.\\n" "$gem"
 
 mkdir -p "$templatedir" 
 # Output our template
