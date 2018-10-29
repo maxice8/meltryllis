@@ -16,7 +16,7 @@ title_wait() {
 	do
 		case "$title" in
 			*Chromium) echo 'chromium' > "$_fifo" ;;
-			'fish '*) echo 'shell' > "$_fifo" ;;
+			'fish '*|'dash '*|'bash '*) echo 'shell' > "$_fifo" ;;
 			'm '*) echo 'mail client' > "$_fifo" ;;
 			'i '*) echo 'irc client' > "$_fifo" ;;
 			'f '*) echo 'file manager' > "$_fifo" ;;
