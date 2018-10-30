@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env dash
 #
 # gemnerator <GEMS...> - Make templates for gems from rubygems
 #
@@ -7,6 +7,69 @@
 # - curl
 # - jq
 #
+
+# Function: get_dep
+# Description: Function that transforms a Rubygems dependency
+#  specification into a Void Linux template equivalent
+# Input: Line containing 3 elements separated by whitespace
+#  those elements are the name of the pacakge, the version 
+#  comparator and the version being compared against
+# Examples:
+#  get_ver rake >= 0
+#  get_ver test--unit ~> 2.0
+get_dep() {
+	pkg="$(echo "$1" | cut -d ' ' -f1)"
+	cmp="$(echo "$1" | cut -d ' ' -f2)"
+	ver="$(echo "$1" | cut -d ' ' -f3)"
+
+	local fdeps
+
+	# Deal with the case where there are multiple version
+	# specifiers like: gem >= 1.0, < 2.0
+	if [ -z "${ver##*,}" ]; then
+		# Remove comma from version
+		ver="${ver%%,*}"
+
+		# Get the second specifier and version
+		cmpr="$(echo "$1" | cut -d ' ' -f4)"
+		vers="$(echo "$1" | cut -d ' ' -f5)"
+
+		# Call the function again, this time we know there is
+		# multiple version specifiers
+		printf "%s" "$(get_dep "${pkg} ${cmpr} ${vers}") "
+
+	fi
+
+	# Deal with all ruby version operators
+	case "$cmp" in
+		'>'|'<'|'<='|'>=') 
+			if [ "$ver" = "0" -a "$cmp" = ">=" ]; then
+				printf "%s" "$pkg"
+			else
+				printf "%s%s%s" "$pkg" "$cmp" "$ver"
+			fi
+			;;
+		'~>') 
+			# The ~> comparator is meant to allow only version updates
+			# up to the first version specifier
+			# ~> 2.0.3 means >= 2.0.3 ∩ < 2.1
+			# ~> 2.1 means >= 2.1 ∩ > 3.0
+			# ~> 2 means >= 2 ∩ > 3 (Super pessimistic anti-pattern)
+			fdeps="${pkg}>=${ver}"
+			ver="${ver%.*}"
+			lver="${ver##*.}"
+			if [ ${#ver} -eq 1 ]; then
+				ver=""
+			else
+				ver="${ver%.*}."
+			fi
+			fdeps="$fdeps ${pkg}<${ver}$((lver + 1)).0"
+			
+			printf "%s" "$fdeps"
+			;;
+	esac
+}
+
 gem="${1?'no gem name given'}" # Name from rubygems
 pkgname="ruby-$1" # Name for the template
 
@@ -43,8 +106,8 @@ version="$(printf "%s" "$data" | jq -r .version)"
 # Depends can be multiple values and due to jq we get them in multiple lines, use paste to
 # join them with space between them.
 deps="$(printf "%s" "$data" |
-		jq -r '.dependencies.runtime | .[].name' |
-		paste -sd ' ')"
+		jq -r '.dependencies.runtime | .[] | {name, requirements} | .[]' |
+		paste -d " " - -)"
 
 # Try to get description from the summary field
 short_desc="$(printf "%s" "$data" | jq -r '.summary // empty')"
@@ -73,14 +136,18 @@ checksum="$(printf "%s" "$data" | jq -r '.sha //empty')"
 # Run gemnerator against each dependency, this is recursive and it will walk
 # the whole dependency chain
 depends=""
-for d in $deps
+
+IFS="
+" ; for d in $deps
 do
-	printf "[DEPENDENCY]: %s -> %s.\\n" "$d" "$gem"
-	"$0" "$d" || printf "[WARN] Failed to make template for %s.\\n" "$gem"
-	if [ -z "${dist_gems##*$d*}" ]; then
+	pkg="$(echo "$d" | cut -d ' ' -f1)"
+	ver="$(echo "$d" | cut -d ' ' -f2-)"
+	printf "[DEPENDENCY]: %s (%s) -> %s.\\n" "$pkg" "$ver" "$gem"
+	"$0" "$pkg" || printf "[WARN] Failed to make template for %s.\\n" "$pkg"
+	if [ -z "${dist_gems##*$pkg*}" ]; then
 		continue
 	fi
-	depends="${depends} ruby-$d"
+	depends="${depends} ruby-$(get_dep $d)"
 done
 
 # Everything seems ready to go!
@@ -102,3 +169,5 @@ license="$licenses"
 homepage="$homepage"
 checksum=$checksum
 EOF
+
+# vim: set syn=sh :
