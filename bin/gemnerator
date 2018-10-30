@@ -18,6 +18,10 @@
 #  get_dep rake >= 0 -> rake
 #  get_dep test-unit ~> 2.0 -> ruby-test-unit>=2.0 ruby-test-unit<3.0
 get_dep() {
+	if [ $(echo "$1" | wc -w) -lt 3 ]; then
+		return 0
+	fi
+
 	pkg="$(echo "$1" | cut -d ' ' -f1)"
 	cmp="$(echo "$1" | cut -d ' ' -f2)"
 	ver="$(echo "$1" | cut -d ' ' -f3)"
@@ -79,7 +83,9 @@ templatedir=$(xdistdir)/srcpkgs/$pkgname
 # Don't try to package gems that are part of ruby
 dist_gems="bigdecimal json minitest net-telnet psych rake rdoc test-unit"
 if [ -z "${dist_gems##*$gem*}" ]; then
-	printf "[WARN] %s part of ruby.\\n" "$gem"
+	if [ "$GEMNERATOR_VERBOSE" ]; then
+		printf "%s part of ruby.\\n" "$gem"
+	fi
 	return 0
 fi
 
@@ -87,16 +93,21 @@ fi
 # dependency tree of a gem so just return when a package is
 # already packaged
 if [ -d "$templatedir" ]; then
-	printf "[WARN] %s already packaged.\\n" "$gem"
+	if [ "$GEMNERATOR_VERBOSE" ]; then
+		printf "%s already packaged.\\n" "$gem"
+	fi
 	return 0
 fi
 
 # Use the rubygems API to get all information in json format
 # we will use 'jq' to parse it
+if [ "$GEMNERATOR_VERBOSE" ]; then
+	printf "fetching %s\\n" "https://rubygems.org/api/v1/gems/${gem}.json"
+fi
 data="$(curl --silent https://rubygems.org/api/v1/gems/${gem}.json)"
 
 if [ -z "$data" ]; then
-	printf "[ERR] Can't fetch data for %s.\\n" "$gem"
+	printf "can't fetch data for %s.\\n" "$gem"
 	return 1
 fi
 
@@ -125,8 +136,7 @@ homepage="$(printf "%s" "$data" | jq -r '.homepage_uri // empty')"
 
 # If homepage is an empty string then we recieved null, we set it to the rubygems
 # page of the gem
-if [ -z "$homepage" ]
-then
+if [ -z "$homepage" ]; then
 	homepage="https://rubygems.org/gems/$gem"
 fi
 
@@ -142,7 +152,10 @@ IFS="
 do
 	pkg="$(echo "$d" | cut -d ' ' -f1)"
 	ver="$(echo "$d" | cut -d ' ' -f2-)"
-	"$0" "$pkg" || printf "[WARN] Failed to make template for %s.\\n" "$pkg"
+	if [ "$GEMNERATOR_VERBOSE" ]; then
+		printf "found dependency %s (for %s)\\n" "$pkg $ver" "$gem"
+	fi
+	"$0" "$pkg"
 	if [ -z "${dist_gems##*$pkg*}" ]; then
 		continue
 	fi
@@ -160,11 +173,15 @@ post_install() {
 fi
 
 # Everything seems ready to go!
-printf "[OK] Creating template for %s.\\n" "$gem"
+printf "creating template for %s.\\n" "$gem"
 
 mkdir -p "$templatedir" 
 # Output our template
-cat >"$templatedir/template" <<EOF
+if [ "$GEMNERATOR_VERBOSE" ]; then
+	tee "$templatedir/template"
+else
+	cat > "$templatedir/template"
+fi <<EOF
 # Template file for '$pkgname'
 pkgname=$pkgname
 version=$version
