@@ -11,12 +11,12 @@
 # Function: get_dep
 # Description: Function that transforms a Rubygems dependency
 #  specification into a Void Linux template equivalent
-# Input: Line containing 3 elements separated by whitespace
+# Input: Line containing at least 3 elements separated by whitespace
 #  those elements are the name of the pacakge, the version 
 #  comparator and the version being compared against
 # Examples:
-#  get_ver rake >= 0
-#  get_ver test--unit ~> 2.0
+#  get_dep rake >= 0 -> rake
+#  get_dep test-unit ~> 2.0 -> ruby-test-unit>=2.0 ruby-test-unit<3.0
 get_dep() {
 	pkg="$(echo "$1" | cut -d ' ' -f1)"
 	cmp="$(echo "$1" | cut -d ' ' -f2)"
@@ -142,13 +142,22 @@ IFS="
 do
 	pkg="$(echo "$d" | cut -d ' ' -f1)"
 	ver="$(echo "$d" | cut -d ' ' -f2-)"
-	printf "[DEPENDENCY]: %s (%s) -> %s.\\n" "$pkg" "$ver" "$gem"
 	"$0" "$pkg" || printf "[WARN] Failed to make template for %s.\\n" "$pkg"
 	if [ -z "${dist_gems##*$pkg*}" ]; then
 		continue
 	fi
 	depends="${depends} ruby-$(get_dep $d)"
 done
+
+required_licenses="MIT ISC BSD"
+# Check if license requires usage of vlicense
+if [ -z "${required_licenses##*$license*}" ]; then
+	vlicense="
+post_install() {
+	vlicense LICENSE
+}
+"
+fi
 
 # Everything seems ready to go!
 printf "[OK] Creating template for %s.\\n" "$gem"
@@ -163,11 +172,12 @@ revision=1
 noarch=yes
 build_style=gem
 $(test -z "$depends" || echo depends=\"$depends\" | sed 's|" |"|')
-short_desc="$(test -z "${short_desc}" || echo "$short_desc")"
+short_desc="$short_desc"
 maintainer="$(git config user.name) <$(git config user.email)>"
 license="$licenses"
 homepage="$homepage"
 checksum=$checksum
+$(test -z "$vlicense" || echo "$vlicense")
 EOF
 
 # vim: set syn=sh :
