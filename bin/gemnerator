@@ -1,4 +1,5 @@
 #!/usr/bin/env dash
+# vim: syntax=sh filetype=sh
 #
 # gemnerator <GEMS...> - Make templates for gems from rubygems
 #
@@ -8,29 +9,34 @@
 # - jq
 #
 
-# Function: get_dep
+# Function: get_ruby_dep
 # Description: Function that transforms a Rubygems dependency
 #  specification into a Void Linux template equivalent
 # Input: Line containing at least 3 elements separated by whitespace
 #  those elements are the name of the pacakge, the version 
 #  comparator and the version being compared against
 # Examples:
-#  get_dep rake >= 0 -> rake
-#  get_dep test-unit ~> 2.0 -> ruby-test-unit>=2.0 ruby-test-unit<3.0
-get_dep() {
+#  get_ruby_dep rake >= 0 -> ruby-rake
+#  get_ruby_dep test-unit ~> 2.0 -> ruby-test-unit>=2.0 ruby-test-unit<3.0
+# Returns:
+#  0 on success
+#  1 too low number of arguments
+get_ruby_dep() {
 	if [ $(echo "$1" | wc -w) -lt 3 ]; then
-		return 0
+		return 1
 	fi
+
+	local pkg cmp ver fdeps
 
 	pkg="$(echo "$1" | cut -d ' ' -f1)"
 	cmp="$(echo "$1" | cut -d ' ' -f2)"
 	ver="$(echo "$1" | cut -d ' ' -f3)"
 
-	local fdeps
-
 	# Deal with the case where there are multiple version
 	# specifiers like: gem >= 1.0, < 2.0
 	if [ -z "${ver##*,}" ]; then
+		local cmpr vers
+
 		# Remove comma from version
 		ver="${ver%%,*}"
 
@@ -47,10 +53,10 @@ get_dep() {
 	# Deal with all ruby version operators
 	case "$cmp" in
 		'>'|'<'|'<='|'>=') 
-			if [ "$ver" = "0" -a "$cmp" = ">=" ]; then
-				printf "%s" "$pkg"
+			if [ "$ver" = "0" ] && [ "$cmp" = ">=" ]; then
+				printf "ruby-%s" "$pkg"
 			else
-				printf "%s%s%s" "$pkg" "$cmp" "$ver"
+				printf "ruby-%s%s%s" "$pkg" "$cmp" "$ver"
 			fi
 			;;
 		'~>') 
@@ -59,7 +65,7 @@ get_dep() {
 			# ~> 2.0.3 means >= 2.0.3 ∩ < 2.1
 			# ~> 2.1 means >= 2.1 ∩ > 3.0
 			# ~> 2 means >= 2 ∩ > 3 (Super pessimistic anti-pattern)
-			fdeps="${pkg}>=${ver}"
+			fdeps="ruby-${pkg}>=${ver}"
 			ver="${ver%.*}"
 			lver="${ver##*.}"
 			if [ ${#ver} -eq 1 ]; then
@@ -67,12 +73,26 @@ get_dep() {
 			else
 				ver="${ver%.*}."
 			fi
-			fdeps="$fdeps ${pkg}<${ver}$((lver + 1)).0"
+			fdeps="$fdeps ruby-${pkg}<${ver}$((lver + 1)).0"
 			
 			printf "%s" "$fdeps"
 			;;
 	esac
+
+	return 0
 }
+
+# : "${LIB_LOCATION:=/usr/share/xgems}"
+# 
+# # Try to get functions and fail otherwise
+# if [ -r "${LIB_LOCATION}"/helper.dash ]; then
+# 	. "${LIB_LOCATION}"/helper.dash
+# elif [ -r "${PWD}"/helper.dash ]; then
+# 	. "${PWD}"/helper.dash
+# else
+# 	printf "Couldn't load helper library\\n"
+# 	exit 1
+# fi
 
 gem="${1?'no gem name given'}" # Name from rubygems
 pkgname="ruby-$1" # Name for the template
@@ -86,7 +106,7 @@ if [ -z "${dist_gems##*$gem*}" ]; then
 	if [ "$GEMNERATOR_VERBOSE" ]; then
 		printf "%s part of ruby.\\n" "$gem"
 	fi
-	return 0
+	exit 0
 fi
 
 # We expect this script to run recursively and walk the whole
@@ -96,7 +116,7 @@ if [ -d "$templatedir" ]; then
 	if [ "$GEMNERATOR_VERBOSE" ]; then
 		printf "%s already packaged.\\n" "$gem"
 	fi
-	return 0
+	exit 0
 fi
 
 # Use the rubygems API to get all information in json format
@@ -106,9 +126,9 @@ if [ "$GEMNERATOR_VERBOSE" ]; then
 fi
 data="$(curl --silent https://rubygems.org/api/v1/gems/${gem}.json)"
 
-if [ -z "$data" ]; then
+if [ "$data" = "This rubygem could not be found." ]; then
 	printf "can't fetch data for %s.\\n" "$gem"
-	return 1
+	exit 0
 fi
 
 # Get the values from the JSON data given to us
@@ -159,7 +179,7 @@ do
 	if [ -z "${dist_gems##*$pkg*}" ]; then
 		continue
 	fi
-	depends="${depends} ruby-$(get_dep $d)"
+	depends="${depends} $(convert_ruby_dep $d)"
 done
 
 required_licenses="MIT ISC BSD"
@@ -188,7 +208,7 @@ version=$version
 revision=1
 noarch=yes
 build_style=gem
-$(test -z "$depends" || echo depends=\"$depends\" | sed 's|" |"|')
+$(test -z "$depends" || echo depends=\"$depends\" | sed 's|" |"|' | fold -s -w75 | sed '1!s/^/ /')
 short_desc="$short_desc"
 maintainer="$(git config user.name) <$(git config user.email)>"
 license="$licenses"
@@ -196,5 +216,3 @@ homepage="$homepage"
 checksum=$checksum
 $(test -z "$vlicense" || echo "$vlicense")
 EOF
-
-# vim: set syn=sh :
