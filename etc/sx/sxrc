@@ -12,8 +12,6 @@ gpgconf --launch gpg-agent &
 xbanish &
 wm &
 rndw &
-notify-new-mail &
-wpa_cli -a $HOME/bin/notify-wifi &
 start-pulseaudio-x11 &
 xidle -timeout 900 -program /usr/bin/slock &
 sudo sh -c 'echo 100 > /sys/class/backlight/intel_backlight/brightness'
