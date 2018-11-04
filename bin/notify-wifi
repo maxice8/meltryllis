@@ -1,9 +1,0 @@
-#!/bin/sh
-case "$2" in
-	CONNECTED)
-		notify-send.sh --replace=23969 "Connected to $WPA_ID" -a "WiFi"
-		;;
-	DISCONNECTED)
-		notify-send.sh --replace=23969 "Disconnected" -a "WIFI"
-		;;
-esac
