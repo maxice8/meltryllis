@@ -46,7 +46,7 @@ get_ruby_dep() {
 
 		# Call the function again, this time we know there is
 		# multiple version specifiers
-		printf "%s" "$(get_dep "${pkg} ${cmpr} ${vers}") "
+		printf "%s" "$(get_ruby_dep "${pkg} ${cmpr} ${vers}") "
 
 	fi
 
@@ -179,7 +179,7 @@ do
 	if [ -z "${dist_gems##*$pkg*}" ]; then
 		continue
 	fi
-	depends="${depends} $(convert_ruby_dep $d)"
+	depends="${depends} $(get_ruby_dep $d)"
 done
 
 required_licenses="MIT ISC BSD"
