@@ -63,7 +63,7 @@ replace_license() {
 # header is present and if not rewrites it
 rewrite_header() {
 	pkgname="$(_get_varcontent pkgname= | tr -d \")"
-	grep -Fq -- "# Template file for '$pkgname'" "$TEMPLATE_FILE" ||
+	grep -Fq -- "^# Template file for '$pkgname'$" "$TEMPLATE_FILE" ||
 		sed -i "1 s|^.*$|# Template file for '$pkgname'|" "$TEMPLATE_FILE"
 }
 
