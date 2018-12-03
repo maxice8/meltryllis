@@ -1,5 +1,5 @@
 #!/bin/sh
-_bargeo="266x30+1100+0"
+_bargeo="336x30+1030+0"
 
 create-fifo "$_fifo"
 
@@ -21,14 +21,13 @@ music_wait() {
 	while :; do
 		mpc idle
 		parse > "$_fifo"
-		notify-send.sh --replace=13211993 "$(parse)" -a "MPD"
 	done
 }
 
 music_wait &
 
 while :; do
-	echo "%{c}$(head -c 40 < $_fifo)"
+	echo "%{c}$(head -c 50 < $_fifo)"
 done | lemonbar -f "${_barfont}" \
 				-B "${_barbg}" \
 				-F "${_barfg}" \

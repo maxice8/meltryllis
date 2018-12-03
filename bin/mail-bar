@@ -1,5 +1,5 @@
 #!/bin/sh
-_bargeo="100x30+650+0"
+_bargeo="130x30+670+0"
 
 create-fifo "$_fifo"
 
@@ -8,8 +8,8 @@ trap "rm -f $_fifo" EXIT QUIT TERM
 mcount() {
 	mail_count="$(( $(fcount "${MAILDIR}/new" ) + $(fcount "${MAILDIR}/cur") ))"
 	case "$mail_count" in
-		0) echo 'no new mail' ;;
-		*) echo "$mail_count new mail" ;;
+		0) echo 'keine neue Mail' ;;
+		*) echo "$mail_count neue Mail" ;;
 	esac
 }
 
