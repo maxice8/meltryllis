@@ -32,3 +32,5 @@ fsckObjects = true
 	program = gpg2
 [pull]
 	rebase = true
+[sendmail]
+	confirm = always
