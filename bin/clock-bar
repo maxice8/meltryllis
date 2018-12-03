@@ -1,12 +1,12 @@
 #!/bin/sh
-_bargeo="280x30+340+0"
+_bargeo="260x30+320+0"
 _barfg="#010101"
 _barbg="#d2d2d2"
 _r="${_barfg}"
 _t="${_barfg}"
 
 while :; do
-	echo "%{c}clock: $(date "+%H:%M")  seattle: $(TZ=America/Los_Angeles date "+%H:%M")  berlin: $(TZ=Europe/Berlin date "+%H:%M")"
+	echo "%{c}BST: $(date "+%H:%M")  PST: $(TZ=America/Los_Angeles date "+%H:%M")  CEST: $(TZ=Europe/Berlin date "+%H:%M")"
 	sleep 60
 done | lemonbar -f "${_barfont}" \
 				-f "${_barfont2}" \
