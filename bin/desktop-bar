@@ -1,6 +1,6 @@
 #!/bin/sh
 # it assumes the monitors are named 1 to 9
-_bargeo="100x30+130+0"
+_bargeo="130x30+130+0"
 
 create-fifo "$_fifo"
 
@@ -16,17 +16,31 @@ get_cur() {
 desktop_wait() {
 	cur="$(get_cur)"
 	case "$cur" in
-		1) echo '1st' > "$_fifo" ;;
-		2) echo '2nd' > "$_fifo" ;;
-		*) echo "${cur}th" > "$_fifo" ;;
+		1) echo 'erster' > "$_fifo" ;;
+		2) echo 'zweiter' > "$_fifo" ;;
+		3) echo 'dritter' > "$_fifo" ;;
+		4) echo 'vierter' > "$_fifo" ;;
+		5) echo 'fünfter' > "$_fifo" ;;
+		6) echo 'sechster' > "$_fifo" ;;
+		7) echo 'siebter' > "$_fifo" ;;
+		8) echo 'achten' > "$_fifo" ;;
+		9) echo 'neunter' > "$_fifo" ;;
+		10) echo 'zehnter' > "$_fifo" ;;
 	esac
 	bspc subscribe desktop_focus |
 		while read -r _; do
 			cur="$(get_cur)"
 			case "$cur" in
-				1) echo '1st' > "$_fifo" ;;
-				2) echo '2nd' > "$_fifo" ;;
-				*) echo "${cur}th" > "$_fifo" ;;
+				1) echo 'erster' > "$_fifo" ;;
+				2) echo 'zweiter' > "$_fifo" ;;
+				3) echo 'dritter' > "$_fifo" ;;
+				4) echo 'vierter' > "$_fifo" ;;
+				5) echo 'fünfter' > "$_fifo" ;;
+				6) echo 'sechster' > "$_fifo" ;;
+				7) echo 'siebter' > "$_fifo" ;;
+				8) echo 'achten' > "$_fifo" ;;
+				9) echo 'neunter' > "$_fifo" ;;
+				10) echo 'zehnter' > "$_fifo" ;;
 			esac
 		done
 }
@@ -35,7 +49,7 @@ desktop_wait &
 _w="$(bspc query -D | wc -l)"
 
 while :; do
-	echo "%{c}$(cat "$_fifo") wrkspace"
+	echo "%{c}$(cat "$_fifo") Arbeitsplatz"
 done | lemonbar -f "${_barfont}" \
 				-f "${_barfont2}" \
 				-B "${_barbg}" \
