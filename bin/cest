@@ -1,0 +1,4 @@
+#!/bin/sh
+# German date
+# convert from Brazil to Germany
+TZ=Europe/Berlin date -d "TZ=\"Brazil/East\" $*"
