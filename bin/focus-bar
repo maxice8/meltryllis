@@ -1,8 +1,7 @@
 #!/bin/sh
 # it assumes the monitors are named 1 to 9
 _bargeo="130x30+0+0"
-_barbg="#ff4660"
-_barfg="#d5c4a1"
+_barbg="#327c69"
 
 create-fifo "$_fifo"
 
@@ -25,7 +24,7 @@ title_wait() {
 			'') echo 'the void' > "$_fifo" ;;
 			*) echo "$title" | awk '{ print tolower($1) }' > "$_fifo" ;;
 		esac
-	done
+	done || break
 	done
 }
 
