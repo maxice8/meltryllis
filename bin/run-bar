@@ -1,8 +1,10 @@
 #!/bin/sh
 bf="-lucy-tewi-medium-r-normal--11-90-100-100-c-60-iso10646-1"
 bf2="-wuncon-siji-medium-r-normal--10-100-75-75-c-80-iso10646-1"
-bbg="#d2d2d2"
-bfg="#010101"
+#bbg="#d2d2d2"
+#bfg="#010101"
+bbg="#151515"
+bfg="#ffffff"
 t="%{F#A7A7A7}"
 r="%{F#ffffff}"
 
