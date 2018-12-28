@@ -113,6 +113,8 @@ set ruler
 set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
 
+au BufReadPre,BufNewFile *.sh let g:is_bash = 1
+
 " Ignore case when searching
 set ignorecase
 
