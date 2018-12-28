@@ -1,7 +1,5 @@
 #!/bin/sh
 _bargeo="260x30+320+0"
-_barfg="#010101"
-_barbg="#d2d2d2"
 _r="${_barfg}"
 _t="${_barfg}"
 
