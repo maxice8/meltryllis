@@ -5,7 +5,13 @@
 # EXEC {{{
 
 super + d
-	thingylaunch
+	rofi -show run
+
+super + f
+	rofi -show windowcd
+
+super + shift + f
+	rofi -show window
 
 super + Return
 	urxvt
