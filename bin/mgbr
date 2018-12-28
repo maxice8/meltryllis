@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
 # mgbr BRANCH-NAME ... - mgbr merge branches
-[ $# -lt 1 ] && exit 1
+[ $# -lt 1 ] && set -- $(git current-branch)
 
 git fetch upstream >/dev/null 2>&1 ||
 	{
