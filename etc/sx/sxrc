@@ -14,7 +14,7 @@ xbanish &
 wm &
 rndw &
 start-pulseaudio-x11 &
-xidle -timeout 900 -program /usr/bin/slock &
+xidle -timeout 360 -program "$HOME/bin/lock -l" &
 sudo sh -c 'echo 300 > /sys/class/backlight/intel_backlight/brightness'
 export DISPLAY=:1 && exec xwait
 
