@@ -5,6 +5,9 @@
 # EXEC {{{
 
 super + d
+	rofi -show drun -show-icons
+
+super + shift + d
 	rofi -show run
 
 super + f
