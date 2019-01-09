@@ -4,3 +4,5 @@
 ENV="$HOME"/etc/dash/env
 
 export ENV
+
+export PATH="$HOME/.cargo/bin:$PATH"
