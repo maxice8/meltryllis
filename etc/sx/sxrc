@@ -10,6 +10,8 @@ sxhkd &
 syncthing -no-browser &
 volume-output | xob &
 gpgconf --launch gpg-agent &
+autocutsel -fork &
+autocutsel -selection PRIMARY -fork &
 xbanish &
 wm &
 rndw &
