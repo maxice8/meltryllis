@@ -17,7 +17,7 @@ super + shift + f
 	rofi -show window
 
 super + Return
-	urxvt
+	alacritty
 
 # }}}
 
