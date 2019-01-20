@@ -8,10 +8,4 @@ rofi.modi: window,run,windowcd,drun
 rofi.lines: 5
 rofi.width: 32
 
-! State:           ´bg´,     ´fg´,     ´bgalt´,  ´hlbg´,   ´hlfg´
-rofi.color-normal: #151515,  #ffffff,  #202020,  #327c69,  #ffffff
-rofi.color-urgent: #151515,  #ffffff,  #202020,  #327c69,  #ffffff
-rofi.color-active: #151515,  #ffffff,  #202020,  #327c69,  #ffffff
-
-!                  ´background´, ´border´, ´separator´
-rofi.color-window: #151515,      #ffffff,  #ffffff
+rofi.theme: ~/etc/rofi/oxide.rasi
