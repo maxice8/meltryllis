@@ -11,4 +11,5 @@ do
 		shift 1
 	fi
 	hub pr checkout $args
+	git rebase upstream/master
 done
