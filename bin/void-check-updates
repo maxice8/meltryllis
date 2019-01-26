@@ -6,8 +6,10 @@ for pkg in $( fd --exclude '*uboot*' \
 				 --exclude '*linux[0-9]' \
 				 --exclude '*i18n*' \
 				 --exclude '*kernel*' \
-				 --exclude '*python*' \
-				 --exclude '*cinnamon*' \
-				 --type directory --max-depth 1 . srcpkgs/ ); do
+				 --exclude '*x264*' \
+				 --exclude '*x265*' \
+				 --type directory --max-depth 1 . srcpkgs/ \
+				 -x grep -LE 'maintainer="Alessio Sergi <al3hex@gmail.com>|Andrea Brancaleoni <abc@pompel.me>"' {}/template |
+				 cut -d / -f-2); do
 ./xbps-src update-check $pkg 2>&1 | grep -Ev '(^NO VERSION|^=>)'
 done
