@@ -12,16 +12,13 @@ Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'matze/vim-meson'
 Plug 'KeitaNakamura/neodark.vim'
-Plug 'morhetz/gruvbox'
-Plug 'shinchu/lightline-gruvbox.vim'
-Plug 'vmchale/ion-vim'
 
 " Add Plugins
 "
 call plug#end()
 
 let g:lightline = {
-    \ 'colorscheme': 'gruvbox',
+    \ 'colorscheme': 'neodark',
     \ 'active': {
     \   'left': [ [ 'mode', 'paste' ], [ 'filename' ] ],
     \   'right': [ [ 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype'] ]
@@ -181,6 +178,7 @@ endif
 
 " Required to keep sane cursor
 set guicursor=
+set guifont=Hack
 
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
