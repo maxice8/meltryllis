@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
-# mkpr [BRANCH] ... - mgbr merge branches
+# mkpr [BRANCH] ... - mkpr create a pull request
 [ "$EDIT" ] && EDIT="--edit" || EDIT="--no-edit"
 
 while [ $# -gt 0 ]
