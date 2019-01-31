@@ -21,7 +21,7 @@ done
 
 for pkg in $args
 do
-	if ./xbps-src pkg $arch "${pkg}"
+	if ./xbps-src -f pkg $arch "${pkg}"
 	then
 		str="$str$pkg:ok\\n"
 	else
