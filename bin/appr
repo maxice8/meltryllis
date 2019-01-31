@@ -1,0 +1,49 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+# appr PR-NUM - Approves a pull request by number
+#
+# It is required to have a netrc file with the following structure present
+# machine api.github.com
+# login USER
+# password PASSWORD
+user=$(git config --get user.name)
+r=0
+
+cd "$(xdistdir)" || exit
+
+comment=""
+
+while [ $# -gt 0 ]
+do
+	case $1 in
+		''|*[!0-9]*) comment="${comment} $1" ; shift ; continue;;
+		*) ;;
+	esac
+
+
+	data="{\"event\":\"APPROVE\""
+
+	if [ -n "$comment" ]; then
+		data="${data},\"body\":\"$comment\"}"
+		comment=""
+	else
+		data="${data}}"
+	fi
+
+	curl --netrc --fail --request POST \
+		 --data "$data" \
+		 https://api.github.com/repos/void-linux/void-packages/pulls/"$1"/reviews \
+		 >/dev/null 2>&1 ||
+		 {
+			 printerr "Failed to approve $1" ;
+			 r=$((r+1))
+			 [ $r -gt 3 ] && exit $r
+			 continue ;
+		 } &&
+		 {
+			printok "Approved Pull Request #$1" ;
+			r=0
+		 }
+	
+	shift
+done
