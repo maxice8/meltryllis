@@ -4,7 +4,7 @@ _r="${_barfg}"
 _t="${_barfg}"
 
 while :; do
-	echo "%{c}BST: $(date "+%H:%M")  PST: $(TZ=America/Los_Angeles date "+%H:%M")  CEST: $(TZ=Europe/Berlin date "+%H:%M")"
+	echo "%{c}BST: $(date "+%H:%M")  PST: $(TZ=America/Los_Angeles date "+%H:%M")  CET: $(TZ=Europe/Berlin date "+%H:%M")"
 	sleep 60
 done | lemonbar -f "${_barfont}" \
 				-f "${_barfont2}" \
