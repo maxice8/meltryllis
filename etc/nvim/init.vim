@@ -10,7 +10,7 @@ Plug 'w0rp/ale'
 Plug 'tpope/vim-git'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
-Plug 'matze/vim-meson'
+Plug 'igankevich/mesonic'
 Plug 'KeitaNakamura/neodark.vim'
 
 " Add Plugins
