@@ -83,8 +83,8 @@ super + shift + r
 # BSPWM {{{
 
 super + {_, shift + }Escape
-	{bspc wm -d > "$BSPWM_STATE" && bspc quit, \
-	 bspc quit 1}
+	{bspc wm -d > "$BSPWM_STATE" && bspc wm --restart, \
+	 bspc wm --restart}
 
 # focus next node
 super + {_, shift} + Tab
