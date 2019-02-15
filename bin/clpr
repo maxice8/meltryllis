@@ -6,6 +6,9 @@
 # machine api.github.com
 # login USER
 # password PASSWORD
+repo_name="$(get-repo-config repo_name)"
+repo_owner="$(get-repo-config repo_owner)"
+
 r=0
 
 cd "$(xdistdir)" || exit
@@ -17,10 +20,8 @@ do
 		*) ;;
 	esac
 
-	curl --netrc --fail --request PATCH \
-		 --data '{"state":"closed"}' \
-		 https://api.github.com/repos/void-linux/void-packages/pulls/"$1" \
-		 >/dev/null 2>&1 ||
+	hub api repos/"${repo_owner}"/"${repo_name}"/pulls/"$1" \
+		-X PATCH -F state=closed >/dev/null 2>&1 ||
 		 {
 			 printerr "Failed to close $1" ;
 			 r=$((r+1))
