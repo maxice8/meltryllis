@@ -5,18 +5,15 @@ username() {
 }
 
 remote_url() {
-	remote_url="$(git config --get remote.upstream.url)"
-	
-	if [ -z "$remote_url" ]; then
-		remote_url="$(git config --get remote.origin.url)"
-	fi
-	
-	if [ -z "$remote_url" ]; then
-		echo "No usable remote found"
-		exit 1
+	if git config --get remote.upstream.url >/dev/null; then
+		git config --get remote.upstream.url
+		return 0
 	fi
 
-	echo "$remote_url"
+	if git config --get remote.origin.url >/dev/null; then
+		git config --get remote.origin.url
+		return 0
+	fi
 }
 
 repo_name() {
@@ -27,9 +24,25 @@ repo_owner() {
 	basename "$(dirname "$(remote_url)")"
 }
 
+origin_remote_url() {
+	git config --get remote.origin.url >/dev/null || return $?
+
+	git config --get remote.origin.url
+}
+
+origin_repo_name() {
+	basename "$(origin_remote_url)" | sed 's|.git$||g'
+}
+
+origin_repo_owner() {
+	basename "$(dirname "$(origin_remote_url)")"
+}
+
 case "$1" in
 	username) username ;;
-	repo_name) repo_name ;;
-	repo_owner) repo_owner ;;
+	repo-name) repo_name ;;
+	repo-owner) repo_owner ;;
+	origin-repo-name) origin_repo_name ;;
+	origin-repo-owner) origin_repo_owner ;;
 	*) exit 1 ;;
 esac
