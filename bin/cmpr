@@ -1,0 +1,16 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+# cmpr PR-NUM COMMENT[...] - Comments on an Issue by number
+repo_name="$(get-repo-config repo-name)"
+repo_owner="$(get-repo-config repo-owner)"
+
+[ $# -lt 2 ] && exit 1
+
+pr="$1" ; shift
+
+response="$(hub api repos/"${repo_owner}"/"${repo_name}"/issues/"$pr"/comments \
+	-f "body=$*" -X POST --flat)" ||
+	{
+		echo "$response" ; exit 1
+	} &&
+	echo "$response" | grep -E '^.url.*|^.body.*'
