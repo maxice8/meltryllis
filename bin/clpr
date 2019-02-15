@@ -11,8 +11,6 @@ repo_owner="$(get-repo-config repo_owner)"
 
 r=0
 
-cd "$(xdistdir)" || exit
-
 while [ $# -gt 0 ]
 do
 	case $1 in
