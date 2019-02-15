@@ -1,12 +1,11 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
 # mgpr PR-NUM - Merges a pull request by number
-#
-# It is required to have a netrc file with the following structure present
-# machine api.github.com
-# login USER
-# password PASSWORD
-user=$(git config --get user.name)
+
+user="$(get-repo-config username)"
+repo_name="$(get-repo-config repo-name)"
+repo_owner="$(get-repo-config repo-owner)"
+
 r=0
 
 cd "$(xdistdir)" || exit
@@ -18,30 +17,28 @@ do
 		*) ;;
 	esac
 
-	label="$(curl --silent \
-		  --request GET https://api.github.com/repos/void-linux/void-packages/pulls/"$1" |
-		  jq --raw-output .head.label)"
+	prinfo="$(hub api repos/"${repo_owner}"/"${repo_name}"/pulls/"$1" --flat)"
 
-	curl --netrc --fail --request PUT \
-		 --data '{"merge_method":"rebase"}' \
-		 https://api.github.com/repos/void-linux/void-packages/pulls/"$1"/merge \
-		 >/dev/null 2>&1 ||
+	label="$(echo "$prinfo" | awk '/.head.label/ { print $2 }')"
+	title="$(echo "$prinfo" | awk -P '/.title/ { for(i=2;i<=NF;i++) print $i}' | paste -sd ' ')"
+
+	response="$(hub api repos/"${repo_owner}"/"${repo_name}"/pulls/"$1"/merge \
+		 -X PUT -F merge_method=rebase --flat)" ||
 		 {
 			 printerr "Failed to merge $1" ;
 			 r=$((r+1))
-			 [ $r -gt 3 ] && exit $r
+			 [ $r -gt 1 ] && { echo "$response" | grep -o '^.message.*' ; exit $r ; }
 			 continue ;
 		 } &&
 		 {
-			printok "Merged Pull Request #$1" ;
-			r=0
+			 printok "Merged '$title' ($1)"
+			 r=0
 		 }
 	
 	shift
 
 
-	if [ "$(echo "$label" | cut -d : -f1)" = "$user" ]
-	then
+	if [ "$(echo "$label" | cut -d : -f1)" = "$user" ]; then
 		dlbr $(echo "$label" | cut -d : -f2)
 	fi
 
