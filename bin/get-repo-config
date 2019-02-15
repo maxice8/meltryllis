@@ -1,0 +1,35 @@
+#!/bin/sh
+
+username() {
+	git config --get user.name
+}
+
+remote_url() {
+	remote_url="$(git config --get remote.upstream.url)"
+	
+	if [ -z "$remote_url" ]; then
+		remote_url="$(git config --get remote.origin.url)"
+	fi
+	
+	if [ -z "$remote_url" ]; then
+		echo "No usable remote found"
+		exit 1
+	fi
+
+	echo "$remote_url"
+}
+
+repo_name() {
+	basename "$(remote_url)" | sed 's|.git$||g'
+}
+
+repo_owner() {
+	basename "$(dirname "$(remote_url)")"
+}
+
+case "$1" in
+	username) username ;;
+	repo_name) repo_name ;;
+	repo_owner) repo_owner ;;
+	*) exit 1 ;;
+esac
