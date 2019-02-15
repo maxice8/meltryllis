@@ -1,19 +1,18 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
 # dlbr BRANCH... - Delete local and remote branches matching name
-user=$(git config --get user.name)
-repo=$(basename "$(git config --get remote.origin.url)")
+user="$(get-repo-config origin-repo-owner)"
+repo="$(get-repo-config origin-repo-name)"
 
 delete_remote_branch() {
-	curl --netrc --fail --request DELETE \
-		 https://api.github.com/repos/"$user"/"$repo"/git/refs/heads/"$1" \
-		 >/dev/null 2>&1 ||
-		 { 
-			 [ $? = 22 ] || 
-				printerr "Failed to delete remote branch $1" ;
+	hub api repos/"$user"/"$repo"/git/refs/heads/"$1" \
+		-X DELETE >/dev/null 2>&1 ||
+		{ 
+			[ $? = 22 ] ||
+				printerr "Failed to delete remote '$1'" ;
 				return 
 		 } &&
-		 printok "Deleted remote branch $1"
+		 printok "Deleted remote '$1'"
 
 }
 
@@ -29,8 +28,8 @@ delete_local_branch() {
 	fi
 
 	git branch -D "$1" >/dev/null 2>&1 ||
-		{ printerr "Failed to delete local $1"; return ; } &&
-		printok "Deleted local branch $1"
+		{ printerr "Failed to delete local '$1'"; return ; } &&
+		printok "Deleted local '$1'"
 }
 
 while [ $# -gt 0 ]
