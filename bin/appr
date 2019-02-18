@@ -1,49 +1,44 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
 # appr PR-NUM - Approves a pull request by number
-#
-# It is required to have a netrc file with the following structure present
-# machine api.github.com
-# login USER
-# password PASSWORD
-user=$(git config --get user.name)
-r=0
-
-cd "$(xdistdir)" || exit
+repo_name="$(get-repo-config repo-name)"
+repo_owner="$(get-repo-config repo-owner)"
 
 comment=""
 
-while [ $# -gt 0 ]
-do
-	case $1 in
-		''|*[!0-9]*) comment="${comment} $1" ; shift ; continue;;
-		*) ;;
-	esac
-
-
-	data="{\"event\":\"APPROVE\""
-
-	if [ -n "$comment" ]; then
-		data="${data},\"body\":\"$comment\"}"
-		comment=""
+while [ $# -gt 0 ]; do
+	if [ "$1" = "-a" ] || [ "$1" = "--approve" ]; then
+		FIELD="event=APPROVE"
+		shift
+		continue
+	elif [ "$1" = "-r" ] || [ "$1" = "--request-changes" ]; then
+		FIELD="event=REQUEST_CHANGES"
+		needs_comment=1
+		shift
+		continue
 	else
-		data="${data}}"
+		args="$args $1"
 	fi
-
-	curl --netrc --fail --request POST \
-		 --data "$data" \
-		 https://api.github.com/repos/void-linux/void-packages/pulls/"$1"/reviews \
-		 >/dev/null 2>&1 ||
-		 {
-			 printerr "Failed to approve $1" ;
-			 r=$((r+1))
-			 [ $r -gt 3 ] && exit $r
-			 continue ;
-		 } &&
-		 {
-			printok "Approved Pull Request #$1" ;
-			r=0
-		 }
-	
 	shift
 done
+
+set -- $args
+
+pr="$1" ; shift
+comment="$*"
+
+if [ "$needs_comment" ] && [ -z "$comment" ]; then
+	echo "Needs comment for $pr.\n" >&2
+	exit 1
+fi
+
+if [ -z "$FIELD" ]; then
+	FIELD="event=APPROVE"
+fi
+
+response="$(hub api repos/"${repo_owner}"/"${repo_name}"/pulls/"$pr"/reviews \
+	-X POST -F $FIELD -f "body=${comment}" --flat)" ||
+	{
+		echo "$response" | grep -E '^.errors.*|^.message.*' ; exit 1
+	} &&
+	echo "$response" | grep -E '^.body.*|^.state.*'
