@@ -6,8 +6,8 @@
 # machine api.github.com
 # login USER
 # password PASSWORD
-repo_name="$(get-repo-config repo_name)"
-repo_owner="$(get-repo-config repo_owner)"
+repo_name="$(get-repo-config repo-name)"
+repo_owner="$(get-repo-config repo-owner)"
 
 r=0
 
