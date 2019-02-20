@@ -12,28 +12,35 @@ TREE
 .
 ├── bin
 ├── etc
-│  ├── X11
-│  ├── bspwm
-│  ├── dash
-│  ├── fish
-│  ├── git
-│  ├── gtk-3.0
-│  ├── gtk-4.0
-│  ├── mpd
-│  ├── mpv
-│  ├── neomutt
-│  ├── nvim
-│  ├── ranger
-│  ├── sx
-│  ├── sxhkd
-│  └── dunst
-└── usr
-    ├── videos
-    ├── walls
-    ├── screenshots
-    ├── backup
-    ├── Music
-    └── Images
+│   ├── alacritty
+│   ├── bspwm
+│   ├── dash
+│   ├── dunst
+│   ├── fish
+│   ├── git
+│   ├── gtk-3.0
+│   ├── gtk-4.0
+│   ├── mpd
+│   ├── mpv
+│   ├── neomutt
+│   ├── nvim
+│   ├── ranger
+│   ├── rofi
+│   ├── sx
+│   └── sxhkd
+├── src
+├── usr
+│   ├── Images
+│   ├── Music
+│   ├── backup
+│   ├── screenshots
+│   ├── videos
+│   └── walls
+└─── var
+    ├── cache
+    ├── log
+    ├── mail
+    └── share
 ```
 
 LICENSE
