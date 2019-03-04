@@ -205,6 +205,10 @@ while [ $# -gt 0 ]; do
 					  "Toyam Cox <Vaelatern@voidlinux.eu>" &
 		replace_field maintainer "Duncan Overbruck <mail@duncano.de>" \
 					  "Duncaen <duncaen@voidlinux.eu>" &
+		replace_field maintainer "Rasmus Thomsen <rasmus.thomsen@protonmail.com" \
+					  "Rasmus Thomsen <oss@cogitri.dev>" &
+		replace_field maintainer "Rasmus Thomsen <Rasmus.thomsen@protonmail.com" \
+					  "Rasmus Thomsen <oss@cogitri.dev>" &
 
 		replace_field license "Artistic, GPL-1" "Artistic-1.0-Perl, GPL-1.0-or-later" &
 		(
