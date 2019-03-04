@@ -34,3 +34,5 @@ fsckObjects = true
 	rebase = true
 [sendmail]
 	confirm = always
+[diff]
+	noprefix = true
