@@ -20,6 +20,10 @@ do
 	elif [ "$1" = "-e" ]
 	then
 		EDIT="--edit"
+	elif [ "$1" = "-m" ]
+	then
+		MSG="$2"
+		shift
 	else
 		args="$args $1"
 	fi
@@ -38,10 +42,10 @@ pr() {
 	git push -uf origin "$1" >/dev/null 2>&1
 	if [ "$(git rev-list --count upstream/master.."$1")" -gt 1 ]
 	then
-		msg="$(selectcommit "$1")"
-		hub pull-request -h "$1" -m "$msg" $EDIT $ASSIGN $REVIEW $LABEL
+		[ "$MSG" ] || MSG="$(selectcommit "$1")"
+		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL -m "$MSG"
 	else
-		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL
+		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL $MSG
 	fi
 }
 for arg in $args
