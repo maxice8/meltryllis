@@ -13,6 +13,8 @@ Plug 'plasticboy/vim-markdown'
 Plug 'igankevich/mesonic'
 Plug 'KeitaNakamura/neodark.vim'
 
+let b:is_bash = 1
+
 " Add Plugins
 "
 call plug#end()
@@ -75,6 +77,14 @@ let g:gitgutter_override_sign_column_highlight = 0
 
 " Remove folding
 let g:vim_markdown_folding_disabled = 1
+
+" If there's a `meson.build` file, use meson for linting.
+autocmd FileType c call ConsiderMesonForLinting()
+function ConsiderMesonForLinting()
+    if filereadable('meson.build')
+        let g:syntastic_c_checkers = ['meson']
+    endif
+endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
