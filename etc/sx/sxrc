@@ -3,8 +3,10 @@ xset +fp /usr/share/fonts/misc
 xset +fp ~/.fonts
 xset fp rehash
 xset r rate 300 50 &
-xrdb "${XDG_CONFIG_HOME}"/X11/xresources # Before the bars so they get correct colors.
+xset s off
+xset -dpms
 eval $(dbus-launch --sh-syntax --exit-with-x11) # Needs to be before starting wm and terminals
+start-pulseaudio-x11 &
 mpd &
 sxhkd &
 syncthing -no-browser &
@@ -15,7 +17,6 @@ autocutsel -selection PRIMARY -fork &
 xbanish &
 wm &
 rndw &
-start-pulseaudio-x11 &
 xidle -timeout 360 -program "$HOME/bin/lock -l" &
 sudo sh -c 'echo 300 > /sys/class/backlight/intel_backlight/brightness'
 export DISPLAY=:1 && exec xwait
