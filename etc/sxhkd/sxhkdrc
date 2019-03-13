@@ -36,7 +36,7 @@ super + o
 	maim -u -i $(xdotool getactivewindow) > ~/usr/screenshots/$(date +%T-%d)-focused.png
 
 super + shift + o
-	maim -u > ~/usr/screenshots/$(date +%T-%d).png
+	maim -m 2 -u > ~/usr/screenshots/$(date +%T-%d).png
 
 super + ctrl + o
 	maim -s -u > ~/usr/screenshots/$(date +%T-%d)-selected.png
