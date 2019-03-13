@@ -1,0 +1,9 @@
+#! /bin/sh
+bspc subscribe node_focus | while read -r _ _ _ wid; do
+	for win in $(bspc query -N -n .window.local); do
+		[ "$win" = "$wid" ] && continue
+		bspc config -n $win border_width 0 &
+	done
+	bspc config -n $wid border_width 1 &
+	wait
+done
