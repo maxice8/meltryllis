@@ -3,6 +3,5 @@
 # depends: neofetch, w3m with imlib2, with png support
 
 USER='maxice8' \
-HOSTNAME=VoidLinuxWithSystemd \
 SHELL=/usr/bin/fish \
 neofetch --crop_mode fit --loop --w3m "$@"
