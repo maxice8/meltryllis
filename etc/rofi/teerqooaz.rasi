@@ -81,3 +81,5 @@
     border-color: @dark;
 	enabled: false;
 }
+
+/* vim: ft=css
