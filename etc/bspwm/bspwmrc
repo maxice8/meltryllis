@@ -24,13 +24,6 @@ bspc rule -a Firefox:SessionManager desktop=^1 layer=above
 # Adopt orphans
 bspc wm -o
 
-for area in focus desktop date clock spacing mail memory battery volume music; do
-	pgrep "$area"-bar >/dev/null && pkill "$area"-bar
-	run-bar "$area" &
-done
-	
-for area in focus desktop date clock spacing mail memory battery volume music; do
-	# This needs to be in another loop because there is a race condition between
-	# the bar forking and this being able to find it
-	xdo above -t "$(xdo id -n root)" "$(xdo id -a "$area"-bar)"
-done
+pgrep -u "$(id -u)" -x polybar && pkill -u "$(id -u)" -x polybar
+
+polybar main --reload
