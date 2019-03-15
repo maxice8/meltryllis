@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+OPTION="$(volume ismuted && echo "UNMUTE" || echo "MUTE")"
+
+options="$OPTION
+10%
+20%
+30%
+40%
+50%
+60%
+70%
+80%
+90%
+100%"
+selection=$(/bin/echo -e "${options}" | rofi -dmenu -p -theme audio.rasi -location 5 -xoffset -220 -yoffset -50)
+
+amixer -q sset Master "${selection,,}"

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+## Created By Aditya Shakya
+
+MENU="$(rofi -sep "|" -dmenu -p -location 5 -yoffset -50 -xoffset -20 -width 15 -hide-scrollbar -line-padding 4 -padding 20 -lines 4 -font "Fantasque Sans Mono 10" <<< " Lock| Logout| Reboot| Shutdown")"
+            case "$MENU" in
+                *Lock) lock -l ;;
+                *Logout) bspc quit ;;
+                *Reboot) sudo reboot ;;
+                *Shutdown) sudo shutdown ;;
+            esac
+
