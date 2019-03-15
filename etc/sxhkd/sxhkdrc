@@ -5,16 +5,19 @@
 # EXEC {{{
 
 super + d
-	rofi -show drun -show-icons
+	rmenu_1
 
 super + shift + d
-	rofi -show run
+	rmenu_wi_1
 
 super + f
 	rofi -show windowcd
 
 super + shift + f
 	rofi -show window
+
+super + a
+	amenu_1
 
 super + Return
 	alacritty
