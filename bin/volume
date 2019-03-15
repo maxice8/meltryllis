@@ -15,14 +15,15 @@ level() {
 
 ismuted() {
 	if amixer get Master | grep -qw '\[on\]' ; then
-		echo "Unmuted"
+		return 1
 	else
-		echo "Muted"
+		return 0
 	fi
 }
 
 while [ $# -gt 0 ]; do
 	case "$1" in
+		ismuted) ismuted ; return $? ;;
 		toggle) amixer -q set Master toggle ; ismuted;;
 		raise) amixer -q set Master 5%+ ; level;;
 		lower) amixer -q set Master 5%- ; level;;
