@@ -75,8 +75,9 @@
 
 #inputbar {
     children: [entry];
-    border: 0 solid 0 solid 1 solid 0 solid;
+    border: 0 solid 0 solid 0 solid 0 solid;
     margin: 0;
     spacing: 0;
     border-color: @dark;
+	enabled: false;
 }
