@@ -1,0 +1,74 @@
+#!/bin/sh
+get_battery() {
+	_cap="$(cat /sys/class/power_supply/BAT0/capacity)"
+	[ "$_cap" -gt 100 ] && echo "100" || echo "$_cap"
+}
+
+ischarging() {
+	[ "$(acpi -a | cut -d : -f2)" = " on-line" ] && return 0 || return 1
+}
+
+count() {
+	_bat="$(get_battery)"
+	case "$_bat" in
+		100)
+			icon=""
+			;;
+		9[0-9])
+			icon=""
+			;;
+		8[0-9])
+			icon=""
+			;;
+		7[0-9])
+			icon=""
+			;;
+		6[0-9])
+			icon=""
+			;;
+		5[0-9])
+			icon=""
+			;;
+		4[0-9])
+			icon=""
+			;;
+		3[0-9])
+			icon=""
+			;;
+		2[0-9])
+			icon=""
+			;;
+		1[0-9])
+			icon=""
+			;;
+		[0-9])
+			icon=""
+			;;
+	esac
+	if ischarging; then
+		icon="$icon "
+	fi
+	echo "$icon $_bat%"
+}
+
+event() {
+	acpi_listen | grep --line-buffered ac_adapter |
+		while read -r _; do
+			count
+		done
+}
+
+# Start the vent daemon
+event &
+
+# If the user sends us USR1 update now.
+trap "count" USR1
+
+# Count the value of the battery, sleep 30 seconds in the background.
+# we do that to be able to catch signals like USR1 and act on in the
+# meantime.
+while true; do
+	count
+	sleep 30 &
+	wait
+done
