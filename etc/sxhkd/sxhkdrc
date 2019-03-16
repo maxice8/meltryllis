@@ -19,6 +19,9 @@ super + shift + f
 super + a
 	amenu_1
 
+super + h
+	polybar-msg cmd toggle
+
 super + Return
 	alacritty
 
