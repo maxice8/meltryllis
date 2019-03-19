@@ -1,0 +1,106 @@
+#!/bin/bash
+
+usage() {
+	cat <<EOF
+voidpkg [fpr] [PKG]
+
+-f : diff files
+-p : diff shlib-provides
+-r : diff shlib-requires
+-l : diff both shlib-provides and shlib-requires
+EOF
+}
+
+# Print message on stderr and exit
+err() {
+	printf "%s\\n" "$@" >&2
+	exit 1
+}
+
+# Split commas into spaces.
+split_props() {
+	echo "$1" | tr ',' ' '
+}
+
+printpkgprop() {
+	printf "pkg=%s prop=%s\\n" "$1" "$2"
+}
+
+colordiff() {
+	sed 's/^-/\x1b[31m-/;s/^+/\x1b[32m+/;s/$/\x1b[0m/'
+}
+
+# If nothing is given to us, quit.
+if [ -z "$1" ]; then
+	usage
+	exit 1
+fi
+
+if gitdir="$(git rev-parse --absolute-git-dir 2>/dev/null)"; then
+	cd "$(dirname "$gitdir")" || {
+		err "Failed to switch to $(dirname "$gitdir")" ;
+	}
+	branch="$(git rev-parse --abbrev-ref HEAD)"
+else
+	err "Not in git repository"
+fi
+
+arg="$1"
+shift
+
+if [ -z "$1" ]; then
+	pkg="$branch"
+else
+	pkg="$1"
+	shift
+fi
+
+if [ ! -d "hostdir/binpkgs/$branch" ]; then
+	err "No local packages on hostdir/binpkgs/$branch"
+fi
+
+case "$arg" in
+	-f)
+		for pkg in $(xsubpkg "$pkg"); do
+			r="$(void-files-diff "$branch" "$pkg")"
+
+			if [ -n "$r" ]; then
+				printpkgprop "$pkg" files
+				printf "%s\\n" "$r" | colordiff
+			else
+				printpkgprop "$pkg" files
+			fi
+		done
+		;;
+	-p)
+		for pkg in $(xsubpkg "$pkg"); do
+			r="$(void-property-diff "$branch" shlib-provides "$pkg")"
+
+			if [ -n "$r" ]; then
+				printpkgprop "$pkg" shlib-provides
+				printf "%s\\n" "$r" | colordiff
+			else
+				printpkgprop "$pkg" shlib-provides
+			fi
+		done
+		;;
+	-r)
+		for pkg in $(xsubpkg "$pkg"); do
+			r="$(void-property-diff "$branch" shlib-requires "$pkg")"
+
+			if [ -n "$r" ]; then
+				printpkgprop "$pkg" shlib-requires
+				printf "%s\\n" "$r" | colordiff
+			else
+				printpkgprop "$pkg" shlib-requires
+			fi
+		done
+		;;
+	-l)
+		for pkg in $(xsubpkg "$pkg"); do
+			"$0" -p "$pkg"
+			"$0" -r "$pkg"
+		done
+		;;
+	*) usage
+esac
