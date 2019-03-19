@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
-branch="$(git rev-parse --abbrev-ref HEAD)"
-[ -z "$1" ] && set -- "$branch"
+branch="${1:?'Need branch defined'}" ; shift
+pkg="${1:?'Need package defined'}" ; shift
 
-while [ $# -gt 0 ]; do
-	pkgs="$(xsubpkg "$1")"
-	for pkg in $pkgs ; do
-		printf ">>> %s\\n" "$pkg"
-		diff --color <(xbps-query -Rf "${pkg}" | sort) <(xbps-query --repository=hostdir/binpkgs/"$branch" -f "$pkg" | sort)
-	done
-	shift
-done
+diff --color --minimal \
+	--new-line-format="+%L" \
+	--old-line-format="-%L" \
+	--unchanged-line-format='' \
+	<(xbps-query -Rf "${pkg}" | sort) \
+	<(xbps-query --repository=hostdir/binpkgs/"$branch" -f "$pkg" | sort)
