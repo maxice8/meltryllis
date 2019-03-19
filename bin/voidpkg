@@ -2,12 +2,15 @@
 
 usage() {
 	cat <<EOF
-voidpkg [fpr] [PKG]
+voidpkg [fprldsg] [PKG] [ARGS...]
 
 -f : diff files
 -p : diff shlib-provides
 -r : diff shlib-requires
 -l : diff both shlib-provides and shlib-requires
+-d : diff deps
+-s : diff size
+-g : generate report for mainpackage and all subpackages
 EOF
 }
 
@@ -64,42 +67,144 @@ case "$arg" in
 		for pkg in $(xsubpkg "$pkg"); do
 			r="$(void-files-diff "$branch" "$pkg")"
 
-			if [ -n "$r" ]; then
-				printpkgprop "$pkg" files
-				printf "%s\\n" "$r" | colordiff
-			else
-				printpkgprop "$pkg" files
-			fi
+			[ -n "$r" ] && {
+				printpkgprop "$pkg" files ;
+				printf "%s\\n" "$r" | colordiff ;
+			}
+		done
+		;;
+	-d)
+		for pkg in $(xsubpkg "$pkg"); do
+			r="$(void-deps-diff "$branch" "$pkg")"
+
+			[ -n "$r" ] && {
+				printpkgprop "$pkg" deps ;
+				printf "%s\\n" "$r" | colordiff ;
+			}
+		done
+		;;
+	-s)
+		for pkg in $(xsubpkg "$pkg"); do
+			r="$(void-property-diff "$branch" installed_size "$pkg")"
+
+			[ -n "$r" ] && {
+				printpkgprop "$pkg" installed_size ;
+				printf "%s\\n" "$r" | colordiff ;
+			}
 		done
 		;;
 	-p)
 		for pkg in $(xsubpkg "$pkg"); do
 			r="$(void-property-diff "$branch" shlib-provides "$pkg")"
 
-			if [ -n "$r" ]; then
-				printpkgprop "$pkg" shlib-provides
-				printf "%s\\n" "$r" | colordiff
-			else
-				printpkgprop "$pkg" shlib-provides
-			fi
+			[ -n "$r" ] && {
+				printpkgprop "$pkg" shlib-provides ;
+				printf "%s\\n" "$r" | colordiff ;
+			}
 		done
 		;;
 	-r)
 		for pkg in $(xsubpkg "$pkg"); do
 			r="$(void-property-diff "$branch" shlib-requires "$pkg")"
 
-			if [ -n "$r" ]; then
-				printpkgprop "$pkg" shlib-requires
-				printf "%s\\n" "$r" | colordiff
-			else
-				printpkgprop "$pkg" shlib-requires
-			fi
+			[ -n "$r" ] && {
+				printpkgprop "$pkg" shlib-requires ;
+				printf "%s\\n" "$r" | colordiff ;
+			}
 		done
 		;;
 	-l)
-		for pkg in $(xsubpkg "$pkg"); do
-			"$0" -p "$pkg"
-			"$0" -r "$pkg"
+		"$0" -p "$pkg"
+		"$0" -r "$pkg"
+		;;
+	-g)
+		pdiff="$(void-property-diff "$branch" shlib-provdes "$pkg" &)"
+		rdiff="$(void-property-diff "$branch" shlib-requires "$pkg" &)"
+		sdiff="$(void-property-diff "$branch" installed_size "$pkg" &)"
+		fdiff="$(void-files-diff "$branch" "$pkg" &)"
+		ddiff="$(void-deps-diff "$branch" "$pkg" &)"
+
+		wait
+
+		printf "report for changes on '%s' (mainpackage)\\n" "$pkg"
+
+		if [ -n "$pdiff" ]; then
+			echo "shlib-provides="
+			printf "%s\\n" "$pdiff" | colordiff
+		fi
+
+		if [ -n "$pdiff" ]; then
+			echo "shlib-requires="
+			printf "%s\\n" "$rdiff" | colordiff
+		fi
+
+		if [ -n "$sdiff" ]; then
+			echo "size="
+			printf "%s\\n" "$sdiff" | colordiff
+		fi
+
+		if [ -n "$ddiff" ]; then
+			echo "depends="
+			printf "%s\\n" "$ddiff" | colordiff
+		fi
+
+		if [ -n "$fdiff" ]; then
+			echo "files="
+			printf "%s\\n" "$fdiff" | colordiff
+		fi
+
+		# Count number of subpackages (also includes mainpackage)
+		spkgc="$(xsubpkg "$pkg" | wc -l)"
+
+		# Just exit early
+		[ "$spkgc" -eq 1 ] && exit 0
+
+		c=2
+		echo ""
+
+		# Now do it for all subpackages
+		for spkg in $(xsubpkg "$pkg"); do
+			[ "$spkg" = "$(xsubpkg -m "$pkg")" ] && continue
+
+			fdiff="$(void-files-diff "$branch" "$spkg" &)"
+			pdiff="$(void-property-diff "$branch" shlib-provdes "$spkg" &)"
+			rdiff="$(void-property-diff "$branch" shlib-requires "$spkg" &)"
+			ddiff="$(void-deps-diff "$branch" "$spkg" &)"
+			sdiff="$(void-property-diff "$branch" installed_size "$spkg" &)"
+
+			wait
+
+			printf "report for changes on '%s' (subpackage)\\n" "$spkg"
+
+			if [ -n "$pdiff" ]; then
+				echo "shlib-provides="
+				printf "%s\\n" "$pdiff" | colordiff
+			fi
+
+			if [ -n "$pdiff" ]; then
+				echo "shlib-requires="
+				printf "%s\\n" "$rdiff" | colordiff
+			fi
+
+			if [ -n "$ddiff" ]; then
+				echo "depends="
+				printf "%s\\n" "$ddiff" | colordiff
+			fi
+
+			if [ -n "$fdiff" ]; then
+				echo "files="
+				printf "%s\\n" "$fdiff" | colordiff
+			fi
+
+			if [ -n "$sdiff" ]; then
+				echo "size="
+				printf "%s\\n" "$sdiff" | colordiff
+			fi
+
+			[ "$c" -lt "$spkgc" ] && echo ""
+
+			c=$((c + 1))
+			
 		done
 		;;
 	*) usage
