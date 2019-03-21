@@ -1,0 +1,13 @@
+#!/bin/sh
+rofi -modi windowcd \
+	 -show windowcd \
+	 -location 6 \
+	 -line-padding 4 \
+	 -yoffset -50 \
+	 -columns 1 \
+	 -theme focus.rasi \
+	 -window-format "{w} -> ({n}) {t}" \
+	 -lines 10 \
+	 -padding 25 \
+	 -hide-scrollbar \
+	 -font "Fantasque Sans Mono 10"
