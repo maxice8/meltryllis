@@ -126,7 +126,7 @@ case "$arg" in
 
 		wait
 
-		printf "report for changes on '%s' (mainpackage)\\n" "$pkg"
+		printf "changes on '%s' (mainpackage)\\n" "$pkg"
 
 		if [ -n "$pdiff" ]; then
 			echo "shlib-provides="
@@ -174,7 +174,7 @@ case "$arg" in
 
 			wait
 
-			printf "report for changes on '%s' (subpackage)\\n" "$spkg"
+			printf "changes on '%s' (subpackage)\\n" "$spkg"
 
 			if [ -n "$pdiff" ]; then
 				echo "shlib-provides="
