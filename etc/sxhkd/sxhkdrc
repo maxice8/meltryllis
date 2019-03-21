@@ -11,10 +11,10 @@ super + shift + d
 	rmenu_wi_1
 
 super + f
-	rofi -show windowcd
+	fmenu_2
 
 super + shift + f
-	rofi -show window
+	fmenu_1
 
 super + a
 	amenu_1
