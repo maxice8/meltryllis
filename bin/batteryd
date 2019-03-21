@@ -12,42 +12,83 @@ count() {
 	_bat="$(get_battery)"
 	case "$_bat" in
 		100)
-			icon=""
+			if ischarging; then
+				icon=""
+			else
+				icon=""
+			fi
 			;;
 		9[0-9])
-			icon=""
+			if ischarging; then
+				icon=""
+			else
+				icon=""
+			fi
 			;;
 		8[0-9])
-			icon=""
+			if ischarging; then
+				icon=""
+			else
+				icon=""
+			fi
 			;;
 		7[0-9])
-			icon=""
+			if ischarging; then
+				icon=""
+			else
+				icon=""
+			fi
 			;;
 		6[0-9])
-			icon=""
+			if ischarging; then
+				icon=""
+			else
+				icon=""
+			fi
 			;;
 		5[0-9])
-			icon=""
+			if ischarging; then
+				icon=""
+			else
+				icon=""
+			fi
 			;;
 		4[0-9])
-			icon=""
+			if ischarging; then
+				icon=""
+			else
+				icon=""
+			fi
 			;;
 		3[0-9])
-			icon=""
+			if ischarging; then
+				icon=""
+			else
+				icon=""
+			fi
 			;;
 		2[0-9])
-			icon=""
+			if ischarging; then
+				icon=""
+			else
+				icon=""
+			fi
 			;;
 		1[0-9])
-			icon=""
+			if ischarging; then
+				icon=""
+			else
+				icon=""
+			fi
 			;;
 		[0-9])
-			icon=""
+			if ischarging; then
+				icon=""
+			else
+				icon=""
+			fi
 			;;
 	esac
-	if ischarging; then
-		icon="$icon "
-	fi
 	echo "$icon $_bat%"
 }
 
