@@ -1,0 +1,323 @@
+[color]
+
+dark = #252525
+light = #e8e8ec
+accent = #02a2ac
+
+bground = #f7f7f7
+
+;; Material Colors
+;; Keep them even if they are not used, just mark them as UNUSED
+
+;; UNUSED
+red = #e53935
+
+;; UNUSED
+pink = #d81b60
+
+;; UNUSED
+purple = #8e24aa
+
+;; UNUSED
+deep-purple = #5e35b1
+
+;; USED
+indigo = #263172
+
+;; USED
+indigo-2 = #2c3985
+
+;; USED
+indigo-3 = #334198
+
+;; USED
+indigo-4 = #3949ab
+
+;; USED
+indigo-5 = #3f51be
+
+;; USED
+indigo-6 = #5262c5
+
+;; UNUSED
+blue = #1e88e5
+
+;; UNUSED
+light-blue = #039be5
+
+;; UNUSED
+cyan = #00acc1
+
+;; UNUSED
+teal = #00897b
+
+;; UNUSED
+green = #43a047
+
+;; UNUSED
+light-green = #7cb342
+
+;; UNUSED
+lime = #c0ca33
+
+;; UNUSED
+yellow = #fdd835
+
+;; UNUSED
+amber = #ffb300
+
+;; UNUSED
+orange = #fb8c00
+
+;; UNUSED
+deep-orange = #f4511e
+
+;; UNUSED
+brown = #6d4c41
+
+;; USED
+grey = #757575
+
+;; UNUSED
+blue-gray = #546e7a
+
+[bar/main]
+
+monitor =
+monitor-fallback =
+monitor-strict = false
+override-redirect = false
+
+bottom = true
+fixed-center = true
+
+width = 100%
+height = 24
+offset-x = 0%
+offset-y = 0.5%
+
+background = ${color.dark}
+foreground = ${color.light}
+
+radius-top = 0.0
+radius-bottom = 0.0
+
+overline-size = 2
+overline-color = ${color.accent}
+
+padding = 0
+module-margin-left = 0
+module-margin-right = 0
+
+;; NOTE: fonts are indexed by 1 when used so font-0 is 1
+font-0 = "Fantasque Sans Mono:pixelsize=12;2"
+font-1 = "Iosevka Nerd Font:pixelsize=13;3"
+
+font-2 = "Siji:size=12;2"
+font-3 = "Material Icons:size=13;4"
+
+modules-left = launcher workspaces
+modules-center = title
+modules-right = mail pulseaudio battery network date powermenu
+
+separator =
+spacing = 0
+dim-value = 1.0
+wm-name = 
+locale = 
+
+tray-position = none
+tray-detached = false
+tray-maxsize = 16
+tray-transparent = false
+tray-background = ${color.bground}
+tray-offset-x = 0
+tray-offset-y = 0
+tray-padding = 0
+tray-scale = 1.0
+
+enable-ipc = true
+
+[settings]
+
+throttle-output = 5
+throttle-output-for = 10
+throttle-input-for = 30
+
+screenchange-reload = false
+
+compositing-background = source
+compositing-foreground = over
+compositing-overline = over
+compositing-underline = over
+compositing-border = over
+
+pseudo-transparency = false
+
+;; Shows text that can be clicked
+;; Left-click opens rofi menu with programs with .desktop files
+;; Right-click opens rofi menu with all programs
+[module/launcher]
+type = custom/text
+content = 
+
+content-background = ${color.indigo}
+content-foreground = ${color.light}
+content-padding = 2
+
+click-left = rmenu_1
+click-right = rmenu_wi_1
+
+;; Shows workspaces as small circles
+;; Bright grey circle is current workspace
+;; Dark grey circle is workspace with open windows
+;; Empty circle is workspace with nothing open
+[module/workspaces]
+type = internal/bspwm
+
+pin-workspaces = true
+enable-click = true
+enable-scroll = true
+
+label-focused = 
+label-focused-font = 3
+label-focused-foreground = ${color.light}
+label-focused-background = ${color.dark}
+
+label-occupied = 
+label-occupied-font = 3
+label-occupied-foreground = ${color.grey}
+label-occupied-background = ${color.dark}
+
+label-urgent = 
+label-urgent-font = 3
+label-urgent-foreground = #000000
+label-urgent-background = #bd2c40
+label-urgent-underline = #9b02a20
+
+label-empty = 
+label-empty-font = 3
+label-empty-foreground = #555555
+label-empty-background = ${color.dark}
+
+format = <label-state>
+format-background = ${color.dark}
+
+label-monitor = %name%
+
+label-focused-padding = 1
+label-urgent-padding = 1
+label-occupied-padding = 1
+label-empty-padding = 1
+
+;; Keep the name of the focused window
+;; Left-click opens a rofi menu with windows of current workspace
+;; Right-click opens a rofi menuw with windows of all workspaces
+[module/title]
+type = internal/xwindow
+
+format = %{A2:fmenu_1:} %{A1:fmenu_2:} <label> %{A} %{A}
+format-background = ${color.dark}
+format-foreground = ${color.light}
+format-padding = 1
+
+label = %title%
+label-maxlen = 50
+
+;; Runs a script that outputs the number of emails in $MAIL
+;; It uses inotifywait (Linux only) to follow $MAIL/new and reload
+;; whenever it changes
+;; Left-click changes between counting all mails in $MAIL/new to counting
+;; mails in $MAIL/new and $MAIL/cur (read mails)
+;: Right-click spawns an alacritty instance with neomutt open
+[module/mail]
+type = custom/script
+exec = maild
+format-background = ${color.indigo-6}
+format-padding = 1
+tail = true
+
+click-left = "kill -USR1 $(pgrep --oldest --parent %pid%)"
+click-right = "kill -USR2 $(pgrep --oldest --parent %pid%)"
+
+;; Keeps track of state of audio (muted or not) and the current volume
+;; Right-click spawns a menu that lets you choose volume from MUTE to 100%
+;; in steps of 10%
+[module/pulseaudio]
+type = internal/pulseaudio
+
+format-volume-background = ${color.indigo-5}
+format-volume = %{A1:amenu_1:}<ramp-volume> <label-volume>%{A}
+label-volume = %percentage%%
+format-muted = "%{A1:amenu_1:} MUTE%{A}"
+format-muted-background = "${color.indigo-5}"
+format-volume-padding = 1
+format-muted-padding = 1
+
+ramp-volume-0 =
+ramp-volume-1 =
+ramp-volume-2 =
+ramp-volume-3 =
+ramp-volume-4 =
+ramp-volume-5 =
+ramp-volume-6 =
+
+;; Spawns a script that keeps track of the battery levels by counting it
+;; every 30 seconds or when an AC Adapter is plugged or unplugged.
+;; Right-click tells the script to check battery levels again.
+[module/battery]
+type = custom/script
+exec = batteryd
+tail = true
+
+click-left = "kill -USR1 $(pgrep --oldest --parent %pid%)"
+
+format-background = ${color.indigo-4}
+format-foreground = ${color.light}
+format-padding = 1
+
+;; Spawns a script that outputs time in 2 timezones, reloading every 60
+;; seconds.
+;; Right-click prompts the script to change between showing time or current
+;; date
+[module/date]
+type = custom/script
+exec = clockd
+tail = true
+
+click-left = "kill -USR1 $(pgrep --oldest --parent %pid%)"
+
+format-background = ${color.indigo-2}
+format-foreground = ${color.light}
+format-padding = 1
+
+;; When pressed opens a rofi menu with options to lock the screen ('lock -l'),
+;; logout ('bspc quit'), reboot ('sudo reboot') or shutdown ('sudo shutdown').
+[module/powermenu]
+type = custom/text
+content = 
+content-padding = 1
+content-background = ${color.indigo}
+content-foreground = ${color.light}
+click-left = pmenu_1
+click-right = pmenu_1
+
+;; Spawns a script that keeps track of the network, the scripts checks
+;; sequentially this amount of functionality:
+;; 1. If wlan is blocked
+;; 2. If default gateway can be reached by 'wget -q --spider'
+;; 3. If fedora connectivity can be reached by 'wget -q --spider'
+;; Failure in any step prompts for trying again in 10 seconds, success
+;; the whole way prompts for waiting in 30 seconds.
+;; Left-click prompts the script to check again.
+[module/network]
+type = custom/script
+exec = check-network
+label-font = 4
+format-font = 4
+format-background = ${color.indigo-3}
+format-padding = 1
+tail = true
+click-left = "kill -USR1 $(pgrep --oldest --parent %pid%)"
+
+# vim: ft=dosini
