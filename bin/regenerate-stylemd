@@ -1,5 +1,0 @@
-#!/bin/sh
-mandoc -Tmarkdown srcpkgs/base-files/files/style.7 > STYLE.md
-
-git add STYLE.md
-git commit --amend --no-edit
