@@ -99,7 +99,7 @@ event() {
 		done
 }
 
-# Start the vent daemon
+# Start the event daemon
 event &
 
 # If the user sends us USR1 update now.
@@ -109,7 +109,11 @@ trap "count" USR1
 # we do that to be able to catch signals like USR1 and act on in the
 # meantime.
 while true; do
-	count
-	sleep 30 &
-	wait
+	# Run this inside the subshell so the 'wait' command will wait
+	# only for the sleep not for the 'event' function as well
+	(
+		count
+		sleep 30 &
+		wait
+	)
 done
