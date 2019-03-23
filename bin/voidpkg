@@ -118,7 +118,7 @@ case "$arg" in
 		"$0" -r "$pkg"
 		;;
 	-g)
-		pdiff="$(void-property-diff "$branch" shlib-provdes "$pkg" &)"
+		pdiff="$(void-property-diff "$branch" shlib-provides "$pkg" &)"
 		rdiff="$(void-property-diff "$branch" shlib-requires "$pkg" &)"
 		sdiff="$(void-property-diff "$branch" installed_size "$pkg" &)"
 		fdiff="$(void-files-diff "$branch" "$pkg" &)"
@@ -133,7 +133,7 @@ case "$arg" in
 			printf "%s\\n" "$pdiff" | colordiff
 		fi
 
-		if [ -n "$pdiff" ]; then
+		if [ -n "$rdiff" ]; then
 			echo "shlib-requires="
 			printf "%s\\n" "$rdiff" | colordiff
 		fi
