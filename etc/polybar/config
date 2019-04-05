@@ -90,6 +90,7 @@ override-redirect = false
 
 bottom = true
 fixed-center = true
+wm-restack = bspwm
 
 width = 100%
 height = 24
@@ -223,6 +224,8 @@ format-padding = 1
 
 label = %title%
 label-maxlen = 50
+
+label-empty = Void Linux
 
 ;; Runs a script that outputs the number of emails in $MAIL
 ;; It uses inotifywait (Linux only) to follow $MAIL/new and reload
