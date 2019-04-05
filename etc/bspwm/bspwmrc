@@ -18,6 +18,7 @@ bspc rule -a "*" state=floating
 
 bspc rule -a Firefox:Navigator desktop=^1 rectangle=1376x733+-1+-1 follow=on
 bspc rule -a TelegramDesktop:Telegram desktop=^2 rectangle=1376x733+-1+-1 follow=on
+bspc rule -a '*:mpv' desktop=^4 rectangle=1376x733+-1+-1 follow=on
 
 bspc rule -a Firefox:SessionManager desktop=^1 layer=above
 
