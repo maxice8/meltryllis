@@ -1,7 +1,7 @@
 #
 # Set path
 #
-PATH="$HOME"/bin:"$HOME"/.local/bin:"$PATH"
+PATH="$HOME"/.cargo/bin:"$HOME"/bin:"$HOME"/.local/bin:"$PATH"
 
 export PATH
 #
@@ -73,6 +73,10 @@ BSPWM_SOCKET=/tmp/bspwm_socket
 BSPWM_STATE="${XDG_RUNTIME_DIR:-'/tmp'}"/bspwm-state-"$(id -u)".json
 
 export BSPWM_SOCKET BSPWM_STATE
+#
+# If snooze-getmail is not running, start it
+#
+pgrep -u "$(id -u)" -x snooze-getmail || fork snooze-getmail
 #
 # if we log in on VT1 and there is no text in the kernel cmdline start sx
 #
