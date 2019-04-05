@@ -102,11 +102,9 @@ super + x
 	if [ -z "$(bspc query -N -n focused.floating)" ]; then \
 		bspc node focused -g private=off; \
 		bspc node focused -t floating; \
-		polybar-msg cmd show; \
 	else \
 		bspc node focused -g private=on; \
 		bspc node focused -t fullscreen; \
-		polybar-msg cmd hide; \
 	fi
 
 # move a floating window
