@@ -6,7 +6,7 @@ rofi -modi windowcd \
 	 -yoffset -50 \
 	 -columns 1 \
 	 -theme focus.rasi \
-	 -window-format "{w} -> ({n}) {t}" \
+	 -window-format "{w} -> {c} | {t}" \
 	 -lines 10 \
 	 -padding 25 \
 	 -hide-scrollbar \
