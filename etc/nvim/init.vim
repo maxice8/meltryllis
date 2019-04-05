@@ -12,6 +12,33 @@ Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'igankevich/mesonic'
 Plug 'KeitaNakamura/neodark.vim'
+Plug 'rust-lang/rust.vim'
+
+" Rust completion
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
+
+" (Optional) Multi-entry selection UI.
+Plug 'junegunn/fzf'
+
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+
+" Required for operations modifying multiple buffers like rename.
+set hidden
+
+let g:LanguageClient_serverCommands = {
+    \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
+    \ }
+
+nnoremap <C-m> :call LanguageClient_contextMenu()<CR>
+
+let g:ale_rust_cargo_include_features = 'clippy'
+let b:rust_cargo_use_clippy = 1
+
+let g:ale_rust_rls_toolchain = 'stable'
+let g:rustfmt_autosave = 1
 
 let b:is_bash = 1
 
