@@ -25,8 +25,8 @@
     background-color: @dark;
     border-color: @dark;
     border: 30;
-    width: 10%;
-    height: 460px;
+    width: 8%;
+    height: 420px;
     border-radius: 0px;
 }
 
