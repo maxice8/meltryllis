@@ -5,8 +5,6 @@ macro index <f2> '<sync-mailbox><enter-command>source ~/etc/neomutt/thinkabit<en
 macro index <f3> '<sync-mailbox><enter-command>source ~/etc/neomutt/ahri<enter>' "Switches to Ahri"
 macro index <f4> '<sync-mailbox><enter-command>source ~/etc/neomutt/miller<enter>' "Switches to Miller"
 
-macro pager \cb <pipe-entry>'chromium $(xurls | sort -u | fzy)'<enter> 'Follow links with xurls'
-
 set editor="nvim -c 'set syntax=mail ft=mail enc=utf-8'"
 set use_from=yes
 set sidebar_visible = no
