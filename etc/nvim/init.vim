@@ -13,6 +13,7 @@ Plug 'plasticboy/vim-markdown'
 Plug 'igankevich/mesonic'
 Plug 'KeitaNakamura/neodark.vim'
 Plug 'rust-lang/rust.vim'
+Plug 'vimwiki/vimwiki'
 
 " Rust completion
 Plug 'autozimu/LanguageClient-neovim', {
@@ -185,9 +186,6 @@ hi SpellBad ctermfg=015 ctermbg=160 guifg=#ffffff guibg=#d70000
 hi SpellCap ctermfg=015 ctermbg=160 guifg=#ffffff guibg=#d70000
 highlight link SyntasticError SpellBad
 highlight link SyntasticWarning SpellCap
-
-" Fast saving
-nmap <leader>w :w!<cr>
 
 " Fast quitting
 nmap <leader>q :wq<cr>
