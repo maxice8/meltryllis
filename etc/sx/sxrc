@@ -17,6 +17,8 @@ autocutsel -selection PRIMARY -fork &
 xbanish &
 bspwm &
 borderd &
+dunst &
+mpd-notification &
 rndw &
 xidle -timeout 360 -program "$HOME/bin/lock -l" &
 sudo sh -c 'echo 300 > /sys/class/backlight/intel_backlight/brightness'
