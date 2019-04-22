@@ -5,22 +5,17 @@ xset fp rehash
 xset r rate 300 50 &
 xset s off
 xset -dpms
-eval $(dbus-launch --sh-syntax --exit-with-x11) # Needs to be before starting wm and terminals
-start-pulseaudio-x11 &
+eval $(dbus-launch --sh-syntax --exit-with-session) # Needs to be before starting wm and terminals
 mpd &
 sxhkd &
 syncthing -no-browser &
-volume-output | xob &
-gpgconf --launch gpg-agent &
 autocutsel -fork &
 autocutsel -selection PRIMARY -fork &
 xbanish &
 bspwm &
 borderd &
-dunst &
-mpd-notification &
-rndw &
-xidle -timeout 360 -program "$HOME/bin/lock -l" &
+# rndw &
+# xidle -timeout 360 -program "$HOME/bin/lock -l" &
 sudo sh -c 'echo 300 > /sys/class/backlight/intel_backlight/brightness'
 export DISPLAY=:1 && exec xwait
 
