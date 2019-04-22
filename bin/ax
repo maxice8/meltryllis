@@ -1,0 +1,53 @@
+#!/bin/sh
+usage() {
+	printf "usage: %s <-oebrxndlusah> [args]\\n" "$(basename "$0")"
+}
+
+help() {
+usage
+	cat <<EOF
+
+u : unpack
+e : edit APKBUILD
+b : build the package
+t : build the package and install
+x : get checksum of package
+n : navigate directory
+s : push to remote git
+a : amend commit
+h : show this message
+EOF
+}
+
+run() {
+	cd "$branch"
+	$@
+	cd -
+}
+
+tmpsh() {
+	cd "$1"
+	sh -l
+}
+
+cmd="$1"
+if [ -z "$2" ]; then
+	branch="$(git rev-parse --abbrev-ref HEAD)"
+else
+	branch="$2"
+	shift
+fi
+shift
+
+case "$cmd" in
+	u) run abuild unpack && tmpsh "$branch"/src;;
+	e) e "$branch"/APKBUILD;;
+	b) run abuild -r;;
+	t) run abuild -ri;;
+	n) tmpsh "$branch"/src;;
+	x) run abuild checksum;;
+	s) git push -uf origin "$branch" "$@";;
+	a) git commit --amend -v "$@";;
+	h) help;;
+	*) usage;;
+esac
