@@ -2,4 +2,4 @@
 [ "$1" ] || exit 1
 
 ln -sf "$1" "${HOME}/.wall"
-hsetroot -fill "$( readlink -f -- "$1" )"
+bgs "$( readlink -f -- "$1" )"
