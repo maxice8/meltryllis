@@ -4,8 +4,9 @@
 # Adapted from xlint from Void Linux's xtools to Alpine Linux
 # https://github.com/leahneukirchen/xtools/
 #
-# Requires GNU Grep for -P, apk add grep
-# SPDX license checking is done if spdx-licenses-list is installed
+# Required packages (names are Alpine Linux pkgs):
+# busybox - for sed, tr, sort, head and other simple utiltiies
+# grep - for grep with -P
 
 export LC_ALL=C
 
@@ -67,13 +68,6 @@ for apkbuild; do
 	scan '^  ' "indent with tabs" | once
 	scan '[\t ]$' "trailing whitespace"
 	scan '[^\\]`' "use \$() instead of backticks"
-	if [ -f /usr/share/spdx/license.lst ]; then
-		sed -n 's/license="\(.*\)"/\1/p' "$apkbuild" | tr , "\n" | while read -r l; do
-			if ! grep -q "^${l}$" /usr/share/spdx/license.lst; then
-				scan "license=.*$l" "license '$l' is not SPDX"
-			fi
-		done
-	fi
 	else
 	echo no such apkbuild "$apkbuild" 1>&2
 	fi | sort -t: -n -k2 | grep . && ret=1
