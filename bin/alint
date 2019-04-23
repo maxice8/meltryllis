@@ -1,6 +1,9 @@
 #!/bin/sh
 # alint APKBUILD - scan APKBUILD template for common mistakes
 #
+# Adapted from xlint from Void Linux's xtools to Alpine Linux
+# https://github.com/leahneukirchen/xtools/
+#
 # Requires GNU Grep for -P, apk add grep
 # SPDX license checking is done if spdx-licenses-list is installed
 
