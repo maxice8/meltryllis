@@ -14,8 +14,8 @@ autocutsel -selection PRIMARY -fork &
 xbanish &
 bspwm &
 borderd &
-# rndw &
-# xidle -timeout 360 -program "$HOME/bin/lock -l" &
+rndw &
+xidle -timeout 360 -program "$HOME/bin/lock -l" &
 sudo sh -c 'echo 300 > /sys/class/backlight/intel_backlight/brightness'
 export DISPLAY=:1 && exec xwait
 
