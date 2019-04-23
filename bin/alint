@@ -20,7 +20,9 @@ once() {
 	head -n 1
 }
 
-variables=$(echo -n "startdir
+variables=$(echo -n "#.*
+_.*
+startdir
 srcdir
 pkgdir
 subpkgdir
@@ -62,12 +64,16 @@ url" | tr '\n' '|')
 ret=0
 for apkbuild; do
 	if [ -f "$apkbuild" ]; then
-	scan '^[^ =]*=(""|''|)$' "variable set to empty string: \2"
-	scan '^(?!\s*('"$variables"'))[^\s=-]+=' \
+	scan '^[^ =]*=(|''|)$' "variable set to empty string: \2"
+	scan '^(?!\s*^('"$variables"'))[^\s=-]+=' \
 		 "prefix custom variable with _: \2"
 	scan '^  ' "indent with tabs" | once
 	scan '[\t ]$' "trailing whitespace"
 	scan '[^\\]`' "use \$() instead of backticks"
+	scan '^\t*function\b' 'do not use the function keyword'
+	scan '^\t*[^ ]*  *\(\)' 'do not use space before function parenthesis'
+	scan '^\t*[^ ]*\(\)(|   *){' 'use one space after function parenthesis'
+	scan '^\t*[^ ]*\(\)$' 'do not use a newline before function opening brace'
 	else
 	echo no such apkbuild "$apkbuild" 1>&2
 	fi | sort -t: -n -k2 | grep . && ret=1
