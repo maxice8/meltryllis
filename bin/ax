@@ -42,8 +42,8 @@ shift
 case "$cmd" in
 	u) run abuild unpack && tmpsh "$branch"/src;;
 	e) e "$branch"/APKBUILD;;
-	b) run abuild -r;;
-	t) run abuild -ri;;
+	b) run abuild rootbld -r;;
+	t) run abuild rootbld -ri;;
 	n) f "$branch";;
 	x) run abuild checksum;;
 	s) git push -uf origin "$branch" "$@";;
