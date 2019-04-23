@@ -4,6 +4,3 @@
 [submodule "pomfclip"]
 	path = pomfclip
 	url = https://github.com/ScoreUnder/pomfclip
-[submodule "xtools-devel"]
-	path = xtools-devel
-	url = https://gitlab.com/maxice8/xtools-devel
