@@ -74,14 +74,17 @@ for apkbuild; do
 	scan '^\t*[^ ]*  *\(\)' 'do not use space before function parenthesis'
 	scan '^\t*[^ ]*\(\)(|   *){' 'use one space after function parenthesis'
 	scan '^\t*[^ ]*\(\)$' 'do not use a newline before function opening brace'
+	# Don't perform these checks on packages from main
+	if ! [ -z "${apkbuild##*main/*}" ]; then
 	for phase in build check package; do
-		sed -n "/^$phase() {/,/^}/{p;=}" "$apkbuild" | grep -m 1 -B 1 'cd "$builddir"' | head -1 | while read -r l; do
+		sed -n "/^$phase() {/,/^}/{p;=}" "$apkbuild" | grep -m 1 -B 1 'cd "$builddir"$' | head -1 | while read -r l; do
 			if [ -z "$l" ]; then
 				continue
 			fi
 			printf "$apkbuild:$l: cd \"\$builddir\" can be removed\n"
 		done
 	done
+	fi
 	else
 	echo no such apkbuild "$apkbuild" 1>&2
 	fi | sort -t: -n -k2 | grep . && ret=1
