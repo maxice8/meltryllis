@@ -40,10 +40,11 @@ fi
 shift
 
 case "$cmd" in
-	u) run abuild unpack && tmpsh "$branch"/src;;
+	u) run abuild unpack && exec "$0" n "$@";;
 	e) e "$branch"/APKBUILD;;
 	b) run abuild rootbld;;
 	t) run abuild rootbld;;
+	tf) run abuild -f rootbld;;
 	n) f "$branch";;
 	x) run abuild checksum;;
 	s) git push -uf origin "$branch" "$@";;
