@@ -27,13 +27,11 @@ run() {
 	cd -
 }
 
-find_repo() {
+isclean() {
+	git diff --quiet --cached --exit-code
+}
 
-	# Check if the variable provided to us is just the name of
-	# a repository, and return 1
-	case "$1" in
-		main|community|testing|unmaintained) return 1;;
-	esac
+find_repo() {
 
 	# Check if the branch name is already a fully working path
 	# 
@@ -72,13 +70,16 @@ edit_apkbuild() {
 		e APKBUILD
 		return 0
 	fi
-	printf "Couldn't find APKBUILD for '%s' to edit\n" "$branch"
+	printf "Couldn't find APKBUILD for '%s' to edit\n" "$pkgname"
 	return 1
 }
 
 move_repo() {
 	from="$branch"
 	to="$1"
+
+	pkgname="$(echo "$from" | cut -d / -f 2)"
+	repo="$(echo "$from" | cut -d / -f 1)"
 
 	# Check if the package doesn't exist and error out
 	if [ ! -d "$from" ]; then
@@ -88,9 +89,14 @@ move_repo() {
 	# mv if any of the repos given to us is one of the ones we accept
 	# exit otherwise with an error message
 	case "$to" in
-		main|community|testing|unmaintained) mv "$from" "$to" ;;
-		*) printf "repo '%s' does not exist\n" "$to" ;;
+		main|community|testing|unmaintained) mv -f "$from" "$to" ;;
+		*) printf "repo '%s' does not exist\n" "$to" ; return 1 ;;
 	esac
+
+	if isclean; then
+		git add "$from" "$to"/"$pkgname"
+		git commit -m "${to}/${pkgname}: move from $repo to $to"
+	fi
 }
 
 rename_repo() {
@@ -98,7 +104,8 @@ rename_repo() {
 	to="$1"
 
 	# Get repo from the branch
-	repo="$(echo "$branch" | cut -d / -f1)"
+	repo="$(echo "$from" | cut -d / -f1)"
+	pkgname="$(echo "$from" | cut -d / -f2)"
 
 	# Check if the package doesn't exist and error out
 	if [ ! -d "$from" ]; then
@@ -119,31 +126,40 @@ rename_repo() {
 	fi
 
 	if [ "$realrepo" ]; then
-		printf "package '%s' already exists in repo '%s'" "$to" "$realrepo"
+		printf "package '%s' already exists in repo '%s'\n" "$to" "$realrepo"
 		return 1
 	fi
 
-	mv "$from" "$repo"/"$to"
+	mv -f "$from" "$repo"/"$to"
+
+	# Check if there is nothing cached and try to commit it
+	if isclean; then
+		git add "$from" "$repo"/"$to"
+		git commit -m "${repo}/${to}: rename from $pkgname"
+	fi
 }
 
 cmd="$1"
+_branch="$(git rev-parse --abbrev-ref HEAD)"
 if [ -z "$2" ]; then
-	branch="$(git rev-parse --abbrev-ref HEAD)"
-	branch="$(find_repo "$branch")"
+	branch="$(find_repo "$_branch")"
 else
-	# Try to find the repo with the argument given, and if successful then
-	# shift the arguments by one, otherwise repeat the procedure above
-	# This is for when 'ax m <repo>' is used
-	branch="$(find_repo "$2" && shift || find_repo "$(git rev-parse --abbrev-ref HEAD)")"
+	# Check if the variable provided to us is just the name of
+	# a repository. Otherwise try to find the repo given to use
+	case "$2" in
+		main|community|testing|unmaintained) 
+			branch="$(find_repo "$_branch")";;
+		*) branch="$(find_repo "$2" && shift || find_repo "$_branch")" ;;
+	esac
 fi
 shift
 
 case "$cmd" in
 	u) run abuild unpack && exec "$0" n "$branch";;
 	e) edit_apkbuild "$branch";;
-	b) run abuild rootbld;;
-	t) run abuild rootbld;;
-	tf) run abuild -f rootbld;;
+	b) run abuild -r;;
+	t) run abuild -r;;
+	tf) run abuild -f -r;;
 	n) f "$branch";;
 	x) run abuild checksum;;
 	s) git push -uf origin "$(git rev-parse --abbrev-ref HEAD)" "$@";;
