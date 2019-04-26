@@ -25,29 +25,55 @@ run() {
 	cd -
 }
 
-tmpsh() {
-	cd "$1"
-	sh -l
+find_repo() {
+	# Check if the branch name is already a fully working path
+	if [ -d "$1" ]; then
+		echo "$1"
+		return 0
+	elif [ -d main/"$1" ]; then
+		echo main/"$1"
+		return 0
+	elif [ -d community/"$1" ]; then
+		echo community/"$1"
+		return 0
+	elif [ -d testing/"$1" ]; then
+		echo testing/"$1"
+		return 0
+	fi
+
+	return 1
+}
+
+find_apkbuild() {
+	if [ -f "$branch"/APKBUILD ]; then
+		echo "$branch"/APKBUILD
+		return 0
+	elif [ -f APKBUILD ]; then
+		echo APKBUILD
+		return 0
+	fi
+	return 1
 }
 
 cmd="$1"
 if [ -z "$2" ]; then
 	branch="$(git rev-parse --abbrev-ref HEAD)"
+	branch="$(find_repo "$branch")"
 else
-	branch="$2"
+	branch="$(find_repo "$2")"
 	shift
 fi
 shift
 
 case "$cmd" in
-	u) run abuild unpack && exec "$0" n "$@";;
-	e) e "$branch"/APKBUILD;;
+	u) run abuild unpack && exec "$0" n "$branch";;
+	e) e "$(find_apkbuild "$branch")";;
 	b) run abuild rootbld;;
 	t) run abuild rootbld;;
 	tf) run abuild -f rootbld;;
 	n) f "$branch";;
 	x) run abuild checksum;;
-	s) git push -uf origin "$branch" "$@";;
+	s) git push -uf origin "$(git rev-parse --abbrev-ref HEAD)" "$@";;
 	a) git commit --amend -v "$@";;
 	h) help;;
 	*) usage;;
