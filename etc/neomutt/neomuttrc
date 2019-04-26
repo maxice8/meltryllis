@@ -17,7 +17,7 @@ set spoolfile=~/var/mail
 set record=+sent
 set mbox=+mbox
 
-set sendmail="/usr/bin/sendmail"
+set sendmail="/usr/sbin/sendmail"
 set mailcap_path="~/etc/neomutt/mailcap"
 auto_view text/html
 alternative_order text/plain text/enriched text/html     # save html for last
