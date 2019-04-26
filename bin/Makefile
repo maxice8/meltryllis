@@ -1,4 +1,4 @@
-LN := ln -rsfv
+LN := ln -sfv
 MKDIR := mkdir -pv
 
 BINDIR = $(HOME)/bin

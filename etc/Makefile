@@ -1,4 +1,4 @@
-LN := ln -rsfv
+LN := ln -sfv
 MKDIR := mkdir -pv
 
 ETCDIR = $(XDG_CONFIG_HOME)
