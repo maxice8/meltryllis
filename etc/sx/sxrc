@@ -6,7 +6,6 @@ xset r rate 300 50 &
 xset s off
 xset -dpms
 eval $(dbus-launch --sh-syntax --exit-with-session) # Needs to be before starting wm and terminals
-mpd &
 sxhkd &
 syncthing -no-browser &
 autocutsel -fork &
