@@ -117,7 +117,7 @@ lint() {
 
 for apkbuild in $(changed_files '**/APKBUILD'); do
 	check_local_sources "$apkbuild"
-	alint "$apkbuild"
+	[ -z "NOALINT" ] && alint "$apkbuild"
 done
 
 for path in $(changed_files); do

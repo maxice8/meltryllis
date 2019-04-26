@@ -40,6 +40,12 @@ isupdate() {
 	git diff --cached HEAD -- '**/APKBUILD' | grep -E -q '^(\+|-)pkgver='
 }
 
+repomv() {
+	git diff --name-status --cached --diff-filter=ACMR HEAD -- '**/APKBUILD' | while read -r _ from to; do
+		printf 'move from %s to %s\n' "$(echo "$from" | cut -d / -f1)" "$(echo "$to" | cut -d / -f1)"
+	done
+}
+
 context() {
 	case "$(git diff-index --name-status --cached --diff-filter=ACMR HEAD -- '**/APKBUILD' | head -1)" in
 		A*) echo "new aport" ;;
@@ -54,6 +60,11 @@ lcp=$(git diff-index --name-only --cached HEAD | longest_common_prefix)
 
 case "$lcp" in
 	[^.]*/*) prepend_msg "$(echo "$lcp" | cut -d/ -f1-2): $(context)";;
+	*)
+		pkgname="$(git diff-index --name-only --cached HEAD --diff-filter=ACMR -- '**/APKBUILD')"
+		pkgname="${pkgname%/*}"
+		pkgname="${pkgname#*/}"
+		prepend_msg "$pkgname: $(repomv)";;
 esac
 
 exit 0
