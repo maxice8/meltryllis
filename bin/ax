@@ -15,6 +15,8 @@ x : get checksum of package
 n : navigate directory
 s : push to remote git
 a : amend commit
+m : move package to a given repo
+r : rename a package
 h : show this message
 EOF
 }
@@ -26,33 +28,97 @@ run() {
 }
 
 find_repo() {
+
+	# Check if the variable provided to us is just the name of
+	# a repository, and return 1
+	case "$1" in
+		main|community|testing|unmaintained) return 1;;
+	esac
+
 	# Check if the branch name is already a fully working path
+	# 
+	# This allows us to find_repo if we are given the complete name
+	# in the form of <repo>/<package> like main/openrc
 	if [ -d "$1" ]; then
 		echo "$1"
-		return 0
 	elif [ -d main/"$1" ]; then
 		echo main/"$1"
-		return 0
 	elif [ -d community/"$1" ]; then
 		echo community/"$1"
-		return 0
 	elif [ -d testing/"$1" ]; then
 		echo testing/"$1"
-		return 0
+	elif [ -d unmaintained/"$1" ]; then
+		echo unmaintained/"$1"
 	fi
 
 	return 1
 }
 
-find_apkbuild() {
+edit_apkbuild() {
+	# Check if the path given to us by $branch results in something
+	# This will work in case we are in a branch like 'openrc' or
+	# 'main/openrc'
 	if [ -f "$branch"/APKBUILD ]; then
-		echo "$branch"/APKBUILD
+		e "$branch"/APKBUILD
 		return 0
+	# This fallback allows us to edit the APKBUILD if it is in the
+	# current directory of a package
 	elif [ -f APKBUILD ]; then
-		echo APKBUILD
+		e APKBUILD
 		return 0
 	fi
+	printf "Couldn't find APKBUILD for '%s' to edit\n" "$branch"
 	return 1
+}
+
+move_repo() {
+	from="$branch"
+	to="$1"
+
+	# Check if the package doesn't exist and error out
+	if [ ! -d "$from" ]; then
+		return 1
+	fi
+
+	# mv if any of the repos given to us is one of the ones we accept
+	# exit otherwise with an error message
+	case "$to" in
+		main|community|testing|unmaintained) mv "$from" "$to" ;;
+		*) printf "repo '%s' does not exist\n" "$to" ;;
+	esac
+}
+
+rename_repo() {
+	from="$branch"
+	to="$1"
+
+	# Get repo from the branch
+	repo="$(echo "$branch" | cut -d / -f1)"
+
+	# Check if the package doesn't exist and error out
+	if [ ! -d "$from" ]; then
+		return 1
+	fi
+
+	# Check if the package name is already taken in any repo
+	# realrepo is set if the name is taken and the function
+	# errors out later
+	if [ -d main/"$to" ]; then
+		realrepo=main
+	elif [ -d community/"$to" ]; then
+		realrepo=community
+	elif [ -d testing/"$to" ]; then
+		realrepo=testing
+	elif [ -d unmaintained/"$to" ]; then
+		realrepo=unmaintained
+	fi
+
+	if [ "$realrepo" ]; then
+		printf "package '%s' already exists in repo '%s'" "$to" "$realrepo"
+		return 1
+	fi
+
+	mv "$from" "$repo"/"$to"
 }
 
 cmd="$1"
@@ -60,14 +126,16 @@ if [ -z "$2" ]; then
 	branch="$(git rev-parse --abbrev-ref HEAD)"
 	branch="$(find_repo "$branch")"
 else
-	branch="$(find_repo "$2")"
-	shift
+	# Try to find the repo with the argument given, and if successful then
+	# shift the arguments by one, otherwise repeat the procedure above
+	# This is for when 'ax m <repo>' is used
+	branch="$(find_repo "$2" && shift || find_repo "$(git rev-parse --abbrev-ref HEAD)")"
 fi
 shift
 
 case "$cmd" in
 	u) run abuild unpack && exec "$0" n "$branch";;
-	e) e "$(find_apkbuild "$branch")";;
+	e) edit_apkbuild "$branch";;
 	b) run abuild rootbld;;
 	t) run abuild rootbld;;
 	tf) run abuild -f rootbld;;
@@ -75,6 +143,8 @@ case "$cmd" in
 	x) run abuild checksum;;
 	s) git push -uf origin "$(git rev-parse --abbrev-ref HEAD)" "$@";;
 	a) git commit --amend -v "$@";;
+	m) move_repo "$@";;
+	r) rename_repo "$@";;
 	h) help;;
 	*) usage;;
 esac
