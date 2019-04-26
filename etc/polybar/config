@@ -117,6 +117,7 @@ font-1 = "Iosevka Nerd Font:pixelsize=13;3"
 font-2 = "Siji:size=12;2"
 font-3 = "Material Icons:size=13;4"
 
+
 modules-left = launcher workspaces
 modules-center = title
 modules-right = mail pulseaudio battery network date powermenu
@@ -247,7 +248,7 @@ click-right = "kill -USR2 $(pgrep --oldest --parent %pid%)"
 ;; Right-click spawns a menu that lets you choose volume from MUTE to 100%
 ;; in steps of 10%
 [module/pulseaudio]
-type = internal/pulseaudio
+type = internal/alsa
 
 format-volume-background = ${color.indigo-5}
 format-volume = %{A1:amenu_1:}<ramp-volume> <label-volume>%{A}
