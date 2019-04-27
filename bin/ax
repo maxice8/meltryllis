@@ -95,7 +95,7 @@ move_repo() {
 
 	if isclean; then
 		git add "$from" "$to"/"$pkgname"
-		git commit -m "${to}/${pkgname}: move from $repo to $to"
+		git commit -m "${to}/${pkgname}: move from $repo"
 	fi
 }
 
