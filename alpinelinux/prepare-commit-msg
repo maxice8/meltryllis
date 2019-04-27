@@ -34,7 +34,7 @@ prepend_msg() {
 
 newpkgver() {
 	# Get new version of a package
-	printf 'update to %s' "$(git diff --cached HEAD -- '**/APKBUILD' | grep -m1 '^+pkgver=.*' | cut -d= -f2)"
+	printf 'upgrade to %s' "$(git diff --cached HEAD -- '**/APKBUILD' | grep -m1 '^+pkgver=.*' | cut -d= -f2)"
 }
 
 isupdate() {
@@ -46,7 +46,7 @@ isupdate() {
 repomv() {
 	# Try to guess from which repo a package has been moved FROM and TO
 	git diff-index --name-status --cached HEAD -- '**/APKBUILD' | paste -sd '\t' | while read -r _ from _ to; do
-		printf 'move from %s to %s\n' "$(echo "$from" | cut -d / -f1)" "$(echo "$to" | cut -d / -f1)"
+		printf 'move from %s' "$(echo "$from" | cut -d / -f1)"
 	done
 }
 
