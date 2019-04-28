@@ -139,6 +139,48 @@ rename_repo() {
 	fi
 }
 
+mkgit() {
+	[ ! -f "$branch"/APKBUILD ] && return 1
+	. "$branch"/APKBUILD || {
+		printf "Failed to source APKBUILD for %s\n" "$branch" >&2
+		return 1
+	}
+
+	# declare this variable as it can appear on builddir
+	if [ -f APKBUILD ]; then
+		srcdir="$(pwd -P)/src"
+	else
+		srcdir="$(pwd -P)/$branch/src"
+	fi
+
+	# New style APKBUILD that has no builddir declaration
+	# since the declaration isn't made we have to set builddir
+	# ourselves, which conveniently is $srcdir/$pkgname-$pkgver
+	[ -z "$builddir" ] && builddir="$srcdir/$pkgname-$pkgver"
+
+	if [ ! -d "$builddir" ]; then
+		# Unpack the sources
+		run abuild unpack || return $?
+	fi
+
+	# Try to move to the directory
+	cd "$builddir" || return $?
+
+	# We are already in a git repo, remove it
+	[ -d .git ] && rm -rf .git
+
+	# All well, init our repo
+	git init . 1>/dev/null && git add . && git commit -m "This Time" 1>/dev/null && {
+		printf "Started repo succesfully on %s\n" "$builddir"
+	}
+}
+
+tmpsh() {
+	[ -z "$1" ] && return 1
+	cd "$1" || return $?
+	sh -l
+}
+
 cmd="$1"
 _branch="$(git rev-parse --abbrev-ref HEAD)"
 if [ -z "$2" ]; then
@@ -166,6 +208,10 @@ case "$cmd" in
 	a) git commit --amend -v "$@";;
 	m) move_repo "$@";;
 	r) rename_repo "$@";;
+	w) 
+		builddir=
+		mkgit "$@" && tmpsh "$builddir"
+		;;
 	h) help;;
 	*) usage;;
 esac
