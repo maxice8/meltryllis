@@ -7,6 +7,7 @@ xset s off
 xset -dpms
 eval $(dbus-launch --sh-syntax --exit-with-session) # Needs to be before starting wm and terminals
 sxhkd &
+mpd &
 start-pulseaudio-x11 &
 syncthing -no-browser &
 autocutsel -fork &
