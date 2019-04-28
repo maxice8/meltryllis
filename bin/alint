@@ -84,6 +84,9 @@ for apkbuild; do
 			printf "$apkbuild:$l: cd \"\$builddir\" can be removed\n"
 		done
 	done
+	_pkgname="$(grep -Po "^pkgname=\K.*" "$apkbuild")"
+	_pkgver="$(grep -Po "^pkgver=\K.*" "$apkbuild")"
+	scan '^builddir=.*\$srcdir/\$pkgname-\$pkgver["]?$' "builddir can be removed as it is the default value"
 	fi
 	else
 	echo no such apkbuild "$apkbuild" 1>&2
