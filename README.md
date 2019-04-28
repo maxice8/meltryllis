@@ -20,7 +20,7 @@ TREE
 │   ├── git
 │   ├── gtk-3.0
 │   ├── gtk-4.0
-│   ├── cmus
+│   ├── mpd
 │   ├── mpv
 │   ├── neomutt
 │   ├── nvim
