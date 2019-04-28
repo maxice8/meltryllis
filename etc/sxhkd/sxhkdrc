@@ -62,17 +62,13 @@ XF86Audio{Lower,Raise}Volume
   volume {lower,raise}
 
 XF86Audio{Prev,Next}
-  cmus-remote -{r,n}
+  mpc {prev,next}
 
 XF86AudioMute
   volume toggle
 
 XF86AudioPlay
-  if cmus-remote -Q | grep status | grep -q playing; then \
-    cmus-remote -u; \
-  else \
-    cmus-remote -p; \
-  fi
+  mpc toggle
 
 # }}}
 
