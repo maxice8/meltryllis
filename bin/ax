@@ -17,6 +17,7 @@ s : push to remote git
 a : amend commit
 m : move package to a given repo
 r : rename a package
+w : init a git repo on the unpacked source code
 h : show this message
 EOF
 }
