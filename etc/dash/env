@@ -10,7 +10,7 @@ export PATH
 EDITOR="nvim"
 PAGER="less"
 VISUAL="nvim"
-BROWSER="firefox"
+BROWSER="chromium"
 TERMINAL="alacritty"
 LESSHISTFILE="-"
 
@@ -63,8 +63,8 @@ export _JAVA_OPTIONS _JAVA_AWT_WM_NONREPARENTING
 #
 # bspwm specific
 #
-BSPWM_SOCKET=/tmp/bspwm_socket
-BSPWM_STATE=/tmp/bspwm-state-"$(id -u)".json
+BSPWM_SOCKET=${XDG_RUNTIME_DIR:-/tmp}/bspwm_socket
+BSPWM_STATE=${XDG_RUNTIME_DIR:-/tmp}/bspwm-state-"$(id -u)".json
 
 export BSPWM_SOCKET BSPWM_STATE
 #
