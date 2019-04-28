@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sockdir="/tmp/dtach"
+sockdir="${XDG_RUNTIME_DIR:-/tmp}/dtach"
 
 usage() {
     cat <<EOF
