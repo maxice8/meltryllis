@@ -140,46 +140,70 @@ rename_repo() {
 	fi
 }
 
-mkgit() {
-	[ ! -f "$branch"/APKBUILD ] && return 1
-	. "$branch"/APKBUILD || {
-		printf "Failed to source APKBUILD for %s\n" "$branch" >&2
-		return 1
-	}
+source_apkbuild() {
+	local apkbuild= srcdir=
+
+	# Prefer using the APKBUILD that is on the current directory
+	# rather than the one on the branch.
+	[ -f "$branch"/APKBUILD ] && apkbuild="$branch"/APKBUILD
+	[ -f APKBUILD ] && apkbuild=APKBUILD
+
+	[ -z "$apkbuild" ] && return 1
 
 	# declare this variable as it can appear on builddir
 	if [ -f APKBUILD ]; then
 		srcdir="$(pwd -P)/src"
-	else
+	elif [ -f "$branch"/APKBUILD ]; then
 		srcdir="$(pwd -P)/$branch/src"
+	else
+		return 1
 	fi
+
+	# Pass srcdir when sourcing the APKBUILD so the builddir variable
+	# is completed
+	srcdir="$srcdir" . "$apkbuild" || {
+		printf "Failed to source APKBUILD for %s\n" "$branch" >&2
+		return 1
+	}
 
 	# New style APKBUILD that has no builddir declaration
 	# since the declaration isn't made we have to set builddir
 	# ourselves, which conveniently is $srcdir/$pkgname-$pkgver
 	[ -z "$builddir" ] && builddir="$srcdir/$pkgname-$pkgver"
 
+	# If the sources aren't present then unpack them
 	if [ ! -d "$builddir" ]; then
-		# Unpack the sources
 		run abuild unpack || return $?
 	fi
-
-	# Try to move to the directory
-	cd "$builddir" || return $?
-
-	# We are already in a git repo, remove it
-	[ -d .git ] && rm -rf .git
-
-	# All well, init our repo
-	git init . 1>/dev/null && git add . && git commit -m "This Time" 1>/dev/null && {
-		printf "Started repo succesfully on %s\n" "$builddir"
-	}
+	
+	export builddir
 }
 
 tmpsh() {
 	[ -z "$1" ] && return 1
 	cd "$1" || return $?
 	sh -l
+}
+
+mkgit() {
+	local builddir=""
+
+	source_apkbuild
+
+	# Try to move to the directory
+	cd "$builddir" || return $?
+
+	# If we are in aports, return, we have failed to switch.
+	if [ "${PWD%*/aports*}" = "$PWD" ]; then
+		return 1
+	fi
+
+	# All well, init our repo
+	git init . 1>/dev/null && git add . && git commit -m "This Time" 1>/dev/null && {
+		printf "Started repo succesfully on %s\n" "$builddir"
+	}
+
+	tmpsh "$builddir"
 }
 
 cmd="$1"
@@ -198,7 +222,7 @@ fi
 shift
 
 case "$cmd" in
-	u) run abuild unpack && exec "$0" n "$branch";;
+	u) run abuild unpack && source_apkbuild && f "$builddir";;
 	e) edit_apkbuild "$branch";;
 	b) run abuild -r;;
 	t) run abuild -r;;
@@ -209,10 +233,7 @@ case "$cmd" in
 	a) git commit --amend -v "$@";;
 	m) move_repo "$@";;
 	r) rename_repo "$@";;
-	w) 
-		builddir=
-		mkgit "$@" && tmpsh "$builddir"
-		;;
+	w) mkgit "$@" ;;
 	h) help;;
 	*) usage;;
 esac
