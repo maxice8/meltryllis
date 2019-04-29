@@ -18,6 +18,7 @@ a : amend commit
 m : move package to a given repo
 r : rename a package
 w : init a git repo on the unpacked source code
+g : get value of variables
 h : show this message
 EOF
 }
@@ -76,8 +77,7 @@ edit_apkbuild() {
 }
 
 move_repo() {
-	from="$branch"
-	to="$1"
+	local from="$branch" to="$1" pkgname= repo=
 
 	pkgname="$(echo "$from" | cut -d / -f 2)"
 	repo="$(echo "$from" | cut -d / -f 1)"
@@ -101,12 +101,11 @@ move_repo() {
 }
 
 rename_repo() {
-	from="$branch"
-	to="$1"
+	local from="$branch" to="$1" pkgname= repo=
 
 	# Get repo from the branch
-	repo="$(echo "$from" | cut -d / -f1)"
 	pkgname="$(echo "$from" | cut -d / -f2)"
+	repo="$(echo "$from" | cut -d / -f1)"
 
 	# Check if the package doesn't exist and error out
 	if [ ! -d "$from" ]; then
@@ -171,12 +170,17 @@ source_apkbuild() {
 	# ourselves, which conveniently is $srcdir/$pkgname-$pkgver
 	[ -z "$builddir" ] && builddir="$srcdir/$pkgname-$pkgver"
 
-	# If the sources aren't present then unpack them
-	if [ ! -d "$builddir" ]; then
-		run abuild unpack || return $?
-	fi
-	
 	export builddir
+}
+
+getvar() {
+	[ -z "$1" ] && return 1
+
+	source_apkbuild
+	for arg; do
+		# Get value referenced by the value referenced by the value given to us
+		eval echo "\$$arg"
+	done
 }
 
 tmpsh() {
@@ -186,9 +190,14 @@ tmpsh() {
 }
 
 mkgit() {
-	local builddir=""
+	local builddir=
 
 	source_apkbuild
+
+	# If the sources aren't present then unpack them
+	if [ ! -d "$builddir" ]; then
+		run abuild unpack || return $?
+	fi
 
 	# Try to move to the directory
 	cd "$builddir" || return $?
@@ -234,6 +243,7 @@ case "$cmd" in
 	m) move_repo "$@";;
 	r) rename_repo "$@";;
 	w) mkgit "$@" ;;
+	g) getvar "$@" ;;
 	h) help;;
 	*) usage;;
 esac
