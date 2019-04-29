@@ -115,9 +115,21 @@ lint() {
 	alint "$path" || return 1
 }
 
+isupdate() {
+	# Use grep to check if we have an addition and removal of the pkgver variable
+	# if true then we are updating
+	git diff --cached HEAD -- "$1" | grep -E -q '^(\+|-)pkgver='
+}
+
 for apkbuild in $(changed_files '**/APKBUILD'); do
 	check_local_sources "$apkbuild"
-	[ -z "NOALINT" ] && alint "$apkbuild"
+	[ -z "${NOALINT:-}" ] && alint "$apkbuild"
+	if [ -z "${NOPKGVERCHECK:-}" ] && isupdate "$apkbuild"; then
+		grep -q '^pkgrel=0$' "$apkbuild" || {
+			printf "pkgrel should be 0 for %s\n" "$apkbuild" >&2
+			return 1
+		}
+	fi
 done
 
 for path in $(changed_files); do
