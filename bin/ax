@@ -33,8 +33,15 @@ isclean() {
 	git diff --quiet --cached --exit-code
 }
 
-find_repo() {
+print_vars() {
+	while [ $# -gt 0 ]; do
+		printf "%s=%s\n" "$1" "$2"
+		shift
+		shift
+	done
+}
 
+find_repo() {
 	# Check if the branch name is already a fully working path
 	# 
 	# This allows us to find_repo if we are given the complete name
@@ -63,8 +70,8 @@ edit_apkbuild() {
 	# Check if the path given to us by $branch results in something
 	# This will work in case we are in a branch like 'openrc' or
 	# 'main/openrc'
-	if [ -f "$branch"/APKBUILD ]; then
-		e "$branch"/APKBUILD
+	if [ -n "$1" ] && [ -f "$1"/APKBUILD ]; then
+		e "$1"/APKBUILD
 		return 0
 	# This fallback allows us to edit the APKBUILD if it is in the
 	# current directory of a package
@@ -72,18 +79,42 @@ edit_apkbuild() {
 		e APKBUILD
 		return 0
 	fi
-	printf "Couldn't find APKBUILD for '%s' to edit\n" "$pkgname"
+	printf "Couldn't find APKBUILD for '%s' to edit\n" "$1"
 	return 1
 }
 
 move_repo() {
-	local from="$branch" to="$1" pkgname= repo=
+	local from="${2:-$branch}" to="$1" pkgname= repo=
+
+	if [ -z "$from" ]; then
+		printf "move operation failed: no package to be moved given\n" >&2
+		return 1
+	fi
 
 	pkgname="$(echo "$from" | cut -d / -f 2)"
 	repo="$(echo "$from" | cut -d / -f 1)"
 
+	if [ "$repo" = "$pkgname" ]; then
+		if [ -d main/"$from" ]; then
+			repo=main
+		elif [ -d community/"$from" ]; then
+			repo=community
+		elif [ -d testing/"$from" ]; then
+			repo=testing
+		elif [ -d unmaintained/"$from" ]; then
+			repo=unmaintained
+		else
+			printf "move operation failed: package '%s' doesn't exist\n" "$from"
+			print_vars from "$from" to "$to"
+			return 1
+		fi
+		from="$repo"/"$pkgname"
+	fi
+
 	# Check if the package doesn't exist and error out
 	if [ ! -d "$from" ]; then
+		printf "move operation failed: package '%s' doesn't exist\n" "$from"
+		print_vars from "$from" to "$to" 
 		return 1
 	fi
 
@@ -96,46 +127,74 @@ move_repo() {
 
 	if isclean; then
 		git add "$from" "$to"/"$pkgname"
-		git commit -m "${to}/${pkgname}: move from $repo"
+		NOALINT=1 NOPKGVERCHECK=1 git commit -m "${to}/${pkgname}: move from $repo"
 	fi
 }
 
 rename_repo() {
-	local from="$branch" to="$1" pkgname= repo=
+	local src="${2:-$branch}" dst="$1" pkgname= repo=
+
+	if [ -z "$src" ]; then
+		printf "rename operation failed: no package to be moved given\n" >&2
+		return 1
+	fi
 
 	# Get repo from the branch
-	pkgname="$(echo "$from" | cut -d / -f2)"
-	repo="$(echo "$from" | cut -d / -f1)"
+	pkgname="$(echo "$src" | cut -d / -f2)"
+	repo="$(echo "$src" | cut -d / -f1)"
+
+	# If they are the same then the package was given to us
+	# without a repository, so try to guess it
+	if [ "$pkgname" = "$repo" ]; then
+		if [ -d main/"$src" ]; then
+			repo=main
+		elif [ -d community/"$src" ]; then
+			repo=community
+		elif [ -d testing/"$src" ]; then
+			repo=testing
+		elif [ -d unmaintained/"$src" ]; then
+			repo=unmaintained
+		else
+			printf "rename operation failed: package '%s' doesn't exist\n" "$dst"
+			print_vars from "$src" to "$dst"
+			return 1
+		fi
+
+		from="$repo"/"$pkgname"
+	fi
 
 	# Check if the package doesn't exist and error out
-	if [ ! -d "$from" ]; then
+	if [ ! -d "$src" ]; then
+		printf "rename operation failed: package '%s' doesn't exist\n" "$src"
+		print_vars src "$src" dst "$dst" 
 		return 1
 	fi
 
 	# Check if the package name is already taken in any repo
 	# realrepo is set if the name is taken and the function
 	# errors out later
-	if [ -d main/"$to" ]; then
+	if [ -d main/"$dst" ]; then
 		realrepo=main
-	elif [ -d community/"$to" ]; then
+	elif [ -d community/"$dst" ]; then
 		realrepo=community
-	elif [ -d testing/"$to" ]; then
+	elif [ -d testing/"$dst" ]; then
 		realrepo=testing
-	elif [ -d unmaintained/"$to" ]; then
+	elif [ -d unmaintained/"$dst" ]; then
 		realrepo=unmaintained
 	fi
 
 	if [ "$realrepo" ]; then
-		printf "package '%s' already exists in repo '%s'\n" "$to" "$realrepo"
+		printf "rename operation failed: package '%s' exists in '%s'\n" "$dst" "$realrepo"
+		print_vars src "$src" dst "$dst"
 		return 1
 	fi
 
-	mv -f "$from" "$repo"/"$to"
+	mv -f "$src" "$repo"/"$dst"
 
 	# Check if there is nothing cached and try to commit it
 	if isclean; then
-		git add "$from" "$repo"/"$to"
-		git commit -m "${repo}/${to}: rename from $pkgname"
+		git add "$src" "$repo"/"$dst"
+		NOALINT=1 NOPKGVERCHECK=1 git commit -m "${repo}/${dst}: rename from $pkgname"
 	fi
 }
 
@@ -147,15 +206,17 @@ source_apkbuild() {
 	[ -f "$branch"/APKBUILD ] && apkbuild="$branch"/APKBUILD
 	[ -f APKBUILD ] && apkbuild=APKBUILD
 
-	[ -z "$apkbuild" ] && return 1
+	if [ -z "$apkbuild" ]; then
+		printf "sourcing apkbuild failed: no APKBUILD found under '%s' and '%s'\n" "$branch" "$(pwd -P)"
+		print_vars branch "$branch" curdir "$(pwd -P)"
+		return 1
+	fi
 
 	# declare this variable as it can appear on builddir
-	if [ -f APKBUILD ]; then
+	if [ "$apkbuild" = "APKBUILD" ]; then
 		srcdir="$(pwd -P)/src"
-	elif [ -f "$branch"/APKBUILD ]; then
-		srcdir="$(pwd -P)/$branch/src"
 	else
-		return 1
+		srcdir="$(pwd -P)/$branch/src"
 	fi
 
 	# Pass srcdir when sourcing the APKBUILD so the builddir variable
@@ -231,9 +292,14 @@ fi
 shift
 
 case "$cmd" in
-	u) run abuild unpack && source_apkbuild && f "$builddir";;
+	u)
+		source_apkbuild || return $?
+		# If the sources aren't present then unpack them
+		if [ ! -d "$builddir" ]; then
+			run abuild unpack || return $?
+		fi
+		f "$builddir" ;;
 	e) edit_apkbuild "$branch";;
-	b) run abuild -r;;
 	t) run abuild -r;;
 	tf) run abuild -f -r;;
 	n) f "$branch";;
