@@ -59,15 +59,18 @@ replaces_priority
 source
 subpackages
 triggers
+ldpath
 url" | tr '\n' '|')
 
 ret=0
 for apkbuild; do
 	if [ -f "$apkbuild" ]; then
+	scan '^pkgname="[^$]+"' "pkgname must not be quoted"
+	scan '^pkgver="[^$]+"' "pkgver must not be quoted"
 	scan '^[^ =]*=(|''|)$' "variable set to empty string: \2"
 	scan '^(?!\s*^('"$variables"'))[^\s=-]+=' \
 		 "prefix custom variable with _: \2"
-	scan '^  ' "indent with tabs" | once
+	scan '^  ' "indent with tabs"
 	scan '[\t ]$' "trailing whitespace"
 	scan '[^\\]`' "use \$() instead of backticks"
 	scan '^\t*function\b' 'do not use the function keyword'
