@@ -1,8 +1,14 @@
 #!/bin/sh
 set -eu
 
+getsink() {
+    pacmd stat | awk -F": " '/^Default sink name: /{print $2}'
+}
+
 level() {
-	amixer sget Master | awk -F"[][]" '/dB/ { print $2 }'
+    pacmd list-sinks |
+        awk '/^\s+name: /{indefault = $2 == "<'$(getsink)'>"}
+            /^\s+volume: / && indefault {print $5; exit}'
 }
 
 ismuted() {
