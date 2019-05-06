@@ -59,13 +59,13 @@ super + shift + w
 # MUSIC {{{
 
 XF86Audio{Lower,Raise}Volume
-  volume {lower,raise}
+  pulseaudio-ctl {down,up}
 
 XF86Audio{Prev,Next}
   mpc {prev,next}
 
 XF86AudioMute
-  volume toggle
+  pulseaudio-ctl mute
 
 XF86AudioPlay
   mpc toggle
