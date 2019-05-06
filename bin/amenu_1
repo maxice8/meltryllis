@@ -21,4 +21,4 @@ selection=$(/bin/echo -e "${options}" | rofi \
 										-yoffset -50 \
 										-font "Fantasque Sans Mono 10")
 
-amixer -q sset Master "${selection,,}"
+pulseaudio-ctl set "${selection%\%*}"
