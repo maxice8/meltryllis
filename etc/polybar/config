@@ -161,7 +161,7 @@ pseudo-transparency = false
 ;; Right-click opens rofi menu with all programs
 [module/launcher]
 type = custom/text
-content = 
+content = 
 
 content-background = ${color.indigo}
 content-foreground = ${color.light}
@@ -226,7 +226,7 @@ format-padding = 1
 label = %title%
 label-maxlen = 50
 
-label-empty = Void Linux
+label-empty = Alpine Linux
 
 ;; Runs a script that outputs the number of emails in $MAIL
 ;; It uses inotifywait (Linux only) to follow $MAIL/new and reload
