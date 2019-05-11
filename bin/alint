@@ -65,6 +65,26 @@ url" | tr '\n' '|')
 ret=0
 for apkbuild; do
 	if [ -f "$apkbuild" ]; then
+	# Source apkbuild
+	srcdir="" . "$apkbuild" 2>/dev/null
+	if [ "$builddir" = "/$pkgname-$pkgver" ]; then
+		scan '^builddir=' "builddir can be removed as it is the default value"
+	fi
+	# Find duplicates in
+	printf "%s\n" "$depends" | tr " " "\n" | sort | uniq -d | while read -r dup; do
+		printf "$apkbuild:: duplicate '$dup' in depends\n"
+	done
+	printf "%s\n" "$makedepends" | tr " " "\n" | sort | uniq -d | while read -r dup; do
+		printf "$apkbuild:: duplicate '$dup' in makedepends\n"
+	done
+	printf "%s\n" "$checkdepends" | tr " " "\n" | sort | uniq -d | while read -r dup; do
+		printf "$apkbuild:: duplicate '$dup' in checkdepends\n"
+	done
+	printf "%s\n" "$depends_dev" | tr " " "\n" | sort | uniq -d | while read -r dup; do
+
+		printf "$apkbuild:: duplicate '$dup' in depends_dev\n"
+	done
+	scan '\|\| return 1' "|| return 1 is not required as set -e is used"
 	scan '^pkgname="[^$]+"' "pkgname must not be quoted"
 	scan '^pkgver="[^$]+"' "pkgver must not be quoted"
 	scan '^[^ =]*=(|''|)$' "variable set to empty string: \2"
@@ -89,7 +109,6 @@ for apkbuild; do
 	done
 	_pkgname="$(grep -Po "^pkgname=\K.*" "$apkbuild")"
 	_pkgver="$(grep -Po "^pkgver=\K.*" "$apkbuild")"
-	scan '^builddir=.*\$srcdir/\$pkgname-\$pkgver["]?$' "builddir can be removed as it is the default value"
 	fi
 	else
 	echo no such apkbuild "$apkbuild" 1>&2
