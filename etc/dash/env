@@ -10,7 +10,7 @@ export PATH
 EDITOR="nvim"
 PAGER="less"
 VISUAL="nvim"
-BROWSER="chromium-browser"
+BROWSER="firefox"
 TERMINAL="alacritty"
 LESSHISTFILE="-"
 FILEMANAGER="alacritty -e ranger"
