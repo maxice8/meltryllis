@@ -123,13 +123,17 @@ isupdate() {
 
 for apkbuild in $(changed_files '**/APKBUILD'); do
 	check_local_sources "$apkbuild"
-	[ -z "${NOALINT:-}" ] && alint "$apkbuild"
+	[ -z "${NOALINT:-}" ] && alint "$apkbuild" | while read -r err; do
+		error "$err"
+		err=1
+	done
 	if [ -z "${NOPKGVERCHECK:-}" ] && isupdate "$apkbuild"; then
 		grep -q '^pkgrel=0$' "$apkbuild" || {
-			printf "pkgrel should be 0 for %s\n" "$apkbuild" >&2
+			error "pkgrel should be 0 for %s\n" "$apkbuild" >&2
 			return 1
 		}
 	fi
+	[ $err -eq 1 ] && return 1
 done
 
 for path in $(changed_files); do
