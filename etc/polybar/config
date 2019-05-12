@@ -21,30 +21,6 @@ purple = #8e24aa
 ;; UNUSED
 deep-purple = #5e35b1
 
-;; USED
-indigo = #263172
-
-;; USED
-indigo-2 = #2c3985
-
-;; USED
-indigo-3 = #334198
-
-;; USED
-indigo-4 = #3949ab
-
-;; USED
-indigo-5 = #3f51be
-
-;; USED
-indigo-6 = #5262c5
-
-;; UNUSED
-blue = #1e88e5
-
-;; UNUSED
-light-blue = #039be5
-
 ;; UNUSED
 cyan = #00acc1
 
@@ -163,7 +139,7 @@ pseudo-transparency = false
 type = custom/text
 content = 
 
-content-background = ${color.indigo}
+content-background = ${color.dark}
 content-foreground = ${color.light}
 content-padding = 2
 
@@ -237,7 +213,7 @@ label-empty = Alpine Linux
 [module/mail]
 type = custom/script
 exec = maild
-format-background = ${color.indigo-6}
+format-background = ${color.dark}
 format-padding = 1
 tail = true
 
@@ -250,11 +226,11 @@ click-right = "kill -USR2 %pid%"
 [module/pulseaudio]
 type = internal/pulseaudio
 
-format-volume-background = ${color.indigo-5}
+format-volume-background = ${color.dark}
 format-volume = %{A1:amenu_1:}<ramp-volume> <label-volume>%{A}
 label-volume = %percentage%%
 format-muted = "%{A1:amenu_1:} MUTE%{A}"
-format-muted-background = "${color.indigo-5}"
+format-muted-background = "${color.dark}"
 format-volume-padding = 1
 format-muted-padding = 1
 
@@ -276,7 +252,7 @@ tail = true
 
 click-left = "kill -USR1 %pid%"
 
-format-background = ${color.indigo-4}
+format-background = ${color.dark}
 format-foreground = ${color.light}
 format-padding = 1
 
@@ -291,7 +267,7 @@ tail = true
 
 click-left = "kill -USR1 %pid%"
 
-format-background = ${color.indigo-2}
+format-background = ${color.dark}
 format-foreground = ${color.light}
 format-padding = 1
 
@@ -301,7 +277,7 @@ format-padding = 1
 type = custom/text
 content = 
 content-padding = 1
-content-background = ${color.indigo}
+content-background = ${color.dark}
 content-foreground = ${color.light}
 click-left = pmenu_1
 click-right = pmenu_1
@@ -319,7 +295,7 @@ type = custom/script
 exec = check-network
 label-font = 4
 format-font = 4
-format-background = ${color.indigo-3}
+format-background = ${color.dark}
 format-padding = 1
 tail = true
 click-left = "kill -USR1 %pid%"
