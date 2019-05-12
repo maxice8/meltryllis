@@ -1,4 +1,7 @@
 #!/bin/sh
+: ${AX_ABUILD:=abuild}
+: ${AX_ASUM:=abuild}
+
 usage() {
 	printf "usage: %s <uebtxnsah> [repo/package]\\n" "$(basename "$0")"
 }
@@ -257,7 +260,7 @@ mkgit() {
 
 	# If the sources aren't present then unpack them
 	if [ ! -d "$builddir" ]; then
-		run abuild unpack || return $?
+		run $AX_ASUM unpack || return $?
 	fi
 
 	# Try to move to the directory
@@ -296,12 +299,12 @@ case "$cmd" in
 		source_apkbuild || return $?
 		# If the sources aren't present then unpack them
 		if [ ! -d "$builddir" ]; then
-			run abuild unpack || return $?
+			run $AX_ASUM unpack || return $?
 		fi
 		f "$builddir" ;;
 	e) edit_apkbuild "$branch";;
-	t) run abuild -r;;
-	tf) run abuild -f -r;;
+	t) run $AX_ABUILD -r;;
+	tf) run $AX_ABUILD -f -r;;
 	n) f "$branch";;
 	x) run abuild checksum;;
 	s) git push -uf origin "$(git rev-parse --abbrev-ref HEAD)" "$@";;
