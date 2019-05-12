@@ -4,3 +4,6 @@
 [submodule "pomfclip"]
 	path = pomfclip
 	url = https://github.com/ScoreUnder/pomfclip
+[submodule "atools"]
+	path = atools
+	url = https://github.com/maxice8/atools
