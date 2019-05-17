@@ -1,9 +1,10 @@
 MKDIR := mkdir -pv
 
-USRDIR = $(HOME)/var
-USRDIRS = $(shell find . -type d)
+VARDIR = $(HOME)/var
+VARDIRS = $(shell find . -type d)
 
-tree: $(USRDIRS)
+.PHONY: $(VARDIRS)
 
-$(USRDIRS):
-	@$(MKDIR) $(USRDIR)/$@
+$(VARDIRS):
+	@$(MKDIR) $(VARDIR)
+	@$(MKDIR) $(VARDIR)/$@

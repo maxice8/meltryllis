@@ -10,6 +10,7 @@ ETCFILES = $(shell find . -type f -o -type l -not -name Makefile)
 symlink: $(ETCDIRS) $(ETCFILES)
 
 $(ETCDIRS):
+	@$(MKDIR) $(ETCDIR)
 	@$(MKDIR) $(ETCDIR)/$@
 
 $(ETCFILES):

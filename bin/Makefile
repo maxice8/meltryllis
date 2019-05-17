@@ -9,4 +9,5 @@ BINARIES = $(shell find . -type f -o -type l -not -name Makefile)
 symlink: $(BINARIES)
 
 $(BINARIES):
+	@$(MKDIR) $(BINDIR)
 	@$(LN) $(PWD)/$@ $(BINDIR)/$@
