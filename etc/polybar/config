@@ -95,7 +95,8 @@ font-3 = "Material Icons:size=13;4"
 
 modules-left = launcher workspaces
 modules-center = title
-modules-right = mail pulseaudio battery network date powermenu
+; modules-right = mail pulseaudio battery network date powermenu
+modules-right = memory date powermenu
 
 separator =
 spacing = 0
@@ -257,20 +258,61 @@ format-background = ${color.dark}
 format-foreground = ${color.light}
 format-padding = 1
 
+[module/memory]
+type = internal/memory
+
+; Seconds to sleep between updates
+; Default: 1
+interval = 3
+
+; Available tags:
+;   <label> (default)
+;   <bar-used>
+;   <bar-free>
+;   <ramp-used>
+;   <ramp-free>
+;   <bar-swap-used>
+;   <bar-swap-free>
+;   <ramp-swap-used>
+;   <ramp-swap-free>
+format = <label>   
+
+; Available tokens:
+;   %percentage_used% (default)
+;   %percentage_free%
+;   %gb_used%
+;   %gb_free%
+;   %gb_total%
+;   %mb_used%
+;   %mb_free%
+;   %mb_total%
+;   %percentage_swap_used%
+;   %percentage_swap_free%
+;   %mb_swap_total%
+;   %mb_swap_free%
+;   %mb_swap_used%
+;   %gb_swap_total%
+;   %gb_swap_free%
+;   %gb_swap_used%
+
+label = RAM %percentage_used%% / %percentage_free%%
+
 ;; Spawns a script that outputs time in 2 timezones, reloading every 60
 ;; seconds.
 ;; Right-click prompts the script to change between showing time or current
 ;; date
 [module/date]
-type = custom/script
-exec = clockd
-tail = true
+type = internal/date
+interval = 60.0
 
-click-left = "kill -USR1 %pid%"
+; if `date-alt` or `time-alt` is defined, clicking
+; the module will toggle between formats
+date = %A, %d %B %Y
+time = %H:%M:%S
 
-format-background = ${color.dark}
-format-foreground = ${color.light}
-format-padding = 1
+label = %date% %time%
+
+format-margin = 1
 
 ;; When pressed opens a rofi menu with options to lock the screen ('lock -l'),
 ;; logout ('bspc quit'), reboot ('sudo reboot') or shutdown ('sudo shutdown').

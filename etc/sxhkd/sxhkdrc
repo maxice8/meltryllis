@@ -75,7 +75,7 @@ XF86AudioPlay
 # MISC {{{
 
 XF86MonBrightness{Up,Down}
-  xbacklight -{inc,dec} 1
+  xbacklight -{inc,dec} 10
 
 # }}}
 

@@ -10,7 +10,7 @@ export PATH
 EDITOR="nvim"
 PAGER="less"
 VISUAL="nvim"
-BROWSER="firefox"
+BROWSER="luakit"
 TERMINAL="alacritty"
 LESSHISTFILE="-"
 FILEMANAGER="alacritty -e ranger"
@@ -71,7 +71,7 @@ export BSPWM_SOCKET BSPWM_STATE
 #
 # Alpine Linux aports specific
 #
-AX_ABUILD=dabuild
+AX_ABUILD=/usr/bin/abuild # Supra specific
 AX_ASUM=/usr/bin/abuild
 
 export AX_ABUILD AX_ASUM

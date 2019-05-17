@@ -7,8 +7,8 @@ xset s off
 xset -dpms
 eval $(dbus-launch --sh-syntax --exit-with-session) # Needs to be before starting wm and terminals
 sxhkd &
-mpd &
-start-pulseaudio-x11 &
+# mpd &
+# start-pulseaudio-x11 &
 syncthing -no-browser &
 autocutsel -fork &
 autocutsel -selection PRIMARY -fork &
@@ -17,7 +17,6 @@ bspwm &
 borderd &
 rndw &
 xidle -timeout 360 -program "$HOME/bin/lock -l" &
-sudo sh -c 'echo 300 > /sys/class/backlight/intel_backlight/brightness'
 export DISPLAY=:1 && exec xwait
 
 # vim: ft=sh
