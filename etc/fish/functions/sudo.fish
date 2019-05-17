@@ -1,3 +1,4 @@
+# Defined in /tmp/fish.hJEHOE/sudo.fish @ line 2
 function sudo
-	command sudo -E $argv
+	command doas -E $argv
 end
