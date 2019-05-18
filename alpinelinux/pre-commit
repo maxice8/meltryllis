@@ -112,7 +112,8 @@ check_file_size() {
 lint() {
 	local path="$1"
 
-	alint "$path" || return 1
+	aports-lint "$path" || return 1
+	apkbuild-lint "$path" || return 1
 }
 
 isupdate() {
@@ -123,17 +124,29 @@ isupdate() {
 
 for apkbuild in $(changed_files '**/APKBUILD'); do
 	check_local_sources "$apkbuild"
-	[ -z "${NOALINT:-}" ] && alint "$apkbuild" | while read -r err; do
-		error "$err"
-		err=1
-	done
+	OLDIFS="$IFS"
+	IFS="
+"
+	if [ -z "${NOAPORTS_LINT:-}" ]; then
+		for msg in $(IFS="$OLDIFS" aports-lint "$apkbuild"); do
+			error "$msg"
+			err=1
+		done
+	fi
+	if [ -z "${NOAPKBUILD_LINT:-}" ]; then
+		for msg in $(IFS="$OLDIFS" apkbuild-lint "$apkbuild"); do
+			error "$msg"
+			err=1
+		done
+	fi
+	IFS="$OLDIFS"
 	if [ -z "${NOPKGVERCHECK:-}" ] && isupdate "$apkbuild"; then
 		grep -q '^pkgrel=0$' "$apkbuild" || {
 			error "pkgrel should be 0 for %s\n" "$apkbuild" >&2
 			return 1
 		}
 	fi
-	[ $err -eq 1 ] && return 1
+	[ ${err:-0} -eq 1 ] && return 1
 done
 
 for path in $(changed_files); do
