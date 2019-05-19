@@ -1,0 +1,9 @@
+#!/bin/sh
+cleanup() {
+	rm -f "$TMPFILE"
+}
+trap cleanup EXIT
+
+TMPFILE="$(mktemp)"
+curl -sL "$1" > "$TMPFILE"
+sxiv -f -b "$TMPFILE"

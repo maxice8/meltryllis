@@ -1,0 +1,4 @@
+#!/bin/sh
+while true; do
+	snooze -H '*' -d '*' -M /2 run-getmail.sh
+done
