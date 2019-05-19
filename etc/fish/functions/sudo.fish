@@ -1,4 +1,4 @@
-# Defined in /tmp/fish.hJEHOE/sudo.fish @ line 2
+# Defined in /tmp/fish.AdhNIf/sudo.fish @ line 2
 function sudo
-	command doas -E $argv
+	command doas $argv
 end
