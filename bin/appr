@@ -27,8 +27,12 @@ set -- $args
 pr="$1" ; shift
 comment="$*"
 
+# Transform all occurrences of '@@@' into a newline
+comment="$(printf "%s\\n" "$comment" | sed 's/@@@/\
+/g')"
+
 if [ "$needs_comment" ] && [ -z "$comment" ]; then
-	echo "Needs comment for $pr.\n" >&2
+	echo "Needs comment for $pr" >&2
 	exit 1
 fi
 
