@@ -107,9 +107,9 @@ for commit in $commits; do
 		# if the commit message is empty then add our current message
 		# otherwise add our current message after adding a newline (@@@)
 		if [ -z "$commitcom" ]; then
-			commitcom="- $curcom"
+			commitcom="$curcom"
 		else
-			commitcom="$commitcom@@@- $curcom"
+			commitcom="$commitcom@@@$curcom"
 		fi
 	done
 
@@ -124,7 +124,7 @@ for commit in $commits; do
 		if [ -z "$commitcomments" ]; then
 			commitcomments="$commit_header@@@$commitcom"
 		else
-			commitcomments="$commitcomments@@@$commit_header@@@$commitcom"
+			commitcomments="$commitcomments@@@ @@@$commit_header@@@$commitcom"
 		fi
 	fi
 done
@@ -152,10 +152,10 @@ for file in $files; do
 		fi
 
 		if [ -z "$filecom" ]; then
-			filecom="- $curcom"
+			filecom="$curcom"
 		else
 			# Append our comments.
-			filecom="$filecom@@@- $curcom"
+			filecom="$filecom@@@$curcom"
 		fi
 	done
 
@@ -165,7 +165,7 @@ for file in $files; do
 		if [ -z "$filecomments" ]; then
 			filecomments="$file_name@@@$filecom"
 		else
-			filecomments="$filecomments@@@$file_name@@@$filecom"
+			filecomments="$filecomments@@@ @@@$file_name@@@$filecom"
 		fi
 	fi
 done
@@ -182,7 +182,7 @@ if [ -n "$filecomments" ]; then
 	if [ -z "$comments" ]; then
 		comments="$filecomments"
 	else
-		comments="$comments@@@$filecomments"
+		comments="$comments@@@ @@@$filecomments"
 	fi
 fi
 
@@ -192,3 +192,6 @@ else
 	appr -r "$pr_num" "$comments"
 fi
 
+# Avoid using the 'dlbr' script since that also tries to remove a branch
+# in the remote repo and we don't need that
+git branch -D "$pr_num"
