@@ -71,8 +71,9 @@ if [ -n "$user" ]; then
 		echo "body: $body"
 		read -p "make new review? " yn
 		case $yn in
-			[Yy]* ) break ;;
+			[Yy]* |'') break ;;
 			[Nn]* ) exit 0 ;;
+			[Oo]* ) hub browser -- issues/$pr_num ;;
 			* ) echo "Please answer yes or no" ;;
 		esac
 	done
@@ -100,6 +101,7 @@ if [ -z "$commits" ]; then
 			   | jq -r '.[].sha')"
 fi
 
+commitcount="$(printf "%s\\n" "$commits" | wc -l)"
 
 # Comments to be given on the PR in regards to commits
 commitcomments=""
@@ -109,9 +111,20 @@ filecomments=""
 # will be added here and displayed to the user
 comments=""
 
-# Path to the APKBUILDS that have been changed
-files="$(changed_files $(printf "%s\\n" "$commits" | tail -1))"
+files=""
+for commit in $commits; do
+	# Add file in a newline so we can operate on them with sort -u
+	files="$files
+$(changed_files $commit)"
+done
 
+# We don't want to operate on duplicate files, if 2 commits point to the same
+# file like one that is updating and one that is making style changes are in the
+# same PR, we don't want to open the APKBUILD twice
+files="$(printf "%s\\n" "$files" | sort -u)"
+filecount="$(printf "%s\\n" "$files" | wc -l)"
+
+c=1
 # Read comments for the PR until we have one that is just exit
 for commit in $commits; do
 	commitcom="" # The comment on a specific commit
@@ -129,7 +142,7 @@ for commit in $commits; do
 									 	 		 --border \
 									 	 		 --inline-info \
 									 	 		 --no-clear \
-												 --prompt="$commit > " \
+												 --prompt="$commit ($c out of $commitcount) > " \
 									 	 		 | head -1)"
 
 		# If no output was written on the prompt then the user wants to exit
@@ -147,6 +160,8 @@ for commit in $commits; do
 			commitcom="$commitcom@@@$curcom"
 		fi
 	done
+		
+	c=$(( c + 1 ))
 
 	# If the commit messages are empty then continue, we have nothing to comment
 	# on
@@ -157,14 +172,17 @@ for commit in $commits; do
 		# otherwise add the previous commit comments and then add our headers and
 		# our messages
 		if [ -z "$commitcomments" ]; then
-			commitcomments="$commit_header@@@$commitcom"
+			commitcomments="\`\`\`@@@$commit_header@@@$commitcom@@@\`\`\`"
 		else
-			commitcomments="$commitcomments@@@ @@@$commit_header@@@$commitcom"
+			commitcomments="$commitcomments@@@\`\`\`@@@$commit_header@@@$commitcom@@@\`\`\`"
 		fi
 	fi
 done
 
+c=1
+
 # Same comments applies here but with files instead of commits
+# Get only unique files
 for file in $files; do
 	filecom=""
 	file_name="for file $file:"
@@ -178,7 +196,7 @@ for file in $files; do
 				  				--border \
 				  				--inline-info \
 				  				--no-clear \
-				  				--prompt="$file > " \
+								--prompt="$file ($c out of $filecount) > " \
 				  				| head -1)"
 
 		if [ -z "$curcom" ]; then
@@ -194,13 +212,15 @@ for file in $files; do
 		fi
 	done
 
+	c=$(( c + 1 ))
+
 	if [ -z "$filecom" ]; then
 		continue
 	else
 		if [ -z "$filecomments" ]; then
-			filecomments="$file_name@@@$filecom"
+			filecomments="\`\`\`@@@$file_name@@@$filecom@@@\`\`\`"
 		else
-			filecomments="$filecomments@@@ @@@$file_name@@@$filecom"
+			filecomments="$filecomments@@@\`\`\`@@@$file_name@@@$filecom@@@\`\`\`"
 		fi
 	fi
 done
