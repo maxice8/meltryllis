@@ -1,0 +1,194 @@
+#!/bin/sh
+if ! [ -d .git ]; then
+	echo "Not in a git repo" >&2
+	return 1
+fi
+
+# List all commits that are in a Pull Request
+gcp() {
+	git log upstream/master..$1 --pretty='%h'
+}
+
+# List all APKBUILD files that have been added or modified in the given commit
+changed_files() {
+	git diff-tree \
+		--no-commit-id \
+		--name-only -r --diff-filter=AM \
+		"$@" \
+		'**/APKBUILD'
+}
+
+# If the user executed pr-fetcher-daemon binary or invokes with the
+# first arg as daemon then we execute a PRs fetching daemon, hub pr list
+# takes a very long time, so run it every 5 minutes
+if [ "${0##*/}" = "pr-fetcher-daemon" ] || [ "$1" = "daemon" ]; then
+	while true; do
+		output=""
+		output="$(hub pr list -f '(%i) (%NC) %t by %au%n')"
+		[ -z "$output" ] && continue
+		printf "%s\\n" "$output" > "${XDG_RUNTIME_DIR:-'/tmp/'}"/PRs
+		sleep 300
+	done
+fi
+
+if [ ! -f "${XDG_RUNTIME_DIR:-'/tmp'}"/PRs ]; then
+	echo "PRs file is not present, start pr-fetcher-daemon or run this program with daemon" >&2
+	return 1
+fi
+
+# Ask the user to pick a PR using 'fzy'
+picked_pr="$(fzy --lines="$(tput cols)" < "${XDG_RUNTIME_DIR:-'/tmp'}"/PRs)"
+
+# If the user picked nothing then quit, this program can be used to check for PRs
+[ -z "$picked_pr" ] && return 0
+
+# Number of the PR as a whole integer, remove the () and # with tr
+pr_num="$(printf "%s\\n" "$picked_pr" | cut -d ' ' -f1 | tr -d '()#')"
+
+commits=""
+
+# Check if the pr is already fetched, if not fetch it and checkout it
+if git rev-parse --verify "$pr_num" >/dev/null 2>&1; then
+	gbr "$pr_num"
+else
+	# Check out the pr num with the name of the pr branch
+	hub pr checkout "$pr_num" "$pr_num" >/dev/null 2>&1 &
+	commits="$(hub api \
+			   /repos/alpinelinux/aports/pulls/${pr_num}/commits \
+			   | jq -r '.[].sha' &)"
+	wait
+fi
+
+if [ -z "$commits" ]; then
+	commits="$(hub api \
+			   /repos/alpinelinux/aports/pulls/${pr_num}/commits \
+			   | jq -r '.[].sha')"
+fi
+
+
+# Comments to be given on the PR in regards to commits
+commitcomments=""
+# Comments to be given on the PR in regards to files changed
+filecomments=""
+# Comments to be given on the PR in regards to both, comments from the 2 above
+# will be added here and displayed to the user
+comments=""
+
+# Path to the APKBUILDS that have been changed
+files="$(changed_files $(printf "%s\\n" "$commits" | tail -1))"
+
+# Read comments for the PR until we have one that is just exit
+for commit in $commits; do
+	commitcom="" # The comment on a specific commit
+	commit_header="for commit $commit:" # The header used for all comments in a specific commit
+
+	while true; do
+		# Show a fzf prompt with the commit navigable as a pager and get the output
+		# of the query, either empty or the message to be added to the comments
+		# TODO: make it work as a full pager, not matching fuzzy as we type, that is just annoying
+		curcom="$(git show "$commit" | colordiff | fzf \
+												 --layout reverse \
+									 	 		 --ansi \
+									 	 		 --print-query \
+									 	 		 --no-hscroll \
+									 	 		 --border \
+									 	 		 --inline-info \
+									 	 		 --no-clear \
+												 --prompt="$commit > " \
+									 	 		 | head -1)"
+
+		# If no output was written on the prompt then the user wants to exit
+		# restore the terminal and break out of the loop
+		if [ -z "$curcom" ]; then
+			tput rmcup
+			break
+		fi
+
+		# if the commit message is empty then add our current message
+		# otherwise add our current message after adding a newline (@@@)
+		if [ -z "$commitcom" ]; then
+			commitcom="- $curcom"
+		else
+			commitcom="$commitcom@@@- $curcom"
+		fi
+	done
+
+	# If the commit messages are empty then continue, we have nothing to comment
+	# on
+	if [ -z "$commitcom" ]; then
+		continue
+	else
+		# if the commit comments are empty then add our header and our messages
+		# otherwise add the previous commit comments and then add our headers and
+		# our messages
+		if [ -z "$commitcomments" ]; then
+			commitcomments="$commit_header@@@$commitcom"
+		else
+			commitcomments="$commitcomments@@@$commit_header@@@$commitcom"
+		fi
+	fi
+done
+
+# Same comments applies here but with files instead of commits
+for file in $files; do
+	filecom=""
+	file_name="for file $file:"
+
+	while true; do
+		curcom="$(cat "$file" | fzf \
+								--layout reverse \
+				  				--ansi \
+				  				--print-query \
+				  				--no-hscroll \
+				  				--border \
+				  				--inline-info \
+				  				--no-clear \
+				  				--prompt="$file > " \
+				  				| head -1)"
+
+		if [ -z "$curcom" ]; then
+			tput rmcup
+			break
+		fi
+
+		if [ -z "$filecom" ]; then
+			filecom="- $curcom"
+		else
+			# Append our comments.
+			filecom="$filecom@@@- $curcom"
+		fi
+	done
+
+	if [ -z "$filecom" ]; then
+		continue
+	else
+		if [ -z "$filecomments" ]; then
+			filecomments="$file_name@@@$filecom"
+		else
+			filecomments="$filecomments@@@$file_name@@@$filecom"
+		fi
+	fi
+done
+
+# If we have comments about the commits then add them to comments
+if [ -n "$commitcomments" ]; then
+	comments="$commitcomments"
+fi
+
+# If we have comments about the files then add them to files
+if [ -n "$filecomments" ]; then
+	# If comments is empty then add it, otherwise add it after making
+	# a newline and appending the previous comment
+	if [ -z "$comments" ]; then
+		comments="$filecomments"
+	else
+		comments="$comments@@@$filecomments"
+	fi
+fi
+
+if [ -z "$comments" ]; then
+	appr "$pr_num" LGTM
+else
+	appr -r "$pr_num" "$comments"
+fi
+
