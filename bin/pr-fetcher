@@ -6,7 +6,7 @@ fi
 
 # Print a message to the user
 msg() {
-	printf -- "\\033[0;36m[ PLEASE WAIT ]\\033[0m $@\n"
+	printf -- "\\033[0;36m[ PLEASE WAIT ]\\033[0m $*\\n"
 }
 
 # List all APKBUILD files that have been added or modified in the given commit
@@ -37,15 +37,46 @@ if [ ! -f "${XDG_RUNTIME_DIR:-'/tmp'}"/PRs ]; then
 fi
 
 # Ask the user to pick a PR using 'fzy'
-picked_pr="$(fzy --lines="$(tput cols)" < "${XDG_RUNTIME_DIR:-'/tmp'}"/PRs)"
+picked_pr="$(grep -v "by $(get-repo-config origin-repo-owner)" < "${XDG_RUNTIME_DIR:-'/tmp'}"/PRs \
+			 | fzy --lines="$(tput cols)")"
 
 # If the user picked nothing then quit, this program can be used to check for PRs
 [ -z "$picked_pr" ] && return 0
 
 # Number of the PR as a whole integer, remove the () and # with tr
 pr_num="$(printf "%s\\n" "$picked_pr" | cut -d ' ' -f1 | tr -d '()#')"
+title="$(printf "%s\\n" "$picked_pr" | cut -d ' ' -f3- | sed 's| by .*||g')"
 
 commits=""
+
+# Check if we already reviewed the PR
+msg Checking if "$pr_num" "($title)" was already reviewed
+reviews="$(hub api \
+		   /repos/alpinelinux/aports/pulls/${pr_num}/reviews)"
+
+user="$(printf "%s\\n" "$reviews" \
+		| jq --arg GITNAME "$(get-repo-config origin-repo-owner)" \
+		 -r '.[].user.login | select(.==$GITNAME)')"
+state="$(printf "%s\\n" "$reviews" \
+		| jq -r '.[].state')"
+body="$(printf "%s\\n" "$reviews" \
+		| jq -r '.[].body')"
+
+if [ -n "$user" ]; then
+	while true; do
+		echo "Previous review found!"
+		echo "PR number: $pr_num"
+		echo "PR title: $title"
+		echo "state: $state"
+		echo "body: $body"
+		read -p "make new review? " yn
+		case $yn in
+			[Yy]* ) break ;;
+			[Nn]* ) exit 0 ;;
+			* ) echo "Please answer yes or no" ;;
+		esac
+	done
+fi
 
 # Check if the pr is already fetched, if not fetch it and checkout it
 if git rev-parse --verify "$pr_num" >/dev/null 2>&1; then
@@ -63,7 +94,7 @@ else
 fi
 
 if [ -z "$commits" ]; then
-	msg Fetching commits for "$pr_num"
+	msg Fetching commits from "$pr_num" "($title)"
 	commits="$(hub api \
 			   /repos/alpinelinux/aports/pulls/${pr_num}/commits \
 			   | jq -r '.[].sha')"
@@ -191,10 +222,10 @@ if [ -n "$filecomments" ]; then
 fi
 
 if [ -z "$comments" ]; then
-	msg Approving PR "$pr_num"
+	msg Approving PR "$pr_num" "($title)"
 	appr "$pr_num" LGTM
 else
-	msg Requesting changes on "$pr_num" with the following comments "$(printf "%s\\n" "$comments" | sed 's|@@@|\
+	msg Requesting changes on "$pr_num" "($title)" with the following comments "$(printf "%s\\n" "$comments" | sed 's|@@@|\
 "|g')"
 	appr -r "$pr_num" "$comments"
 fi
