@@ -13,7 +13,7 @@ msg() {
 changed_files() {
 	git diff-tree \
 		--no-commit-id \
-		--name-only -r --diff-filter=AM \
+		--name-only -r --diff-filter=M \
 		"$@" \
 		'**/APKBUILD'
 }
@@ -225,8 +225,9 @@ if [ -z "$comments" ]; then
 	msg Approving PR "$pr_num" "($title)"
 	appr "$pr_num" LGTM
 else
-	msg Requesting changes on "$pr_num" "($title)" with the following comments "$(printf "%s\\n" "$comments" | sed 's|@@@|\
-"|g')"
+	msg "Requesting changes on $pr_num ($title) with the following comments
+$(printf "%s\\n" "$comments" | sed 's|@@@|\
+|g')"
 	appr -r "$pr_num" "$comments"
 fi
 
