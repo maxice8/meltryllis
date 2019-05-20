@@ -4,9 +4,9 @@ if ! [ -d .git ]; then
 	return 1
 fi
 
-# List all commits that are in a Pull Request
-gcp() {
-	git log upstream/master..$1 --pretty='%h'
+# Print a message to the user
+msg() {
+	printf -- "\\033[0;36m[ PLEASE WAIT ]\\033[0m $@\n"
 }
 
 # List all APKBUILD files that have been added or modified in the given commit
@@ -49,10 +49,13 @@ commits=""
 
 # Check if the pr is already fetched, if not fetch it and checkout it
 if git rev-parse --verify "$pr_num" >/dev/null 2>&1; then
+	msg Switching to branch "$pr_num"
 	gbr "$pr_num"
 else
 	# Check out the pr num with the name of the pr branch
+	msg Fetching and checking out branch "$pr_num"
 	hub pr checkout "$pr_num" "$pr_num" >/dev/null 2>&1 &
+	msg Fetching commits for "$pr_num"
 	commits="$(hub api \
 			   /repos/alpinelinux/aports/pulls/${pr_num}/commits \
 			   | jq -r '.[].sha' &)"
@@ -60,6 +63,7 @@ else
 fi
 
 if [ -z "$commits" ]; then
+	msg Fetching commits for "$pr_num"
 	commits="$(hub api \
 			   /repos/alpinelinux/aports/pulls/${pr_num}/commits \
 			   | jq -r '.[].sha')"
@@ -187,11 +191,15 @@ if [ -n "$filecomments" ]; then
 fi
 
 if [ -z "$comments" ]; then
+	msg Approving PR "$pr_num"
 	appr "$pr_num" LGTM
 else
+	msg Requesting changes on "$pr_num" with the following comments "$(printf "%s\\n" "$comments" | sed 's|@@@|\
+"|g')"
 	appr -r "$pr_num" "$comments"
 fi
 
 # Avoid using the 'dlbr' script since that also tries to remove a branch
 # in the remote repo and we don't need that
-git branch -D "$pr_num"
+msg Deleting branch "$pr_num"
+git checkout -q master && git branch -q -D "$pr_num"
