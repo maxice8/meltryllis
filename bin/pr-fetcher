@@ -4,16 +4,26 @@ if ! [ -d .git ]; then
 	return 1
 fi
 
+user="$(get-repo-config repo-owner)"
+repo="$(get-repo-config repo-name)"
+ouser="$(get-repo-config origin-repo-owner)"
+orepo="$(get-repo-config origin-repo-name)"
+
+prfile="${XDG_RUNTIME_DIR:-'/tmp'}"/PRs-"$user"-"$repo"
+
 # Print a message to the user
 msg() {
 	printf -- "\\033[0;36m[ PLEASE WAIT ]\\033[0m $*\\n"
 }
 
 # List all APKBUILD files that have been added or modified in the given commit
+# NOTE: ideally --diff-filter should deal with only changed APKBUILDs since if a new
+# APKBUILD is added we can just comment on the commit that adds it in full. But we
+# need to check for when they are added when files are moved from one repo to another
 changed_files() {
 	git diff-tree \
 		--no-commit-id \
-		--name-only -r --diff-filter=M \
+		--name-only -r --diff-filter=AM \
 		"$@" \
 		'**/APKBUILD'
 }
@@ -26,18 +36,18 @@ if [ "${0##*/}" = "pr-fetcher-daemon" ] || [ "$1" = "daemon" ]; then
 		output=""
 		output="$(hub pr list -f '(%i) (%NC) %t by %au%n')"
 		[ -z "$output" ] && continue
-		printf "%s\\n" "$output" > "${XDG_RUNTIME_DIR:-'/tmp/'}"/PRs
+		printf "%s\\n" "$output" > "$prfile"
 		sleep 300
 	done
 fi
 
-if [ ! -f "${XDG_RUNTIME_DIR:-'/tmp'}"/PRs ]; then
+if [ ! -f "$prfile" ]; then
 	echo "PRs file is not present, start pr-fetcher-daemon or run this program with daemon" >&2
 	return 1
 fi
 
 # Ask the user to pick a PR using 'fzy'
-picked_pr="$(grep -v "by $(get-repo-config origin-repo-owner)" < "${XDG_RUNTIME_DIR:-'/tmp'}"/PRs \
+picked_pr="$(grep -v "by $ouser" < "$prfile" \
 			 | fzy --lines="$(tput cols)")"
 
 # If the user picked nothing then quit, this program can be used to check for PRs
@@ -55,7 +65,7 @@ reviews="$(hub api \
 		   /repos/alpinelinux/aports/pulls/${pr_num}/reviews)"
 
 user="$(printf "%s\\n" "$reviews" \
-		| jq --arg GITNAME "$(get-repo-config origin-repo-owner)" \
+		| jq --arg GITNAME "$ouser" \
 		 -r '.[].user.login | select(.==$GITNAME)')"
 state="$(printf "%s\\n" "$reviews" \
 		| jq -r '.[].state')"
@@ -73,7 +83,10 @@ if [ -n "$user" ]; then
 		case $yn in
 			[Yy]* |'') break ;;
 			[Nn]* ) exit 0 ;;
-			[Oo]* ) hub browser -- issues/$pr_num ;;
+			[Oo]* ) 
+				echo "Opening in a browser"
+				hub browse -- issues/$pr_num
+				;;
 			* ) echo "Please answer yes or no" ;;
 		esac
 	done
@@ -123,6 +136,22 @@ done
 # same PR, we don't want to open the APKBUILD twice
 files="$(printf "%s\\n" "$files" | sort -u)"
 filecount="$(printf "%s\\n" "$files" | wc -l)"
+# files will always have an empty line due to the way it is assigned, so always
+# discount one from it
+filecount=$(( filecount - 1 ))
+
+while true; do
+	echo "Commits in $pr_num ($title):"
+	for commit in $commits; do
+		git show $commit -s --pretty=oneline
+	done
+	read -p "continue? " yn
+	case $yn in
+		[Yy]* |'') break ;;
+		[Nn]* ) exit 0 ;;
+		* ) echo "Please answer yes or no" ;;
+	esac
+done
 
 c=1
 # Read comments for the PR until we have one that is just exit
@@ -172,9 +201,9 @@ for commit in $commits; do
 		# otherwise add the previous commit comments and then add our headers and
 		# our messages
 		if [ -z "$commitcomments" ]; then
-			commitcomments="\`\`\`@@@$commit_header@@@$commitcom@@@\`\`\`"
+			commitcomments="- $commit_header@@@\`\`\`@@@$commitcom@@@\`\`\`"
 		else
-			commitcomments="$commitcomments@@@\`\`\`@@@$commit_header@@@$commitcom@@@\`\`\`"
+			commitcomments="$commitcomments@@@- $commit_header@@@\`\`\`@@@$commitcom@@@\`\`\`"
 		fi
 	fi
 done
@@ -186,6 +215,15 @@ c=1
 for file in $files; do
 	filecom=""
 	file_name="for file $file:"
+
+	# We need this in case we catch a file that in a later commit is moved to another
+	# repository, like modifying testing/foo/APKBUILD but in the last commit moving
+	# it to community/foo/APKBUILD, it will result in testing/foo/APKBUILD being
+	# added to the file list because the algo for checking which files were changed
+	# runs against each commit
+	if [ ! -f "$file" ]; then
+		continue
+	fi
 
 	while true; do
 		curcom="$(cat "$file" | fzf \
@@ -218,9 +256,9 @@ for file in $files; do
 		continue
 	else
 		if [ -z "$filecomments" ]; then
-			filecomments="\`\`\`@@@$file_name@@@$filecom@@@\`\`\`"
+			filecomments="- $file_name@@@\`\`\`@@@$filecom@@@\`\`\`"
 		else
-			filecomments="$filecomments@@@\`\`\`@@@$file_name@@@$filecom@@@\`\`\`"
+			filecomments="$filecomments@@@- $file_name@@@\`\`\`@@@$filecom@@@\`\`\`"
 		fi
 	fi
 done
