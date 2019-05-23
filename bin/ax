@@ -130,7 +130,7 @@ move_repo() {
 
 	if isclean; then
 		git add "$from" "$to"/"$pkgname"
-		NOALINT=1 NOPKGVERCHECK=1 git commit -m "${to}/${pkgname}: move from $repo"
+		NOAPKBUILD_LINT=1 NOAPORTS_LINT=1 NOPKGVERCHECK=1 git commit -m "${to}/${pkgname}: move from $repo"
 	fi
 }
 
@@ -197,7 +197,7 @@ rename_repo() {
 	# Check if there is nothing cached and try to commit it
 	if isclean; then
 		git add "$src" "$repo"/"$dst"
-		NOALINT=1 NOPKGVERCHECK=1 git commit -m "${repo}/${dst}: rename from $pkgname"
+		NOAPKBUILD_LINT=1 NOAPORTS_LINT=1 NOPKGVERCHECK=1 git commit -m "${repo}/${dst}: rename from $pkgname"
 	fi
 }
 
