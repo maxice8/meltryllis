@@ -4,28 +4,119 @@ if ! [ -d .git ]; then
 	return 1
 fi
 
-user="$(get-repo-config repo-owner)"
-repo="$(get-repo-config repo-name)"
+# Clean up after our operations
+cleanup() {
+	# Clean up the temporary directory
+	[ -n "$tempdir" ] && [ -d "$tempdir" ] && rm -rf "$tempdir"
+	# Delete the branch we used
+	if git rev-parse --verify "$pr_num" >/dev/null 2>&1; then
+		git checkout -q master
+		git branch -q -D "$pr_num"
+	fi
+}
+trap cleanup EXIT
+
+uuser="$(get-repo-config repo-owner)"
+urepo="$(get-repo-config repo-name)"
 ouser="$(get-repo-config origin-repo-owner)"
 orepo="$(get-repo-config origin-repo-name)"
 
-prfile="${XDG_RUNTIME_DIR:-'/tmp'}"/PRs-"$user"-"$repo"
+prfile="${XDG_RUNTIME_DIR:-'/tmp'}"/PRs-"$uuser"-"$urepo"
 
 # Print a message to the user
 msg() {
 	printf -- "\\033[0;36m[ PLEASE WAIT ]\\033[0m $*\\n"
 }
 
-# List all APKBUILD files that have been added or modified in the given commit
+ask() {
+	printf -- "\\033[0;33m[ PLEASE ANSWER ]\\033[0M $*\\n"
+}
+
+# List all APKBUILD files that have been added or modified in the given commit, trim
+# files that do not actually exist
 # NOTE: ideally --diff-filter should deal with only changed APKBUILDs since if a new
 # APKBUILD is added we can just comment on the commit that adds it in full. But we
 # need to check for when they are added when files are moved from one repo to another
 changed_files() {
-	git diff-tree \
-		--no-commit-id \
-		--name-only -r --diff-filter=AM \
-		"$@" \
-		'**/APKBUILD'
+	for file in $(git diff-tree \
+				  --no-commit-id \
+				  --name-only -r --diff-filter=AM \
+				  "$@" '**/APKBUILD'); do
+	[ -f "$file" ] && echo $file
+	done
+}
+
+annotate_commit() {
+	local input= commit="$1" commitfile="$2"/"$1"
+
+	while true; do
+		# Show a fzf prompt with the commit navigable as a pager and get the output
+		# of the query, either empty or the message to be added to the comments
+		# TODO: make it work as a full pager, not matching fuzzy as we type, that is just annoying
+		input="$(git show "$commit" | colordiff | fzf \
+												  --layout reverse \
+										 		  --ansi \
+										 		  --print-query \
+										 		  --no-hscroll \
+										 		  --border \
+										 		  --inline-info \
+										 		  --no-clear \
+										 		  --prompt="$commit > " \
+												  | head -1)"
+
+		printf "%s\\n"  "$input" >> "$commitfile"
+
+		# Strip all empty lines	
+		sed -i '/^$/d' "$commitfile"
+
+		# Replace all newlines with '@@@' but restore the last one
+		awk 1 ORS="@@@" "$commitfile" | sed "s|@@@$|\\n|" > "$commitfile"- && mv "$commitfile"- "$commitfile"
+
+		# If no output was written on the prompt then the user wants to exit
+		# restore the terminal and break out of the loop
+		if [ -z "$input" ]; then
+			tput rmcup
+			break
+		fi
+	done
+}
+
+annotate_file() {
+	local input= file="$1" filefile="$2"/"$1"
+
+	# Create path to the file
+	mkdir -p "${filefile%/*}"
+
+	while true; do
+		# Show a fzf prompt with the commit navigable as a pager and get the output
+		# of the query, either empty or the message to be added to the comments
+		# TODO: make it work as a full pager, not matching fuzzy as we type, that is just annoying
+		input="$(cat -n "$file" | fzf \
+								  --layout reverse \
+								  --ansi \
+								  --print-query \
+								  --no-hscroll \
+								  --border \
+								  --inline-info \
+								  --no-clear \
+								  --prompt="$file > " \
+								  | head -1)"
+
+		printf "%s\\n"  "$input" >> "$filefile"
+
+		# Strip all empty lines	
+		sed -i '/^$/d' "$filefile"
+
+		# Replace all newlines with '@@@' but restore the last one
+		awk 1 ORS="@@@" "$filefile" | sed "s|@@@$|\\n|" > "$filefile"- && mv "$filefile"- "$filefile"
+
+		# If no output was written on the prompt then the user wants to exit
+		# restore the terminal and break out of the loop
+		if [ -z "$input" ]; then
+			tput rmcup
+			break
+		fi
+	done
 }
 
 # If the user executed pr-fetcher-daemon binary or invokes with the
@@ -62,7 +153,7 @@ commits=""
 # Check if we already reviewed the PR
 msg Checking if "$pr_num" "($title)" was already reviewed
 reviews="$(hub api \
-		   /repos/alpinelinux/aports/pulls/${pr_num}/reviews)"
+		   /repos/${uuser}/${urepo}/pulls/${pr_num}/reviews)"
 
 user="$(printf "%s\\n" "$reviews" \
 		| jq --arg GITNAME "$ouser" \
@@ -102,7 +193,7 @@ else
 	hub pr checkout "$pr_num" "$pr_num" >/dev/null 2>&1 &
 	msg Fetching commits for "$pr_num"
 	commits="$(hub api \
-			   /repos/alpinelinux/aports/pulls/${pr_num}/commits \
+			   /repos/${uuser}/${urepo}/pulls/${pr_num}/commits \
 			   | jq -r '.[].sha' &)"
 	wait
 fi
@@ -110,16 +201,12 @@ fi
 if [ -z "$commits" ]; then
 	msg Fetching commits from "$pr_num" "($title)"
 	commits="$(hub api \
-			   /repos/alpinelinux/aports/pulls/${pr_num}/commits \
+			   /repos/${uuser}/${urepo}/pulls/${pr_num}/commits \
 			   | jq -r '.[].sha')"
 fi
 
 commitcount="$(printf "%s\\n" "$commits" | wc -l)"
 
-# Comments to be given on the PR in regards to commits
-commitcomments=""
-# Comments to be given on the PR in regards to files changed
-filecomments=""
 # Comments to be given on the PR in regards to both, comments from the 2 above
 # will be added here and displayed to the user
 comments=""
@@ -134,150 +221,77 @@ done
 # We don't want to operate on duplicate files, if 2 commits point to the same
 # file like one that is updating and one that is making style changes are in the
 # same PR, we don't want to open the APKBUILD twice
-files="$(printf "%s\\n" "$files" | sort -u)"
+files="$(printf "%s\\n" "$files" | sort -u | sed '/^$/d')"
 filecount="$(printf "%s\\n" "$files" | wc -l)"
-# files will always have an empty line due to the way it is assigned, so always
-# discount one from it
-filecount=$(( filecount - 1 ))
 
+# Temporary directory that holds the files that represents the comments and
+# the commits
+tempdir="$(mktemp -d)"
+
+# Read comments for the PR until we have one that is just exit
 while true; do
-	echo "Commits in $pr_num ($title):"
-	for commit in $commits; do
-		git show $commit -s --pretty=oneline
-	done
-	read -p "continue? " yn
-	case $yn in
-		[Yy]* |'') break ;;
-		[Nn]* ) exit 0 ;;
-		* ) echo "Please answer yes or no" ;;
+
+	# If we have only one commit then just go to it instead of asking the user
+	# what commit he wants to look at
+	if [ "$commitcount" -eq 1 ]; then
+		annotate_commit "$commits" "$tempdir"
+		break
+	fi
+
+	# If the user has less than 3 commits then set lines to 3 since we can't have
+	# a lower value to that
+	[ "$commitcount" -lt 3 ] && lines=3 || lines=$commitcount
+
+	tput clear # Clear the terminal
+	yn="$(git show $commits -s --pretty=oneline | fzy \
+												  --lines="$lines" \
+												  --prompt="pick a commit: ")"
+
+	yn="$(printf "%s\\n" "$yn" | cut -d ' ' -f1)"
+
+	case "$yn" in
+		'') break ;; # This is reached with 'fzy' when the user presses ctrl-c
+		*) annotate_commit "$yn" "$tempdir" ;; 
 	esac
 done
 
-c=1
 # Read comments for the PR until we have one that is just exit
-for commit in $commits; do
-	commitcom="" # The comment on a specific commit
-	commit_header="for commit $commit:" # The header used for all comments in a specific commit
+while true; do
 
-	while true; do
-		# Show a fzf prompt with the commit navigable as a pager and get the output
-		# of the query, either empty or the message to be added to the comments
-		# TODO: make it work as a full pager, not matching fuzzy as we type, that is just annoying
-		curcom="$(git show "$commit" | colordiff | fzf \
-												 --layout reverse \
-									 	 		 --ansi \
-									 	 		 --print-query \
-									 	 		 --no-hscroll \
-									 	 		 --border \
-									 	 		 --inline-info \
-									 	 		 --no-clear \
-												 --prompt="$commit ($c out of $commitcount) > " \
-									 	 		 | head -1)"
+	[ -z "$files" ] && break
 
-		# If no output was written on the prompt then the user wants to exit
-		# restore the terminal and break out of the loop
-		if [ -z "$curcom" ]; then
-			tput rmcup
-			break
-		fi
-
-		# if the commit message is empty then add our current message
-		# otherwise add our current message after adding a newline (@@@)
-		if [ -z "$commitcom" ]; then
-			commitcom="$curcom"
-		else
-			commitcom="$commitcom@@@$curcom"
-		fi
-	done
-		
-	c=$(( c + 1 ))
-
-	# If the commit messages are empty then continue, we have nothing to comment
-	# on
-	if [ -z "$commitcom" ]; then
-		continue
-	else
-		# if the commit comments are empty then add our header and our messages
-		# otherwise add the previous commit comments and then add our headers and
-		# our messages
-		if [ -z "$commitcomments" ]; then
-			commitcomments="- $commit_header@@@\`\`\`@@@$commitcom@@@\`\`\`"
-		else
-			commitcomments="$commitcomments@@@- $commit_header@@@\`\`\`@@@$commitcom@@@\`\`\`"
-		fi
+	# If there is only one file modified then just go to it instead of asking
+	# the user which file he wants
+	if [ "$filecount" -eq 1 ]; then
+		annotate_file "$files" "$tempdir"
+		break
 	fi
+
+	[ "$filecount" -lt 3 ] && lines=3 || lines=$filecount
+
+	tput clear # Clear the terminal
+	yn="$(echo "$files" | fzy \
+						  --lines="$lines" \
+						  --prompt="pick a file: ")"
+
+	yn="$(printf "%s\\n" "$yn" | cut -d ' ' -f1)"
+
+	case "$yn" in
+		'') break ;; # This is reached if the user presses ctrl-c
+		*) annotate_file "$yn" "$tempdir" ;; 
+	esac
 done
 
-c=1
-
-# Same comments applies here but with files instead of commits
-# Get only unique files
-for file in $files; do
-	filecom=""
-	file_name="for file $file:"
-
-	# We need this in case we catch a file that in a later commit is moved to another
-	# repository, like modifying testing/foo/APKBUILD but in the last commit moving
-	# it to community/foo/APKBUILD, it will result in testing/foo/APKBUILD being
-	# added to the file list because the algo for checking which files were changed
-	# runs against each commit
-	if [ ! -f "$file" ]; then
-		continue
-	fi
-
-	while true; do
-		curcom="$(cat "$file" | fzf \
-								--layout reverse \
-				  				--ansi \
-				  				--print-query \
-				  				--no-hscroll \
-				  				--border \
-				  				--inline-info \
-				  				--no-clear \
-								--prompt="$file ($c out of $filecount) > " \
-				  				| head -1)"
-
-		if [ -z "$curcom" ]; then
-			tput rmcup
-			break
-		fi
-
-		if [ -z "$filecom" ]; then
-			filecom="$curcom"
-		else
-			# Append our comments.
-			filecom="$filecom@@@$curcom"
-		fi
-	done
-
-	c=$(( c + 1 ))
-
-	if [ -z "$filecom" ]; then
-		continue
-	else
-		if [ -z "$filecomments" ]; then
-			filecomments="- $file_name@@@\`\`\`@@@$filecom@@@\`\`\`"
-		else
-			filecomments="$filecomments@@@- $file_name@@@\`\`\`@@@$filecom@@@\`\`\`"
-		fi
-	fi
+# Iterate over all files in tempdir, sort so that commits come before
+# filenames
+for as in $(find "$tempdir" -type f -print | sort -t / -k 2); do
+	relas="${as##*$tempdir/}" # Strip the temporary dir from the path
+	[ -s "$file" ] && continue # Empty files can be ignored safely
+	header="For $relas" # This is 'For <commit|filename>'
+	inputs="$(cat "$as")"
+	[ -z "$inputs" ] && continue # No comments, continue
+	comments="${comments}${header}@@@\`\`\`@@@${inputs}@@@\`\`\`@@@"
 done
-
-# If we have comments about the commits then add them to comments
-if [ -n "$commitcomments" ]; then
-	comments="$commitcomments"
-fi
-
-# If we have comments about the files then add them to files
-if [ -n "$filecomments" ]; then
-	# If comments is empty then add it, otherwise add it after making
-	# a newline and appending the previous comment
-	if [ -z "$comments" ]; then
-		comments="$filecomments"
-	else
-		comments="$comments@@@ @@@$filecomments"
-	fi
-fi
 
 if [ -z "$comments" ]; then
 	msg Approving PR "$pr_num" "($title)"
