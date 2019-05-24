@@ -69,6 +69,13 @@ BSPWM_STATE=${XDG_RUNTIME_DIR:-/tmp}/bspwm-state-"$(id -u)".json
 
 export BSPWM_SOCKET BSPWM_STATE
 #
+# Alpine Linux aports specific
+#
+AX_ABUILD=dabuild
+AX_ASUM=/usr/bin/abuild
+
+export AX_ABUILD AX_ASUM
+#
 # If snooze-getmail is not running, start it
 #
 # pgrep -u "$(id -u)" -x snooze-getmail || fork snooze-getmail
