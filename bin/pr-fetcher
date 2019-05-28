@@ -140,9 +140,13 @@ fi
 # Ask the user to pick a PR using 'fzy'
 # Remove the name of the user since you can't remove
 # Remove users that don't want reviews that include
-# linting and quality of APKBUILD improvments.
+# linting and quality of APKBUILD improvments that
+# are not directly related to the PR in hand, this
+# can be revisited once proper linting is part of
+# Alpine review process.
 picked_pr="$(grep -v "by $ouser" < "$prfile" \
 			 | grep -v 'by PureTryOut' \
+			 | grep -v 'by 5paceToast' \
 			 | fzy --lines="$(tput cols)")"
 
 # If the user picked nothing then quit, this program can be used to check for PRs
@@ -286,7 +290,11 @@ while true; do
 	esac
 done
 
+tput clear
+msg Starting shell to work on \#$pr_num
 sh -l
+tput clear
+msg Finished shell work on \#$pr_num
 
 # Iterate over all files in tempdir, sort so that commits come before
 # filenames
