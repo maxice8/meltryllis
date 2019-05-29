@@ -307,7 +307,7 @@ for as in $(find "$tempdir" -type f -print | sort -t / -k 2); do
 	comments="${comments}${header}@@@\`\`\`@@@${inputs}@@@\`\`\`@@@"
 done
 
-if [ "$needsinput" -eq 1 ]; then
+if [ "$needsinput" ] && [ "$needsinput" -eq 1 ]; then
 	msg Getting user input on \#$pr_num after shell tests
 	${EDITOR:-vi}  "$tempdir"/.in-general
 	
