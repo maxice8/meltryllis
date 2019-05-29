@@ -292,7 +292,7 @@ done
 
 tput clear
 msg Starting shell to work on \#$pr_num
-sh -l
+sh -l || needsinput=1
 tput clear
 msg Finished shell work on \#$pr_num
 
@@ -306,6 +306,19 @@ for as in $(find "$tempdir" -type f -print | sort -t / -k 2); do
 	[ -z "$inputs" ] && continue # No comments, continue
 	comments="${comments}${header}@@@\`\`\`@@@${inputs}@@@\`\`\`@@@"
 done
+
+if [ "$needsinput" -eq 1 ]; then
+	msg Getting user input on \#$pr_num after shell tests
+	${EDITOR:-vi}  "$tempdir"/.in-general
+	
+	# Get general comments from the user
+	if [ -s "$tempdir"/.in-general ]; then
+		header="general comments:"
+		sed -i '/^$/d' "$tempdir"/.in-general
+		inputs="$(awk 1 ORS="@@@" "$tempdir"/.in-general | sed "s|@@@$|\\n|")"
+		comments="${comments}${header}@@@\`\`\`@@@${inputs}@@@\`\`\`@@@"
+	fi
+fi
 
 if [ -z "$comments" ]; then
 	msg Approving PR "$pr_num" "($title)"
