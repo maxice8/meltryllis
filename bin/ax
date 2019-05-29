@@ -313,6 +313,10 @@ case "$cmd" in
 	r) rename_repo "$@";;
 	w) mkgit "$@" ;;
 	g) getvar "$@" ;;
+	l) 
+		apkbuild-lint "$branch"/APKBUILD
+		aports-lint "$branch"/APKBUILD
+		;;
 	h) help;;
 	*) usage;;
 esac
