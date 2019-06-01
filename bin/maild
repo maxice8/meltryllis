@@ -1,0 +1,50 @@
+#!/bin/sh
+new_mail_icon=""
+cur_mail_icon=""
+
+new=1
+
+count_new() {
+	echo "$new_mail_icon $(fcount "${MAILDIR}/new")"
+}
+
+count_all() {
+	echo "$cur_mail_icon $(( $(fcount "${MAILDIR}/new" ) + $(fcount "${MAILDIR}/cur") ))"
+}
+
+toggle() {
+	if [ "$new" = 1 ]; then
+		new=0
+		count_all
+
+		return
+	else
+		new=1
+		count_new
+
+		return
+	fi
+}
+
+spawn() {
+	fork alacritty -e m
+}
+
+trap "toggle" USR1
+trap "spawn" USR2
+
+count_new
+
+mail_wait() {
+	inotifywait -q -m "${MAILDIR}/new" "${MAILDIR}/cur" -e create -e delete |
+		while read -r _; do
+			[ "$new" = "1" ] && count_new 
+			[ "$new" = "0" ] && count_all
+		done
+}
+
+mail_wait &
+
+while :; do
+	wait
+done

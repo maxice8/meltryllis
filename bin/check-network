@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+# Use this if you can't connect to the default gateway, the wireless
+# card is disabled, or there is no ap connected to. 
+disconnected=""
+
+check_hardware() {
+	# Check if the network card isn't blocked
+	if rfkill -o TYPE,SOFT,HARD | grep wlan | grep -wq blocked; then
+		echo "$disconnected"
+		return 1
+	fi
+	return 0
+}
+
+check_gateway() {
+	gateway="$(ip route | grep default | awk '{ print $3 }')"
+
+	# Check if we can connect to the default gateway
+	if ! wget -q --tries=1 --timeout=2 --spider "$gateway"; then
+		echo "$disconnected"
+		return 1
+	fi
+	return 0
+}
+
+check_connectivity() {
+	# Use this if you can connect to the default gateway but is behind
+	# a captive portal
+	captive_portal=""
+	
+	# All is good!
+	wireless_connected=""
+
+	# Check the fedoraproject page.
+	if wget -q --tries=5 --timeout=2 --spider http://fedoraproject.org/static/hotspot.txt; then
+        echo "$wireless_connected"
+		return 0
+    else
+        echo "$captive_portal"
+		return 1
+    fi
+}
+
+scan() {
+	check_hardware || return $?
+	check_gateway || return $?
+	check_connectivity || return $?
+}
+
+trap "scan" USR1
+
+while :; do
+	if ! scan; then
+		sleep 10 &
+	else
+		sleep 30 &
+	fi
+	wait
+done
+
