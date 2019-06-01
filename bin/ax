@@ -3,16 +3,16 @@
 : ${AX_ASUM:=abuild}
 
 usage() {
-	printf "usage: %s <uebtxnsah> [repo/package]\\n" "$(basename "$0")"
+	printf "usage: %s <key> [repo/package]\\n" "$(basename "$0")"
 }
 
 help() {
 usage
 	cat <<EOF
 
+keys: 
 u : unpack
 e : edit APKBUILD
-b : build the package
 t : build the package and install
 x : get checksum of package
 n : navigate directory
