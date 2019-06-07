@@ -4,8 +4,14 @@ then
 	set $@ -- $(git rev-parse --abbrev-ref HEAD)
 fi
 
+if [ "$(git rev-parse --abbrev-ref HEAD)" = master ]; then
+	branch=pusher/master
+else
+	branch=upstream/master
+fi
+
 while [ $# -gt 0 ]
 do
-	git log upstream/master..$1 --pretty='%C(yellow)%h %C(white)%s' 
+	git log $branch..$1 --pretty='%C(yellow)%h %C(white)%s' 
 	shift
 done
