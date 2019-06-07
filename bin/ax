@@ -307,6 +307,7 @@ case "$cmd" in
 	t) run $AX_ABUILD -r;;
 	tf) run $AX_ABUILD -f -r;;
 	n) f "$branch";;
+	N) run sh -l ;;
 	x) run abuild checksum;;
 	s) git push -uf origin "$(git rev-parse --abbrev-ref HEAD)" "$@";;
 	a) git commit --amend -v "$@";;
