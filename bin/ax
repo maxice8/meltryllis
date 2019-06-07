@@ -22,6 +22,7 @@ m : move package to a given repo
 r : rename a package
 w : init a git repo on the unpacked source code
 g : get value of variables
+f : fix APKBUILD
 h : show this message
 EOF
 }
@@ -167,7 +168,7 @@ rename_repo() {
 	fi
 
 	# Check if the package doesn't exist and error out
-	if [ ! -d "$src" ]; then
+	if [ ! -d "$repo"/"$src" ]; then
 		printf "rename operation failed: package '%s' doesn't exist\n" "$src"
 		print_vars src "$src" dst "$dst" 
 		return 1
@@ -192,11 +193,11 @@ rename_repo() {
 		return 1
 	fi
 
-	mv -f "$src" "$repo"/"$dst"
+	mv -f "$from" "$repo"/"$dst"
 
 	# Check if there is nothing cached and try to commit it
 	if isclean; then
-		git add "$src" "$repo"/"$dst"
+		git add "$from" "$repo"/"$dst"
 		NOAPKBUILD_LINT=1 NOAPORTS_LINT=1 NOPKGVERCHECK=1 git commit -m "${repo}/${dst}: rename from $pkgname"
 	fi
 }
@@ -287,7 +288,7 @@ else
 	# Check if the variable provided to us is just the name of
 	# a repository. Otherwise try to find the repo given to use
 	case "$2" in
-		main|community|testing|unmaintained) 
+		main|community|testing|unmaintained)
 			branch="$(find_repo "$_branch")";;
 		*) branch="$(find_repo "$2" && shift || find_repo "$_branch")" ;;
 	esac
@@ -309,10 +310,13 @@ case "$cmd" in
 	x) run abuild checksum;;
 	s) git push -uf origin "$(git rev-parse --abbrev-ref HEAD)" "$@";;
 	a) git commit --amend -v "$@";;
-	m) move_repo "$@";;
-	r) rename_repo "$@";;
-	w) mkgit "$@" ;;
-	g) getvar "$@" ;;
+	m) move_repo "$@" "$branch";;
+	r) rename_repo "$@" "$branch";;
+	w) mkgit "$@" "$branch";;
+	g) getvar "$@" "$branch";;
+	f)
+		apkbuild-fixer "$branch"/APKBUILD
+		;;
 	l) 
 		apkbuild-lint "$branch"/APKBUILD
 		aports-lint "$branch"/APKBUILD
