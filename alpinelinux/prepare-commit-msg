@@ -52,7 +52,13 @@ repomv() {
 
 context() {
 	case "$(git diff-index --name-status --cached --diff-filter=ACMR HEAD -- '**/APKBUILD' | head -1)" in
-		A*) echo "new aport" ;;
+		A*)
+			echo "new aport"
+			echo ""
+			. $(git diff-index --name-only --cached --diff-filter=A HEAD -- '**/APKBUILD' | head -1)
+			echo "$url"
+			echo "$pkgdesc"
+			;;
 		M*) isupdate && newpkgver ;;
 	esac
 }
