@@ -304,8 +304,21 @@ case "$cmd" in
 		fi
 		f "$builddir" ;;
 	e) edit_apkbuild "$branch";;
-	t) run $AX_ABUILD -r;;
-	tf) run $AX_ABUILD -f -r;;
+	t)
+		if [ "$AX_LOG" ]; then
+			_mktemp="$(mktemp)"
+			run $AX_ABUILD -r | tee $_mktemp
+		else
+			run $AX_ABUILD -r
+		fi
+		;;
+	tf) if [ "$AX_LOG" ]; then
+			_mktemp="$(mktemp)"
+			run $AX_ABUILD -f -r | tee $_mktemp
+		else
+			run "$AX_ABUILD" -f -r
+		fi
+		;;
 	n) f "$branch";;
 	N) run sh -l ;;
 	x) run abuild checksum;;
