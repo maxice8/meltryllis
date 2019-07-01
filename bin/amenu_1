@@ -19,6 +19,6 @@ selection=$(/bin/echo -e "${options}" | rofi \
 										-location 5 \
 										-xoffset -220 \
 										-yoffset -50 \
-										-font "Fantasque Sans Mono 10")
+										-font "Droid Sans Mono 8")
 
 pulseaudio-ctl set "${selection%\%*}"
