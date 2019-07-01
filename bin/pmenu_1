@@ -1,12 +1,22 @@
 #!/bin/bash
+MENU="$(rofi \
+		-sep "|" \
+		-dmenu \
+		-p \
+		-location 5 \
+		-yoffset -50 \
+		-xoffset -20 \
+		-width 15 \
+		-hide-scrollbar \
+		-line-padding 4 \
+		-padding 10 \
+		-lines 2 \
+		-eh 2 \
+		-font "Droid Sans Mono 8" <<< " Lock| Logout| Reboot| Shutdown")"
 
-## Created By Aditya Shakya
-
-MENU="$(rofi -sep "|" -dmenu -p -location 5 -yoffset -50 -xoffset -20 -width 15 -hide-scrollbar -line-padding 4 -padding 10 -lines 2 -font "Fantasque Sans Mono 10" <<< " Lock| Logout| Reboot| Shutdown")"
-            case "$MENU" in
-                *Lock) lock -l ;;
-                *Logout) bspc quit ;;
-                *Reboot) sudo reboot ;;
-                *Shutdown) sudo shutdown ;;
-            esac
-
+case "$MENU" in
+    *Lock) lock -l ;;
+    *Logout) bspc quit ;;
+    *Reboot) sudo reboot ;;
+    *Shutdown) sudo shutdown ;;
+esac

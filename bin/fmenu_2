@@ -10,4 +10,4 @@ rofi -modi windowcd \
 	 -lines 10 \
 	 -padding 25 \
 	 -hide-scrollbar \
-	 -font "Fantasque Sans Mono 10"
+	 -font "Droid Sans Mono 8"

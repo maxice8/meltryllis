@@ -1,7 +1,4 @@
-#!/bin/bash
-
-## Created By Aditya Shakya
-
+#!/bin/sh
 rofi -modi run,drun,window \
 	 -lines 10 \
 	 -padding 20 \
@@ -12,4 +9,4 @@ rofi -modi run,drun,window \
 	 -show drun \
 	 -sidebar-mode \
 	 -columns 3 \
-	 -font "Fantasque Sans Mono 10"
+	 -font "Droid Sans Mono 8"

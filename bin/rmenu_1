@@ -1,7 +1,4 @@
-#!/bin/bash
-
-## Created By Aditya Shakya
-
+#!/bin/sh
 rofi -modi run,drun \
 	 -show drun \
 	 -location 7 \
@@ -15,5 +12,4 @@ rofi -modi run,drun \
 	 -hide-scrollbar \
 	 -show-icons \
 	 -drun-icon-theme "Papirus" \
-	 -font "Fantasque Sans Mono 10"
-
+	 -font "Droid Sans Mono 8"
