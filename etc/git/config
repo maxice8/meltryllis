@@ -37,3 +37,5 @@ fsckObjects = true
 	confirm = always
 [diff]
 	noprefix = false
+[cola]
+	spellcheck = false
