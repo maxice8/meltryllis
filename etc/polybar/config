@@ -93,9 +93,12 @@ font-1 = "Iosevka Nerd Font:pixelsize=13;3"
 font-2 = "Siji:size=12;2"
 font-3 = "Material Icons:size=13;4"
 
+font-4 = "Droid Sans Mono:pixelsize=11;3"
+
 modules-left = launcher workspaces
 modules-center = title
-modules-right = mail pulseaudio battery network date powermenu
+;modules-right = mail pulseaudio battery network date powermenu
+modules-right = mail pulseaudio network date powermenu
 
 separator =
 spacing = 0
@@ -199,7 +202,7 @@ format-background = ${color.dark}
 format-foreground = ${color.light}
 format-padding = 1
 
-label-font = 1
+label-font = 5
 label = %title%
 label-maxlen = 50
 
@@ -271,6 +274,7 @@ click-left = "kill -USR1 %pid%"
 format-background = ${color.dark}
 format-foreground = ${color.light}
 format-padding = 1
+label-font = 5
 
 ;; When pressed opens a rofi menu with options to lock the screen ('lock -l'),
 ;; logout ('bspc quit'), reboot ('sudo reboot') or shutdown ('sudo shutdown').
