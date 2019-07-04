@@ -12,7 +12,7 @@ MENU="$(rofi \
 		-padding 10 \
 		-lines 2 \
 		-eh 2 \
-		-font "Droid Sans Mono 8" <<< " Lock| Logout| Reboot| Shutdown")"
+		-font "Droid Sans Mono 8" <<< "  Lock| Logout|  Reboot|  Shutdown")"
 
 case "$MENU" in
     *Lock) lock -l ;;
