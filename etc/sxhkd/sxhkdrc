@@ -25,6 +25,9 @@ super + h
 super + Return
 	alacritty
 
+shift + Return
+	xdotool click 1
+
 # }}}
 
 # SCREENSHOTS {{{
