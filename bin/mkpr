@@ -24,6 +24,9 @@ do
 	then
 		MSG="$2"
 		shift
+	elif [ "$1" = "-d" ]
+	then
+		DRAFT="--draft"
 	else
 		args="$args $1"
 	fi
