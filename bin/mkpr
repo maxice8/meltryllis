@@ -36,10 +36,14 @@ done
 [ -z "$args" ] && args="$(git rev-parse --abbrev-ref HEAD)"
 
 selectcommit() {
-	git show -s --format=%B $(git log upstream/master.."$1" --pretty='%h %s' |
-							  fzy |
-							  cut -d ' ' -f1)
+	git show -s --format=%B $(git log upstream/master.."$1" --pretty='%s' |
+							  fzy)
 }
+
+lastcommit() {
+	git show -s --format=%B
+}
+
 pr() {
 	git rebase upstream/master >/dev/null 2>&1
 	git push -uf origin "$1" >/dev/null 2>&1
@@ -48,7 +52,7 @@ pr() {
 		[ "$MSG" ] || MSG="$(selectcommit "$1")"
 		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL -m "$MSG"
 	else
-		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL $MSG
+		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL -m "$(lastcommit)"
 	fi
 }
 for arg in $args
