@@ -36,8 +36,9 @@ done
 [ -z "$args" ] && args="$(git rev-parse --abbrev-ref HEAD)"
 
 selectcommit() {
-	git show -s --format=%B $(git log upstream/master.."$1" --pretty='%s' |
-							  fzy)
+	git show -s --format=%B $(git log upstream/master.."$1" --pretty='%h %s' |
+							  fzy |
+							  cut -d ' ' -f1)
 }
 
 lastcommit() {
