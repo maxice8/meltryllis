@@ -30,5 +30,5 @@ case "$cmd" in
 	-h) usage;;
 	-l) ls -1 "${sockdir}";;
 	-d) rm -f -- "${sockdir}"/"$1";;
-	*) exec dtach -A "${sockdir}"/"${cmd}" -e '^f' "${@:-'false'}";;
+	*) exec dtach -A "${sockdir}"/"${cmd}" -e '^f' -r winch "${@:-'false'}";;
 esac
