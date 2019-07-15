@@ -303,6 +303,13 @@ case "$cmd" in
 			run $AX_ASUM unpack || return $?
 		fi
 		f "$builddir" ;;
+	U)
+		source_apkbuild || return $?
+		# If the sources aren't present then unpack them
+		if [ ! -d "$builddir" ]; then
+			run $AX_ASUM unpack || return $?
+		fi
+		tmpsh "$builddir" ;;
 	e) edit_apkbuild "$branch";;
 	t)
 		if [ "$AX_LOG" ]; then
