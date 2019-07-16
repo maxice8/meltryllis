@@ -1,0 +1,6 @@
+#!/bin/sh
+_REALBASE="$(alpine-stable-prefix)"
+if [ -n "$_REALBASE" ]; then
+	_REALBASE="$_REALBASE-stable"
+fi
+git push upstream "$(git rev-parse --abbrev-ref HEAD)":"${_REALBASE:-master}"
