@@ -27,6 +27,11 @@ do
 	elif [ "$1" = "-d" ]
 	then
 		DRAFT="--draft"
+	elif [ "$1" = "-b" ]
+	then
+		BASE="--base $2"
+		_REALBASE="$2" # This is the base branch we are pushing to, like 3.10-stable
+		shift
 	else
 		args="$args $1"
 	fi
@@ -36,24 +41,28 @@ done
 [ -z "$args" ] && args="$(git rev-parse --abbrev-ref HEAD)"
 
 selectcommit() {
-	git show -s --format=%B $(git log upstream/master.."$1" --pretty='%h %s' |
+	# If we are pushing against a non-default base then prefix it on the commit msg
+	[ -n "$_REALBASE" ] && printf "%s " "[$(alpine-stable-prefix "$_REALBASE")]"
+	git show -s --format=%B $(git log upstream/${_REALBASE:-master}.."$1" --pretty='%h %s' |
 							  fzy |
 							  cut -d ' ' -f1)
 }
 
 lastcommit() {
+	# If we are pushing against a non-default base then prefix it on the commit msg
+	[ -n "$_REALBASE" ] && printf "%s " "[$(alpine-stable-prefix "$_REALBASE")]"
 	git show -s --format=%B
 }
 
 pr() {
-	git rebase upstream/master >/dev/null 2>&1
+	git rebase upstream/"${_REALBASE:-master}" >/dev/null 2>&1
 	git push -uf origin "$1" >/dev/null 2>&1
-	if [ "$(git rev-list --count upstream/master.."$1")" -gt 1 ]
+	if [ "$(git rev-list --count upstream/"${_REALBASE:-master}"..$1)" -gt 1 ]
 	then
 		[ "$MSG" ] || MSG="$(selectcommit "$1")"
-		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL -m "$MSG"
+		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL $BASE -m "$MSG"
 	else
-		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL -m "$(lastcommit)"
+		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL $BASE -m "$(lastcommit)"
 	fi
 }
 for arg in $args
