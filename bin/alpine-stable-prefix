@@ -1,0 +1,17 @@
+#!/bin/sh
+[ -d .git ] || exit 1
+
+if [ "$1" ]; then
+	branch="$1"
+else
+	branch="$(git rev-parse --abbrev-ref HEAD)"
+fi
+
+# Only work on supported alpine releases.
+case "$branch" in
+	3.10-*) echo 3.10 ;;
+	3.9-*) echo 3.9 ;;
+	3.8-*) echo 3.8 ;;
+	3.7-*) echo 3.7 ;;
+	*) exit 1 ;;
+esac
