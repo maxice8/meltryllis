@@ -7,8 +7,6 @@
 [alias]
   ls = log --oneline --decorate --graph
   g = grep --break --heading --line-number
-  pullp = pull upstream --rebase master
-  pushp = push upstream
 [core]
   editor = nvim
 [github]
