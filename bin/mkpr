@@ -55,6 +55,10 @@ lastcommit() {
 }
 
 pr() {
+	if [ -z "$BASE" ] && [ -n "$(alpine-stable-prefix "$1")" ]; then
+		_REALBASE="$(alpine-stable-prefix "$1")"-stable
+		BASE="--base $_REALBASE"
+	fi
 	git rebase upstream/"${_REALBASE:-master}" >/dev/null 2>&1
 	git push -uf origin "$1" >/dev/null 2>&1
 	if [ "$(git rev-list --count upstream/"${_REALBASE:-master}"..$1)" -gt 1 ]
