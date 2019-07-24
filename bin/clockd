@@ -3,7 +3,7 @@
 clock=1
 
 print_clock() {
-	echo " $(date "+%I:%M:%p") $(TZ=Europe/Berlin date "+%I:%M:%p") $(TZ=Asia/Tokyo date "+%I:%M:%p")"
+	echo " $(date "+%H:%M") $(TZ=Europe/Berlin date "+%H:%M")"
 }
 
 print_date() {
