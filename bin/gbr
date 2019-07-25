@@ -4,15 +4,21 @@ if [ ! -e .git ] || [ -z "$1" ]; then
 	exit 1
 fi
 
+if git config remote.upstream.url >/dev/null; then
+	remote=upstream
+else
+	remote=origin
+fi
+
 while [ $# -gt 0 ]; do
 	if git rev-parse --quiet --verify "$1" >/dev/null 2>&1; then
 		git checkout "$1" >/dev/null 2>&1
 	else
 		_RELBASE="$(alpine-stable-prefix "$1")"
 		if [ -n "$_RELBASE" ]; then
-			git branch -f "$1" upstream/"$_RELBASE"-stable >/dev/null 2>&1
+			git branch -f "$1" $remote/"$_RELBASE"-stable >/dev/null 2>&1
 		else
-			git branch -f "$1" upstream/master >/dev/null 2>&1
+			git branch -f "$1" $remote/master >/dev/null 2>&1
 		fi
 		git checkout "$1" >/dev/null 2>&1
 	fi
