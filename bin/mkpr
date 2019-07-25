@@ -40,10 +40,21 @@ done
 
 [ -z "$args" ] && args="$(git rev-parse --abbrev-ref HEAD)"
 
+# gitstream is the git remote that i push via SSH
+# to alpine, in the future this will be joined into
+# upstream which will hold gitlab
+if git config remote.gitstream.url >/dev/null; then
+	remote=gitstream
+elif git config remote.upstream.url >/dev/null; then
+	remote=upstream
+else
+	remote=origin
+fi
+
 selectcommit() {
 	# If we are pushing against a non-default base then prefix it on the commit msg
 	[ -n "$_REALBASE" ] && printf "%s " "[$(alpine-stable-prefix "$_REALBASE")]"
-	git show -s --format=%B $(git log upstream/${_REALBASE:-master}.."$1" --pretty='%h %s' |
+	git show -s --format=%B $(git log $remote/${_REALBASE:-master}.."$1" --pretty='%h %s' |
 							  fzy |
 							  cut -d ' ' -f1)
 }
@@ -59,9 +70,9 @@ pr() {
 		_REALBASE="$(alpine-stable-prefix "$1")"-stable
 		BASE="--base $_REALBASE"
 	fi
-	git rebase upstream/"${_REALBASE:-master}" >/dev/null 2>&1
+	git rebase $remote/"${_REALBASE:-master}" >/dev/null 2>&1
 	git push -uf origin "$1" >/dev/null 2>&1
-	if [ "$(git rev-list --count upstream/"${_REALBASE:-master}"..$1)" -gt 1 ]
+	if [ "$(git rev-list --count $remote/"${_REALBASE:-master}"..$1)" -gt 1 ]
 	then
 		[ "$MSG" ] || MSG="$(selectcommit "$1")"
 		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL $BASE -m "$MSG"

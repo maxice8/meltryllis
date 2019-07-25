@@ -3,4 +3,16 @@ _REALBASE="$(alpine-stable-prefix)"
 if [ -n "$_REALBASE" ]; then
 	_REALBASE="$_REALBASE-stable"
 fi
-git push upstream "$(git rev-parse --abbrev-ref HEAD)":"${_REALBASE:-master}"
+
+# gitstream is the git remote that i push via SSH
+# to alpine, in the future this will be joined into
+# upstream which will hold gitlab
+if git config remote.gitstream.url >/dev/null; then
+	remote=gitstream
+elif git config remote.upstream.url >/dev/null; then
+	remote=upstream
+else
+	remote=origin
+fi
+
+git push $remote "$(git rev-parse --abbrev-ref HEAD)":"${_REALBASE:-master}"
