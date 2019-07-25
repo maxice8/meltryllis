@@ -345,7 +345,7 @@ case "$cmd" in
 	m) move_repo "$@" "$branch";;
 	r) rename_repo "$@" "$branch";;
 	w) mkgit "$@" "$branch";;
-	g) getvar "$@" "$branch";;
+	g) getvar "$@";;
 	f)
 		apkbuild-fixer "$branch"/APKBUILD
 		;;
