@@ -6,4 +6,4 @@
 	url = https://github.com/ScoreUnder/pomfclip
 [submodule "atools"]
 	path = atools
-	url = https://github.com/maxice8/atools
+	url = https://gitlab.alpinelinux.org/Leo/atools
