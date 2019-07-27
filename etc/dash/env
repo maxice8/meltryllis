@@ -84,8 +84,9 @@ export BSPWM_SOCKET BSPWM_STATE
 #
 AX_ABUILD=dabuild
 AX_ASUM=/usr/bin/abuild
+APKBUILD_STYLE=leo
 
-export AX_ABUILD AX_ASUM
+export AX_ABUILD AX_ASUM APKBUILD_STYLE
 #
 # If snooze-getmail is not running, start it
 #
