@@ -3,59 +3,11 @@
 # mgbr BRANCH-NAME ... - mgbr merge branches
 [ $# -lt 1 ] && set -- $(git current-branch)
 
-git fetch upstream >/dev/null 2>&1 ||
-	{
-		printerr "Failed to fetch upstream" ;
-		return ;
-	} &&
-		printok "Fetched upstream"
-
-git checkout master >/dev/null 2>&1
-
-while [ $# -gt 0 ]
-do
-	if ! git rev-parse --verify "$1" >/dev/null 2>&1
-	then
-		shift
-		continue
-	fi
-
-	if git merge --no-edit "$1" >/dev/null 2>&1
-	then
-		printok "Merged branch $1"
-	else
-		printerr "Failed to merge branch $1"
-		shift
-		continue
-	fi
-
-	branches="${branches} $1"
-	shift
+for branch in $@; do
+	# Switch to branch
+	git checkout -q $branch || continue
+	pullp # Pull changes from where we are going to push
+	pushp # Push our local changes
 done
 
-git rebase upstream/master >/dev/null 2>&1 ||
-	{
-		printerr "Failed to rebase upstream" ;
-		exit 1 ;
-	}
-
-(
-	if git push origin >/dev/null 2>&1
-	then
-		printok "Pushed to origin"
-	else
-		printerr "Failed to push to origin"
-	fi
-) &
-
-(
-	if git push upstream >/dev/null 2>&1
-	then
-		printok "Pushed to upstream"
-	else
-		printerr "Failed to push to upstream"
-	fi
-) &
-
-wait 
-dlbr $branches
+dlbr $@
