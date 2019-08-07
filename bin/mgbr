@@ -3,11 +3,11 @@
 # mgbr BRANCH-NAME ... - mgbr merge branches
 [ $# -lt 1 ] && set -- $(git current-branch)
 
-for branch in $@; do
+for branch in "$@"; do
 	# Switch to branch
-	git checkout -q $branch || continue
+	git checkout -q "$branch" || continue
 	pullp # Pull changes from where we are going to push
 	pushp # Push our local changes
 done
 
-dlbr $@
+dlbr "$@"
