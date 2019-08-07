@@ -1,124 +1,59 @@
-[color]
+[colors]
+foreground = #ffffff
+background = #000000
 
-dark = #252525
-light = #e8e8ec
-accent = #02a2ac
+icons = #82b061
 
-bground = #f7f7f7
+bspwm = #6182b0
 
-;; Material Colors
-;; Keep them even if they are not used, just mark them as UNUSED
-
-;; UNUSED
-red = #e53935
-
-;; UNUSED
-pink = #d81b60
-
-;; UNUSED
-purple = #8e24aa
-
-;; UNUSED
-deep-purple = #5e35b1
-
-;; UNUSED
-cyan = #00acc1
-
-;; UNUSED
-teal = #00897b
-
-;; UNUSED
-green = #43a047
-
-;; UNUSED
-light-green = #7cb342
-
-;; UNUSED
-lime = #c0ca33
-
-;; UNUSED
-yellow = #fdd835
-
-;; UNUSED
-amber = #ffb300
-
-;; UNUSED
-orange = #fb8c00
-
-;; UNUSED
-deep-orange = #f4511e
-
-;; UNUSED
-brown = #6d4c41
-
-;; USED
-grey = #757575
-
-;; UNUSED
-blue-gray = #546e7a
+green = #82B061
+red = 9d0006
 
 [bar/main]
+width = 100%
+height = 35
+fixed-center = false
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 2
+
+border-size =0
+border-color = #00000000
+
+padding-left = 1
+padding-right = 1
+
+module-margin-left = 1
+module-margin-right = 1
+
+;; NOTE: fonts are indexed by 1 when used so font-0 is 1
+font-0 = curie:style=Regular:size=12:antialias=false;2
+font-1 = Siji:style=Regular:size=11;2
+font-2 = FontAwesome:style=Regular:size=10;3
+font-3 = Iosevka Nerd Font:style=Regular:antialias=false:size=11;3
+
+modules-left = bspwm title
+modules-right = mpd wlan pulseaudio battery date time time-de
+
+tray-position = none
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+enable-ipc = true
+
+wm-restack = bspwm
 
 monitor =
 monitor-fallback =
 monitor-strict = false
 override-redirect = false
 
-bottom = true
-fixed-center = true
-wm-restack = bspwm
-
-width = 100%
-height = 28
-offset-x = 0%
-offset-y = 0%
-
-background = ${color.dark}
-foreground = ${color.light}
-
-radius-top = 0.0
-radius-bottom = 0.0
-
-overline-size = 2
-overline-color = ${color.accent}
-
-padding = 0
-module-margin-left = 0
-module-margin-right = 0
-
-;; NOTE: fonts are indexed by 1 when used so font-0 is 1
-font-0 = "Droid Sans Mono:pixelsize=11;3"
-font-1 = "Iosevka Nerd Font:pixelsize=13;3"
-
-font-2 = "Siji:size=12;2"
-font-3 = "Material Icons:size=13;4"
-
-modules-left = launcher workspaces
-modules-center = title
-modules-right = pulseaudio battery network date powermenu
-
-separator =
-spacing = 0
-dim-value = 1.0
-wm-name = 
-locale = 
-
-tray-position = none
-tray-detached = false
-tray-maxsize = 16
-tray-transparent = false
-tray-background = ${color.bground}
-tray-offset-x = 0
-tray-offset-y = 0
-tray-padding = 0
-tray-scale = 1.0
-
-enable-ipc = true
-
 [settings]
 
 throttle-output = 5
-throttle-output-for = 10
+throttle-output-for = 1
 throttle-input-for = 30
 
 screenchange-reload = false
@@ -129,198 +64,126 @@ compositing-overline = over
 compositing-underline = over
 compositing-border = over
 
-pseudo-transparency = false
-
-;; Shows text that can be clicked
-;; Left-click opens rofi menu with programs with .desktop files
-;; Right-click opens rofi menu with all programs
-[module/launcher]
-type = custom/text
-content = 
-
-content-background = ${color.dark}
-content-foreground = ${color.light}
-content-padding = 2
-
-click-left = rmenu_1
-click-right = rmenu_wi_1
+pseudo-transparency = true
 
 ;; Shows workspaces as small circles
 ;; Bright grey circle is current workspace
 ;; Dark grey circle is workspace with open windows
 ;; Empty circle is workspace with nothing open
-[module/workspaces]
+[module/bspwm]
 type = internal/bspwm
 
 pin-workspaces = true
-enable-click = true
-enable-scroll = true
+inline-mode = false
+enable-click = false
+enable-scroll = false
+reverse-scroll = false
+fuzzy-match = true
 
-label-focused = 
-label-focused-foreground = ${color.light}
-label-focused-background = ${color.dark}
-
-label-occupied = 
-label-occupied-foreground = ${color.grey}
-label-occupied-background = ${color.dark}
-
-label-urgent = 
-label-urgent-foreground = #000000
-label-urgent-background = #bd2c40
-label-urgent-underline = #9b02a20
-
-label-empty = 
-label-empty-foreground = #555555
-label-empty-background = ${color.dark}
-
+format-padding = 1
 format = <label-state>
-format-background = ${color.dark}
-
 label-monitor = %name%
 
+label-dimmed-foreground = #555
+label-dimmed-underline = ${colors.background}
+label-dimmed-focused-background = #f00
+
+label-focused = %{T2}%{T-}
+label-focused-foreground = ${colors.bspwm}
 label-focused-padding = 1
-label-urgent-padding = 1
+
+label-occupied =%{T2}%{T-}
+label-occupied-foreground = ${colors.bspwm}
 label-occupied-padding = 1
+
+label-urgent = U
+label-urgent-foreground = #af3a03
+label-urgent-padding = 1
+
+label-empty = 
+label-empty-foreground = #55
 label-empty-padding = 1
 
-;; Keep the name of the focused window
-;; Left-click opens a rofi menu with windows of current workspace
-;; Right-click opens a rofi menuw with windows of all workspaces
-[module/title]
-type = internal/xwindow
-
-format = %{A2:fmenu_1:} %{A1:fmenu_2:} <label> %{A} %{A}
-format-font = 2
-format-background = ${color.dark}
-format-foreground = ${color.light}
-format-padding = 4
-
-label-font = 5
-label = %title%
-label-maxlen = 70
-
-label-empty = Alpine Linux
-
-;; Keeps track of state of audio (muted or not) and the current volume
-;; Right-click spawns a menu that lets you choose volume from MUTE to 100%
-;; in steps of 10%
 [module/pulseaudio]
-type = internal/pulseaudio
+type = custom/script
+exec = aubar
+tail = true
 
-format-volume-background = ${color.dark}
-format-volume = %{A1:amenu_1:}<ramp-volume> <label-volume>%{A}
-label-volume = %percentage%%
-format-muted = "%{A1:amenu_1:} MUTE%{A}"
-format-muted-background = "${color.dark}"
-format-volume-padding = 1
-format-muted-padding = 1
+label-font = 4
 
-ramp-volume-0 =
-ramp-volume-1 =
-ramp-volume-2 =
-ramp-volume-3 =
-ramp-volume-4 =
-ramp-volume-5 =
-ramp-volume-6 =
-
-;; Spawns a script that keeps track of the battery levels by counting it
-;; every 30 seconds or when an AC Adapter is plugged or unplugged.
-;; Right-click tells the script to check battery levels again.
 [module/battery]
 type = internal/battery
-
-; Battery can get faulty at times, it also likes to quickly
-; discharge from 99 to 97 and get stuck in 97 for a long time
-
-full-at = 99
-
-; System standard
 battery = BAT0
-adapter = ADP1
+adapter = AC
 
-; If we get no inotify events then just ping every minute
-poll-interval = 60
+format-charging =<label-charging>
+label-charging = %{F#6182b0}%{T2}%{T-}%{F-} %percentage%%
 
-; Have a nice charging animation while we are charging
-format-charging = <animation-charging> <label-charging>
+format-discharging = %{T2}<ramp-capacity>%{T-} <label-discharging>
+label-discharging = %percentage%%
+
+format-full = <label-full>
+label-full = "%{T2}%{T-}"
+label-full-foreground = #076678
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+
 format-charging-padding = 1
-
-; Don't run animations while we discharing, just show capacity
-format-discharging = <ramp-capacity> <label-discharging>
 format-discharging-padding = 1
-
-; Show full bar when the label is full
-format-full = <ramp-capacity> <label-full>
 format-full-padding = 1
-
-; type = custom/script
-; exec = batteryd
-; tail = true
-; 
-; click-left = "kill -USR1 %pid%"
-; 
-; format-background = ${color.dark}
-; format-foreground = ${color.light}
-; format-padding = 1
-
-; label-charging = %percentage%%
-
-animation-charging-0 = 
-animation-charging-1 = 
-animation-charging-2 = 
-animation-charging-3 = 
-animation-charging-4 = 
-animation-charging-framerate = 750
-
-ramp-capacity-0 = 
-ramp-capacity-1 = 
-ramp-capacity-2 = 
-ramp-capacity-3 = 
-ramp-capacity-4 = 
 
 ;; Spawns a script that outputs time in 2 timezones, reloading every 60
 ;; seconds.
 ;; Right-click prompts the script to change between showing time or current
 ;; date
 [module/date]
-type = custom/script
-exec = clockd
-tail = true
+type = internal/date
+interval = 30
 
-click-left = "kill -USR1 %pid%"
+date = %%{F#6182b0} %%{F-}%a %d %B
 
-format-background = ${color.dark}
-format-foreground = ${color.light}
+label = %date%
+format = <label>
+
 format-padding = 1
-label-font = 5
 
-;; When pressed opens a rofi menu with options to lock the screen ('lock -l'),
-;; logout ('bspc quit'), reboot ('sudo reboot') or shutdown ('sudo shutdown').
-[module/powermenu]
-type = custom/text
-content = 
-content-padding = 1
-content-background = ${color.dark}
-content-foreground = ${color.light}
-click-left = pmenu_1
-click-right = pmenu_1
+[module/time]
+type = internal/date
+interval = 30
 
-;; Spawns a script that keeps track of the network, the scripts checks
-;; sequentially this amount of functionality:
-;; 1. If wlan is blocked
-;; 2. If default gateway can be reached by 'wget -q --spider'
-;; 3. If fedora connectivity can be reached by 'wget -q --spider'
-;; Failure in any step prompts for trying again in 10 seconds, success
-;; the whole way prompts for waiting in 30 seconds.
-;; Left-click prompts the script to check again.
-[module/network]
+time ="%%{F#6182b0}%%{T2} %%{T-}%%{F-}%I:%M %p"
+
+label = %time%
+format = <label>
+
+[module/time-de]
 type = custom/script
-exec = check-network
-label-font = 4
-format-font = 4
-format-background = ${color.dark}
-format-padding = 1
-tail = true
-click-left = "kill -USR1 %pid%"
+interval = 30
+exec = TZ=Europe/Berlin date +"%I:%M %p  "
+
+[module/mpd]
+type = internal/mpd
+format-online = <label-song> <label-time>%{T2}%{F#6182b0} <icon-prev><icon-stop><toggle><icon-next>%{F-}%{T-}
+format-stopped= <label-song> %{T2}%{T-} <icon-play>
+format-offline=<label-offline>
+label-time=%{F#a59f85} %elapsed%%{F-}
+label-offline=
+
+icon-prev =
+icon-stop =
+icon-play =
+icon-pause =
+icon-next =
+
+label-song=%{F#79740e}%{T2}%{T-} %{F-}%artist% - %title%
+label-song-maxlen = 70
+label-song-ellipsis = true
+
+[module/title]
+type = internal/xwindow
+label = %title:0:30:...%
 
 # vim: ft=dosini
