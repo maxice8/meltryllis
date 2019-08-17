@@ -111,6 +111,8 @@ tail = true
 
 label-font = 4
 
+click-left = pulseaudio-ctl mute
+
 [module/battery]
 type = internal/battery
 battery = BAT0
