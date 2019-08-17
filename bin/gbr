@@ -17,13 +17,13 @@ fi
 
 while [ $# -gt 0 ]; do
 	if git rev-parse --quiet --verify "$1" >/dev/null 2>&1; then
-		git switch "$1" >/dev/null 2>&1
+		git switch "$1"
 	else
 		_RELBASE="$(alpine-stable-prefix "$1")"
 		if [ -n "$_RELBASE" ]; then
-			git switch -f -c "$1" $remote/"$_RELBASE"-stable >/dev/null 2>&1
+			git switch --force --create "$1" $remote/"$_RELBASE"-stable
 		else
-			git switch -f -c "$1" $remote/master >/dev/null 2>&1
+			git switch --force --create "$1" $remote/master
 		fi
 	fi
 	shift
