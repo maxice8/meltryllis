@@ -5,7 +5,7 @@
 
 for branch in "$@"; do
 	# Switch to branch
-	git checkout -q "$branch" || continue
+	git switch -q "$branch" || continue
 	pullp # Pull changes from where we are going to push
 	pushp # Push our local changes
 done
