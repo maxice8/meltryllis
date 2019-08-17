@@ -16,13 +16,18 @@ bspc config pointer_follows_focus true
 # Make all windows floating
 bspc rule -a "*" state=floating
 
-bspc rule -a '*:quaternion' desktop=^4 rectangle=1376x733+-1+-1 follow=on
-bspc rule -a '*:chromium' desktop=^1 rectangle=1376x733+-1+-1 follow=on
-bspc rule -a Firefox:Navigator desktop=^1 rectangle=1376x733+-1+-1 follow=on
-bspc rule -a TelegramDesktop:telegram-desktop desktop=^2 rectangle=1376x733+-1+-1 follow=on
-bspc rule -a '*:mpv' desktop=^4 rectangle=1376x733+-1+-1 follow=on
-
+# Main browser and its download window
+bspc rule -a Firefox:Navigator desktop=^1 rectangle=1366x733+-1+35 follow=on
 bspc rule -a Firefox:SessionManager desktop=^1 layer=above
+
+# Messenger
+bspc rule -a TelegramDesktop:telegram-desktop desktop=^2 rectangle=1366x733+-1+35 follow=on
+
+# Imageboard downloader.
+bspc rule -a Grabber:Grabber desktop=^4 rectangle=1366x733+-1+35 follow=on
+
+# Secondary browser.
+bspc rule -a '*:chromium' desktop=^4 rectangle=1366x733+-1+35 follow=on
 
 # Adopt orphans
 bspc wm -o
