@@ -4,6 +4,7 @@
 " Start pathogen
 call plug#begin('~/var/share/nvim/plugged')
 
+Plug 'scrooloose/nerdtree'
 Plug 'airblade/vim-gitgutter'
 Plug 'itchyny/lightline.vim'
 Plug 'w0rp/ale'
@@ -12,7 +13,6 @@ Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'igankevich/mesonic'
 Plug 'KeitaNakamura/neodark.vim'
-Plug 'vimwiki/vimwiki'
 
 " Add Plugins
 "
@@ -76,6 +76,10 @@ let g:gitgutter_override_sign_column_highlight = 0
 
 " Remove folding
 let g:vim_markdown_folding_disabled = 1
+
+" ale
+let g:airline#extensions#ale#enabled = 1
+let g:ale_set_quickfix = 1
 
 " If there's a `meson.build` file, use meson for linting.
 autocmd FileType c call ConsiderMesonForLinting()
@@ -266,6 +270,10 @@ map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
+" Nerdtree
+map <A-f> :NERDTreeToggle<CR>
+map <A-r> :NERDTreeRefreshRoot<CR>
+
 " Specify the behavior when switching between buffers
 try
   set switchbuf=useopen,usetab,newtab
@@ -335,3 +343,11 @@ if executable('rg')
   set grepprg=rg\ --vimgrep\ --no-heading
   set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
+
+" NERDTree config
+autocmd BufEnter * lcd %:p:h
+let g:NERDTreeWinSize = 32
+let g:NERDTreeShowBookmarks = 1
+let g:NERDTreeChDirMode = 2
+let g:NERDTreeHijackNetrw = 0
+let g:NERDTreeCascadeSingleChildDir = 1
