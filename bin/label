@@ -1,0 +1,25 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+# appr PR-NUM - Approves a pull request by number
+repo_name="$(get-repo-config repo-name)"
+repo_owner="$(get-repo-config repo-owner)"
+
+labels="$1"
+json=""
+
+for label in $(echo "$labels" | sed 's|,| |g'); do
+	json="$json,\"$label\""
+done
+
+json="$(echo "$json" | sed 's|^,||g')"
+
+shift
+
+for pr in "$@"; do
+response="$(echo [$json] | hub api repos/"${repo_owner}"/"${repo_name}"/issues/"$pr"/labels \
+	-X POST --input - --flat)" ||
+	{
+		echo "$response" | grep -E '^.errors.*|^.message.*' ; exit 1
+	} &&
+	echo "Added $labels labels to #$pr"
+done
