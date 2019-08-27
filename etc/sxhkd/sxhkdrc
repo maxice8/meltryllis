@@ -5,16 +5,10 @@
 # EXEC {{{
 
 super + d
-	rmenu_1
+	appmenu
 
-super + shift + d
-	rmenu_wi_1
-
-super + f
-	fmenu_2
-
-super + shift + f
-	fmenu_1
+super + m
+	mpdmenu
 
 super + a
 	amenu_1
