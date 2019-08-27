@@ -1,0 +1,23 @@
+#!/bin/sh
+
+rofi_command="rofi -theme themes/maimmenu.rasi"
+
+### Options ###
+screen=""
+area=""
+window=""
+
+chosen="$(printf "%s\\n%s\\n%s" "$screen" "$area" "$window" | $rofi_command -dmenu -selected-row 1)"
+case $chosen in
+    $screen)
+        sleep 1; maim > ~/usr/screenshots/"$(date +%T-%d)"-fullscreen.png
+        ;;
+    $area)
+		maim -s > ~/usr/screenshots/"$(date +%T-%d)"-area.png
+        ;;
+    $window)
+        sleep 1; maim -i "$(xdotool getactivewindow)" > ~/usr/screenshots/"$(date +%T-%d)"-activewindow.png
+        ;;
+esac
+
+
