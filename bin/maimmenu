@@ -10,13 +10,19 @@ window=""
 chosen="$(printf "%s\\n%s\\n%s" "$screen" "$area" "$window" | $rofi_command -dmenu -selected-row 1)"
 case $chosen in
     $screen)
-        sleep 1; maim > ~/usr/screenshots/"$(date +%T-%d)"-fullscreen.png
+        sleep 1; maim \
+			| tee ~/usr/screenshots/"$(date +%T-%d)"-fullscreen.png \
+			| xclip -selection clipboard -t image/png
         ;;
     $area)
-		maim -s > ~/usr/screenshots/"$(date +%T-%d)"-area.png
+		maim -s \
+			| tee ~/usr/screenshots/"$(date +%T-%d)"-area.png \
+			| xclip -selection clipboard -t image/png
         ;;
     $window)
-        sleep 1; maim -i "$(xdotool getactivewindow)" > ~/usr/screenshots/"$(date +%T-%d)"-activewindow.png
+        sleep 1; maim -i "$(xdotool getactivewindow)" \
+			| tee ~/usr/screenshots/"$(date +%T-%d)"-activewindow.png \
+			| xclip -selection clipboard -t image/png
         ;;
 esac
 
