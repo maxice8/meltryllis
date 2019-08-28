@@ -10,8 +10,11 @@ super + d
 super + m
 	mpdmenu
 
-super + a
-	amenu_1
+super + s
+	maimmenu
+
+super + p
+	powermenu
 
 super + h
 	polybar-msg cmd toggle
