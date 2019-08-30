@@ -10,7 +10,7 @@ window=""
 chosen="$(printf "%s\\n%s\\n%s" "$screen" "$area" "$window" | $rofi_command -dmenu -selected-row 1)"
 case $chosen in
     $screen)
-        sleep 1; maim \
+        sleep 0.5; maim \
 			| tee ~/usr/screenshots/"$(date +%T-%d)"-fullscreen.png \
 			| xclip -selection clipboard -t image/png
         ;;
@@ -20,7 +20,7 @@ case $chosen in
 			| xclip -selection clipboard -t image/png
         ;;
     $window)
-        sleep 1; maim -i "$(xdotool getactivewindow)" \
+        sleep 0.5; maim -i "$(xdotool getactivewindow)" \
 			| tee ~/usr/screenshots/"$(date +%T-%d)"-activewindow.png \
 			| xclip -selection clipboard -t image/png
         ;;
