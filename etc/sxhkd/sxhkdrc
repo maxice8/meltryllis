@@ -16,6 +16,9 @@ super + s
 super + p
 	powermenu
 
+super + f
+	playmenu
+
 super + h
 	polybar-msg cmd toggle
 
