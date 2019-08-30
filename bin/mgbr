@@ -3,6 +3,8 @@
 # mgbr BRANCH-NAME ... - mgbr merge branches
 [ $# -lt 1 ] && set -- $(git current-branch)
 
+set -e
+
 for branch in "$@"; do
 	# Switch to branch
 	git switch -q "$branch" || continue
