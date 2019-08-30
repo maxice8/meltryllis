@@ -32,6 +32,8 @@ case $chosen in
 		sudo sh -c 'echo mem > /sys/power/state'
         ;;
     $log_out)
+		pkill -15 firefox
 		pkill wm # Kills wm shell script and together with it, bspwm
+		pkill X
         ;;
 esac
