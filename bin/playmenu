@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Get the current playing song
+current=$(mpc current)
+# If mpd isn't running it will return an empty string, we don't want to display that
+if [[ -z "$current" ]]; then
+    current="-"
+fi
+
+track="$(mpc playlist | rofi -dmenu -p "$current" -theme themes/playmenu.rasi)"
+
+[ -z "$track" ] && exit 0
+
+artist="$(printf "%s\\n"  "$track" | cut -d - -f1 | awk '{$1=$1};1')"
+title="$(printf "%s\\n"  "$track" | cut -d - -f2 | awk '{$1=$1};1')"
+
+
+mpc searchplay artist "$artist" title "$title" >/dev/null
