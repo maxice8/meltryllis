@@ -1,59 +1,8 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
 # mgpr PR-NUM - Merges a pull request by number
-
-user="$(get-repo-config username)"
-repo_name="$(get-repo-config repo-name)"
-repo_owner="$(get-repo-config repo-owner)"
-
-# Retry counter
-r=0
-
-# PR numbers that failed
-failed=""
-
-# Branches to be deleted
-branches=""
-
-cd "$(xdistdir)" || exit
-
-while [ $# -gt 0 ]
-do
-	case $1 in
-		''|*[!0-9]*) shift ; continue;;
-		*) ;;
-	esac
-
-	prinfo="$(hub api repos/"${repo_owner}"/"${repo_name}"/pulls/"$1" --flat)"
-
-	label="$(echo "$prinfo" | awk '/.head.label/ { print $2 }')"
-	title="$(echo "$prinfo" | awk -P '/.title/ { for(i=2;i<=NF;i++) print $i}' | paste -sd ' ')"
-
-	hub api repos/"${repo_owner}"/"${repo_name}"/pulls/"$1"/merge \
-		 -X PUT -F merge_method=rebase --flat >/dev/null 2>&1 ||
-		 {
-			 r=$((r+1))
-			 [ $r -gt 1 ] && { failed="${failed} $1" ; shift ; }
-			 continue ;
-		 } &&
-		 {
-			 printok "Merged '$title' ($1)"
-			 r=0
-		 }
-	
-	shift
-
-	if [ "$(echo "$label" | cut -d : -f1)" = "$user" ]; then
-		branches="${branches} $(echo "$label" | cut -d : -f2)"
-	fi
-done
-
-for f in $branches; do
-	dlbr $f &
-done
-
-wait
-
-for f in $failed; do
-	printerr "Failed to merge #$f"
+for pr in "$@"; do
+	newpr="$pr"-"$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
+	checkpr "$pr" "$newpr"
+	mgbr "$newpr"
 done
