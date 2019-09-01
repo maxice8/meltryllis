@@ -21,9 +21,9 @@ while [ $# -gt 0 ]; do
 	else
 		_RELBASE="$(alpine-stable-prefix "$1")"
 		if [ -n "$_RELBASE" ]; then
-			git switch --force --create "$1" $remote/"$_RELBASE"-stable
+			git switch --force-create "$1" $remote/"$_RELBASE"-stable
 		else
-			git switch --force --create "$1" $remote/master
+			git switch --force-create "$1" $remote/master
 		fi
 	fi
 	shift
