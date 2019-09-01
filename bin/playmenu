@@ -7,7 +7,7 @@ if [[ -z "$current" ]]; then
     current="-"
 fi
 
-track="$(mpc playlist | rofi -dmenu -p "$current" -theme themes/playmenu.rasi)"
+track="$(mpc playlist | rofi -dmenu -p "$current" -theme themes/playmenu.rasi -i)"
 
 [ -z "$track" ] && exit 0
 
