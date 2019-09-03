@@ -1,0 +1,122 @@
+#!/bin/sh
+#
+# Show diff of the contents of a package (files) or the
+# changes in providers and dependencies.
+#
+# Must be called from where the APKBUILD is located
+#
+
+NORMAL="\033[1;0m"
+RED="\033[1;31m"
+GREEN="\033[1;32m"
+
+msg() {
+	_prompt="$GREEN>>>${NORMAL}"
+	printf "$_prompt %s\n" "$1"
+}
+
+die() {
+	_prompt="${RED}>>> ERROR:${NORMAL}"
+	printf "$_prompt %s\n" "$1" >&2
+	exit 1
+}
+
+# shellcheck disable=SC1091
+. ./APKBUILD || die "failed to source repo for package"
+
+tmpdir=$(mktemp -d -t checkpkg-script.XXXXXX)
+# shellcheck disable=2064
+trap "rm -rf '$tmpdir'" INT EXIT
+cd "$tmpdir" || die "failed to create temp dir"
+
+# generate a temp repositories file with only the http(s) repos
+grep -E "^https?:" /etc/apk/repositories > "$tmpdir"/remote-repositories
+grep -E -v "^https?:" /etc/apk/repositories > "$tmpdir"/local-repositories
+
+_carch="$(abuild -A)"
+
+for i in $pkgname $subpackages; do
+	_pkgname="${i%%:*}"
+	# shellcheck disable=SC2154
+	pkg="${_pkgname}-$pkgver-r$pkgrel"
+	pkgfile=${pkg}.apk
+	filepath=
+
+	# Check if our package and oldpkg matches
+	oldpkg="$(apk fetch --repositories-file "$tmpdir"/remote-repositories --simulate "$_pkgname" 2>&1 | sed 's/^Downloading //')"
+	if [ "${oldpkg}" = "${pkg}" ]; then
+		die "the built package ($pkg) is the same as in-repo"
+	fi
+
+	for repo in $(cat "$tmpdir"/local-repositories); do
+		if [ -f "$repo"/"$_carch"/"$pkgfile" ]; then
+			filepath="$repo"/"$_carch"/"$pkgfile"
+			break
+		fi
+	done
+	[ -f "$filepath" ] || die "can't find $pkgfile, maybe package wasn't built"
+
+	# The user wants us to diff files
+	case "$1" in
+		files)
+			# Fetch filelist from remote repositories
+			apk fetch \
+				--repositories-file "$tmpdir"/remote-repositories \
+				--stdout \
+				"$_pkgname" \
+				2>/dev/null \
+				| tar -zt 2>/dev/null \
+				| grep -v '^\.SIGN\.' \
+				| sort > difflist-"$_pkgname"-old
+
+			tar -ztf "$filepath" | grep -v '^\.SIGN\.' | sort > difflist-"$_pkgname"-new
+			;;
+		provides)
+			apk fetch \
+				--repositories-file "$tmpdir"/remote-repositories \
+				--stdout \
+				"$_pkgname" \
+				2>/dev/null \
+				| tar -zx --to-stdout '.PKGINFO' 2>/dev/null \
+				| grep '^provides =' \
+				| sed 's/^provides = //' \
+				| sort > difflist-"$_pkgname"-old
+
+			tar -zx --to-stdout --file="$filepath" '.PKGINFO' \
+				| grep '^provides = ' \
+				| sed 's/^provides = //' \
+				| sort > difflist-"$_pkgname"-new
+			;;
+		depends)
+			apk fetch \
+				--repositories-file "$tmpdir"/remote-repositories \
+				--stdout \
+				"$_pkgname" \
+				2>/dev/null \
+				| tar -zx --to-stdout '.PKGINFO' 2>/dev/null \
+				| grep '^depend =' \
+				| sed 's/^depend = //' \
+				| sort > difflist-"$_pkgname"-old
+
+			tar -zx --to-stdout --file="$filepath" '.PKGINFO' \
+				| grep '^depend = ' \
+				| sed 's/^depend = //' \
+				| sort > difflist-"$_pkgname"-new
+			;;
+		*)
+			exit 0
+			;;
+	esac
+
+	if [ ! -s difflist-"$_pkgname"-new ] && [ "$1" != depends ]; then
+		die "failed to download new pkg '$pkg'"
+	fi
+	
+	msg "changes of $1 in $pkg$(test -n "$oldpkg" && echo " from $oldpkg"):"
+	diff --color=always --minimal difflist-"$_pkgname"-old difflist-"$_pkgname"-new
+
+	# Clean old packages for new run
+	rm -f difflist-*
+
+done
+
