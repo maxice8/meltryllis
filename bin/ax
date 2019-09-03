@@ -1,6 +1,8 @@
 #!/bin/sh
-: ${AX_ABUILD:=abuild}
-: ${AX_ASUM:=abuild}
+# shellcheck shell=ash
+: "${AX_ABUILD:=abuild}"
+: "${AX_ASUM:=abuild}"
+
 
 usage() {
 	printf "usage: %s <key> [repo/package]\\n" "$(basename "$0")"
@@ -19,6 +21,9 @@ n : navigate directory
 s : push to remote git
 a : amend commit
 m : move package to a given repo
+c : generate diff of package contents
+d : generate diff of package depends
+p : generate diff of package providers
 r : rename a package
 w : init a git repo on the unpacked source code
 g : get value of variables
@@ -30,7 +35,7 @@ EOF
 run() {
 	cd "$branch"
 	$@
-	cd -
+	cd - >/dev/null
 }
 
 isclean() {
@@ -51,19 +56,19 @@ find_repo() {
 	# This allows us to find_repo if we are given the complete name
 	# in the form of <repo>/<package> like main/openrc
 	if [ -d "$1" ]; then
-		echo -n "$1"
+		printf "%s" "$1"
 		return 0
 	elif [ -d main/"$1" ]; then
-		echo -n main/"$1"
+		printf "main/%s" "$1"
 		return 0
 	elif [ -d community/"$1" ]; then
-		echo -n community/"$1"
+		printf "community/%s" "$1"
 		return 0
 	elif [ -d testing/"$1" ]; then
-		echo -n testing/"$1"
+		printf "testing/%s" "$1"
 		return 0
 	elif [ -d unmaintained/"$1" ]; then
-		echo -n unmaintained/"$1"
+		printf "unmaintained/%s" "$1"
 		return 0
 	fi
 
@@ -88,7 +93,7 @@ edit_apkbuild() {
 }
 
 move_repo() {
-	local from="${2:-$branch}" to="$1" pkgname= repo=
+	local from="${2:-$branch}" to="$1" pkgname='' repo=''
 
 	if [ -z "$from" ]; then
 		printf "move operation failed: no package to be moved given\n" >&2
@@ -136,7 +141,7 @@ move_repo() {
 }
 
 rename_repo() {
-	local src="${2:-$branch}" dst="$1" pkgname= repo=
+	local src="${2:-$branch}" dst="$1" pkgname='' repo=''
 
 	if [ -z "$src" ]; then
 		printf "rename operation failed: no package to be moved given\n" >&2
@@ -203,7 +208,7 @@ rename_repo() {
 }
 
 source_apkbuild() {
-	local apkbuild= srcdir=
+	local apkbuild='' srcdir=''
 
 	# Prefer using the APKBUILD that is on the current directory
 	# rather than the one on the branch.
@@ -255,7 +260,7 @@ tmpsh() {
 }
 
 mkgit() {
-	local builddir=
+	local builddir=''
 
 	source_apkbuild
 
@@ -346,6 +351,9 @@ case "$cmd" in
 	r) rename_repo "$@" "$branch";;
 	w) mkgit "$@" "$branch";;
 	g) getvar "$@";;
+	d) run apkg-diff depends ;;
+	p) run apkg-diff providers ;;
+	c) run apkg-diff files ;;
 	f)
 		apkbuild-fixer "$branch"/APKBUILD
 		;;
