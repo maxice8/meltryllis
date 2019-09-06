@@ -5,21 +5,12 @@ PATH="$HOME"/.cargo/bin:"$HOME"/bin:"$HOME"/.local/bin:"$PATH"
 
 export PATH
 #
-# source XDG user dirs
+# Export our TTY, it needs to be here since we need to run it before
+# fish starts so other shells get it
 #
-# shellcheck source=../user-dirs.dirs
-test -e "$XDG_CONFIG_HOME"/user-dirs.dirs &&
-	. "$XDG_CONFIG_HOME"/user-dirs.dirs
+GPG_TTY="$(tty)"
 
-export XDG_DESKTOP_DIR XDG_DOWNLOADS_DIR XDG_TEMPLATES XDG_PUBLICSHARE_DIR \
-       XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR
-#
-# Export JAVA stuff
-#
-_JAVA_AWT_WM_NONREPARENTING=1
-_JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true'
-
-export _JAVA_OPTIONS _JAVA_AWT_WM_NONREPARENTING
+export GPG_TTY
 #
 # If snooze-getmail is not running, start it
 #
