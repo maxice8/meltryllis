@@ -1,7 +1,6 @@
 [user]
 	email = thinkabit.ukim@gmail.com
 	name = Leo
-	signingkey = 543B9D4F4299F06B
 [credential]
 	helper = cache --timeout=999999999 --socket=${XDG_RUNTIME_DIR}/git/credential-cache
 [alias]
@@ -19,21 +18,11 @@ fsckobjects = true
 fsckobjects = true
 [receive]
 fsckObjects = true
-[sendemail]
-	smtpuser = thinkabit.ukim@gmail.com
-	smtpserver = smtp.googlemail.com
-	smtpencryption = tls
-	smtpserverport = 587
-	suppresscc = self
 [commit]
 	verbose = true
-[gpg]
-	program = gpg2
 [pull]
 	rebase = true
 [sendmail]
 	confirm = always
 [diff]
 	noprefix = false
-[cola]
-	spellcheck = false
