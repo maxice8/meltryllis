@@ -21,6 +21,11 @@ die() {
 	exit 1
 }
 
+colordiff() {
+	# GNU SED specific
+	sed 's/^-/\x1b[31m-/;s/^+/\x1b[32m+/;s/$/\x1b[0m/'
+}
+
 # shellcheck disable=SC1091
 . ./APKBUILD || die "failed to source repo for package"
 
@@ -43,7 +48,7 @@ for i in $pkgname $subpackages; do
 	filepath=
 
 	# Check if our package and oldpkg matches
-	oldpkg="$(apk fetch --repositories-file "$tmpdir"/remote-repositories --simulate "$_pkgname" 2>&1 | sed 's/^Downloading //')"
+	oldpkg="$(apk fetch --repositories-file "$tmpdir"/remote-repositories --simulate "$_pkgname" 2>/dev/null | grep Downloading | sed 's/^Downloading //')"
 	if [ "${oldpkg}" = "${pkg}" ]; then
 		die "the built package ($pkg) is the same as in-repo"
 	fi
@@ -66,10 +71,10 @@ for i in $pkgname $subpackages; do
 				"$_pkgname" \
 				2>/dev/null \
 				| tar -zt 2>/dev/null \
-				| grep -v '^\.SIGN\.' \
+				| grep -E -v '(^\.SIGN\.|^\.PKGINFO)' \
 				| sort > difflist-"$_pkgname"-old
 
-			tar -ztf "$filepath" | grep -v '^\.SIGN\.' | sort > difflist-"$_pkgname"-new
+			tar -ztf "$filepath" | grep -E -v '(^\.SIGN\.|^\.PKGINFO)' | sort > difflist-"$_pkgname"-new
 			;;
 		provides)
 			apk fetch \
@@ -108,12 +113,14 @@ for i in $pkgname $subpackages; do
 			;;
 	esac
 
-	if [ ! -s difflist-"$_pkgname"-new ] && [ "$1" != depends ]; then
-		die "failed to download new pkg '$pkg'"
-	fi
-	
-	msg "changes of $1 in $pkg$(test -n "$oldpkg" && echo " from $oldpkg"):"
-	diff --color=always --minimal difflist-"$_pkgname"-old difflist-"$_pkgname"-new
+	msg "pkg=$pkg$(test -n "$oldpkg" && echo " oldpkg=$oldpkg") prop=$1:"
+	diff \
+		--color=always \
+		--unchanged-line-format='' \
+		--old-line-format="- %L" \
+		--new-line-format="+ %L" \
+		difflist-"$_pkgname"-old \
+		difflist-"$_pkgname"-new | colordiff
 
 	# Clean old packages for new run
 	rm -f difflist-*
