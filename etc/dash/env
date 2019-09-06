@@ -5,32 +5,6 @@ PATH="$HOME"/.cargo/bin:"$HOME"/bin:"$HOME"/.local/bin:"$PATH"
 
 export PATH
 #
-# Set misc variables
-#
-EDITOR="nvim"
-PAGER="less"
-VISUAL="nvim"
-BROWSER="firefox"
-TERMINAL="alacritty"
-LESSHISTFILE="-"
-FILEMANAGER="alacritty -e ranger"
-
-export EDITOR PAGER VISUAL BROWSER TERMINAL LESSHISTFILE FILEMANAGER
-#
-# Set XGD Variables
-#
-XDG_CONFIG_HOME="$HOME/etc"
-XDG_DATA_HOME="$HOME/var/share"
-XDG_CACHE_HOME="$HOME/var/cache"
-# Undocumented but widely used.
-# https://github.com/ayekat/dotfiles/issues/30
-XDG_STATE_HOME="$HOME/var/state"
-XDG_BIN_HOME="$HOME/bin"
-XDG_LIB_HOME="$HOME/usr/lib"
-TMPDIR="/tmp"
-
-export XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME XDG_STATE_HOME XDG_BIN_HOME XDG_LIB_HOME TMPDIR
-#
 # source XDG user dirs
 #
 # shellcheck source=../user-dirs.dirs
@@ -40,53 +14,12 @@ test -e "$XDG_CONFIG_HOME"/user-dirs.dirs &&
 export XDG_DESKTOP_DIR XDG_DOWNLOADS_DIR XDG_TEMPLATES XDG_PUBLICSHARE_DIR \
        XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR
 #
-# Applications variables
-#
-PASSWORD_STORE_DIR="$HOME/usr/backup/Keys/gopass"
-WEECHAT_HOME="$XDG_CONFIG_HOME/weechat"
-GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
-MAIL="$HOME/var/mail"
-MAILDIR="$HOME/var/mail"
-INPUTRC="$XDG_CONFIG_HOME/inputrc"
-
-export PASSWORD_STORE_DIR WEECHAT_HOME GNUPGHOME MAILDIR INPUTRC
-#
-# set utf8 locale
-#
-LANG="en_US.UTF-8"
-LANGUAGE="en_US:en"
-TZ="Brazil/East"
-
-export LANG LANGUAGE TZ
-#
 # Export JAVA stuff
 #
 _JAVA_AWT_WM_NONREPARENTING=1
 _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true'
 
 export _JAVA_OPTIONS _JAVA_AWT_WM_NONREPARENTING
-#
-# Export X11 stuff
-#
-XAUTHORITY=${XDG_RUNTIME_DIR:-/tmp}/Xauthority
-ICEAUTHORITY="$XDG_CACHE_HOME/ICEauthority"
-
-export XAUTHORITY ICEAUTHORITY
-#
-# bspwm specific
-#
-BSPWM_SOCKET=${XDG_RUNTIME_DIR:-/tmp}/bspwm_socket
-BSPWM_STATE=${XDG_RUNTIME_DIR:-/tmp}/bspwm-state-"$(id -u)".json
-
-export BSPWM_SOCKET BSPWM_STATE
-#
-# Alpine Linux aports specific
-#
-AX_ABUILD=dabuild
-AX_ASUM=/usr/bin/abuild
-APKBUILD_STYLE=leo
-
-export AX_ABUILD AX_ASUM APKBUILD_STYLE
 #
 # If snooze-getmail is not running, start it
 #
