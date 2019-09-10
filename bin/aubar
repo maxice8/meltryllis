@@ -2,7 +2,7 @@
 mute_color="%{F#65737E}"
 mute_icon="%"
 
-icon_color="%{F#6182b0}"
+icon_color="%{F#67b36f}"
 soft_color="%{F#32CD32}"
 loud_color="%{F#FFFF33}"
 warn_color="%{F#ff8c00}"
