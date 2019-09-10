@@ -4,7 +4,7 @@ background = #000000
 
 icons = #82b061
 
-bspwm = #6182b0
+bspwm = #67b36f
 
 green = #82B061
 red = 9d0006
@@ -119,14 +119,14 @@ battery = BAT0
 adapter = AC
 
 format-charging =<label-charging>
-label-charging = %{F#6182b0}%{T2}%{T-}%{F-} %percentage%%
+label-charging = %{F#67b36f}%{T2}%{T-}%{F-} %percentage%%
 
 format-discharging = %{T2}<ramp-capacity>%{T-} <label-discharging>
 label-discharging = %percentage%%
 
 format-full = <label-full>
 label-full = "%{T2}%{T-}"
-label-full-foreground = #076678
+label-full-foreground = #4e9c57
 
 ramp-capacity-0 = 
 ramp-capacity-1 = 
@@ -145,7 +145,7 @@ format-full-padding = 1
 type = internal/date
 interval = 30
 
-date = %%{F#6182b0} %%{F-}%a %d %B
+date = %%{F#67b36f} %%{F-}%a %d %B
 
 label = %date%
 format = <label>
@@ -156,7 +156,7 @@ format-padding = 1
 type = internal/date
 interval = 30
 
-time ="%%{F#6182b0}%%{T2} %%{T-}%%{F-}%I:%M %p"
+time ="%%{F#67b36f}%%{T2} %%{T-}%%{F-}%I:%M %p"
 
 label = %time%
 format = <label>
@@ -168,7 +168,7 @@ exec = TZ=Europe/Berlin date +"%I:%M %p  "
 
 [module/mpd]
 type = internal/mpd
-format-online = <label-song> <label-time>%{T2}%{F#6182b0} <icon-prev><icon-stop><toggle><icon-next>%{F-}%{T-}
+format-online = <label-song> <label-time>%{T2}%{F#67b36f} <icon-prev><icon-stop><toggle><icon-next>%{F-}%{T-}
 format-stopped= <label-song> %{T2}%{T-} <icon-play>
 format-offline=<label-offline>
 label-time=%{F#a59f85} %elapsed%%{F-}
