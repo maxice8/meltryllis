@@ -27,9 +27,7 @@ case $chosen in
 		lock -l dim
         ;;
     $suspend)
-        mpc -q pause
-        amixer set Master mute
-		sudo sh -c 'echo mem > /sys/power/state'
+		lock -s dim
         ;;
     $log_out)
 		pkill -15 firefox
