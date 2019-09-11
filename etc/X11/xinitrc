@@ -1,28 +1,67 @@
+# Set correct keyboard layout
 setxkbmap br &
+
+# Fix fonts
 xset +fp /usr/share/fonts/misc
 xset +fp ~/.fonts
 xset fp rehash
+
+# Make the keyboard more bearable
 xset r rate 300 50 &
+
+# Don't turn off screen
 xset s off
 xset -dpms
 
-# Kill previous dbus agents
-if pgrep -u $(id -u) -x dbus-daemon; then
-	pkill -u $(id -u) dbus
+# Kill previous dbus daemons
+if pgrep -u "$(id -u)" -x dbus-daemon; then
+	pkill -u "$(id -u)" dbus
 fi
 eval $(dbus-launch --sh-syntax --exit-with-session) # Needs to be before starting wm and terminals
 
+# Hotkey daemons
 sxhkd &
-mpd &
+
+# MPD isn't dependent on DISPLAY and so isn't automatically closed
+# Only start if it is not there already
+if ! pgrep -u "$(id -u)" -x mpd; then
+	mpd &
+fi
+
+# Audio server daemon
 start-pulseaudio-x11 &
-syncthing -no-browser &
+
+# syncthing isn't dependent on DISPLAY and so isn't automatically closed
+# Only start if it is not there already
+if ! pgrep -u "$(id -u)" -x syncthing; then
+	syncthing -no-browser &
+fi
+
+# Notification daemon
+dunst &
+
+# Compositing manager
+compton --dbus --config "$XDG_CONFIG_HOME"/compton.conf &
+
+# Clipboard synchronization
 autocutsel -fork &
 autocutsel -selection PRIMARY -fork &
+
+# Make the keyboard cursor disappear
 xbanish &
+
+# window-manager
 bspwm &
-rndw &
-xidle -timeout 360 -program "$HOME/bin/lock -l" &
+
+# Set the dim wallpaper that is also on the lockscreen
+lock -w dim
+
+# Lock the screen after 360 seconds passed
+xidle -timeout 360 -program "$HOME/bin/lock -l dim" &
+
 sudo sh -c 'echo 300 > /sys/class/backlight/intel_backlight/brightness'
+
+# Exec into { while true do ; sleep inf ; done }
 export DISPLAY=:0 && exec xwait
 
 # vim: ft=sh
