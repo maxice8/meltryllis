@@ -29,6 +29,9 @@ bspc rule -a Grabber:Grabber desktop=^4 rectangle=1366x733+-1+35 follow=on
 # Secondary browser.
 bspc rule -a '*:chromium' desktop=^4 rectangle=1366x733+-1+35 follow=on
 
+# Imageboard downloader.
+bspc rule -a '*:claws-mail' desktop=^5 rectangle=1366x733+-1+35 follow=on
+
 # Adopt orphans
 bspc wm -o
 
