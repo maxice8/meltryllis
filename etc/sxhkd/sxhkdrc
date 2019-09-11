@@ -10,14 +10,14 @@ super + d
 super + m
 	mpdmenu
 
+super + shift + m
+	playmenu
+
 super + s
 	maimmenu
 
 super + p
 	powermenu
-
-super + f
-	playmenu
 
 super + h
 	polybar-msg cmd toggle
@@ -27,28 +27,6 @@ super + Return
 
 shift + Return
 	xdotool click 1
-
-# }}}
-
-# SCREENSHOTS {{{
-
-super + p
-	maim -u -i $(xdotool getactivewindow) | xclip -selection clipboard -t image/png
-
-super + shift + p
-	maim -u | xclip -selection clipboard -t image/png
-
-super + ctrl + p
-	maim -s -u | xclip -selection clipboard -t image/png
-
-super + o
-	maim -u -i $(xdotool getactivewindow) > ~/usr/screenshots/$(date +%T-%d)-focused.png
-
-super + shift + o
-	maim -m 2 -u > ~/usr/screenshots/$(date +%T-%d).png
-
-super + ctrl + o
-	maim -s -u > ~/usr/screenshots/$(date +%T-%d)-selected.png
 
 # }}}
 
