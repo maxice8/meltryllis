@@ -12,6 +12,7 @@
   list-element-margin:                  @inputbar-margin;
   list-element-border:                  0px 0px 0px 8px;
   list-8-window-padding:                120px 100px;
+  list-9-window-padding:                100px 100px;
   /* option menus: i3layoutmenu, mpdmenu, powermenu and scrotmenu */
   /**
    * Values bellow are 'no-padding' ones for a size 50 (@icon-font) font, played around using this character: ■
