@@ -5,7 +5,13 @@ xset fp rehash
 xset r rate 300 50 &
 xset s off
 xset -dpms
+
+# Kill previous dbus agents
+if pgrep -u $(id -u) -x dbus-daemon; then
+	pkill -u $(id -u) dbus
+fi
 eval $(dbus-launch --sh-syntax --exit-with-session) # Needs to be before starting wm and terminals
+
 sxhkd &
 mpd &
 start-pulseaudio-x11 &
@@ -14,7 +20,6 @@ autocutsel -fork &
 autocutsel -selection PRIMARY -fork &
 xbanish &
 bspwm &
-borderd &
 rndw &
 xidle -timeout 360 -program "$HOME/bin/lock -l" &
 sudo sh -c 'echo 300 > /sys/class/backlight/intel_backlight/brightness'
