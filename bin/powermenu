@@ -24,7 +24,7 @@ case $chosen in
 		sudo busybox reboot
         ;;
     $lock)
-		exit 0
+		lock -l dim
         ;;
     $suspend)
         mpc -q pause
