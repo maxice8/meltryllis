@@ -19,6 +19,9 @@ if pgrep -u "$(id -u)" -x dbus-daemon; then
 fi
 eval $(dbus-launch --sh-syntax --exit-with-session) # Needs to be before starting wm and terminals
 
+# Start gnome-keyring-daemon as secrets and ssh manager
+eval $(/usr/bin/gnome-keyring-daemon --start --components=secrets,ssh)
+
 # Hotkey daemons
 sxhkd &
 
