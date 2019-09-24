@@ -1,6 +1,6 @@
 [colors]
 foreground = #ffffff
-background = #000000
+background = #00000000
 
 icons = #82b061
 
@@ -92,11 +92,11 @@ label-focused = %{T2}%{T-}
 label-focused-foreground = ${colors.bspwm}
 label-focused-padding = 1
 
-label-occupied =%{T2}%{T-}
+label-occupied = %{T2}%{T-}
 label-occupied-foreground = ${colors.bspwm}
 label-occupied-padding = 1
 
-label-urgent = U
+label-urgent = %{T2}%{T-}
 label-urgent-foreground = #af3a03
 label-urgent-padding = 1
 
