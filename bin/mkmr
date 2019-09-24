@@ -1,0 +1,175 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+# mkmr [BRANCH] ... - mkmr create a pull request
+
+# We need XDG_CACHE_HOME to cache the ID of repositories
+: "${XDG_CACHE_HOME:-$HOME/.cache}"
+
+check_bin() {
+	if ! type "$1" >/dev/null 2>&1; then
+		echo "Failed to find program '$1'"
+		exit 1
+	fi
+}
+
+# Check for binaries we need
+check_bin curl secret-tool jq git tee cat printf get-repo-config alpine-stable-prefix echo cut printerr &
+wait
+
+while [ $# -gt 0 ]
+do
+	if [ "$1" = "-a" ]
+	then
+		ASSIGN="$2"
+		shift
+	elif [ "$1" = "-l" ]
+	then
+		LABEL="-l $2"
+		shift
+	elif [ "$1" = "-m" ]
+	then
+		MSG="$2"
+		shift
+	elif [ "$1" = "-t" ]
+	then
+		TARGET_BRANCH="$2"
+		shift
+	else
+		args="$args $1"
+	fi
+	shift
+done
+
+[ -z "$args" ] && args="$(git rev-parse --abbrev-ref HEAD)"
+
+# gitstream is the git remote that i push via SSH
+# to alpine, in the future this will be joined into
+# upstream which will hold gitlab
+if git config remote.gitstream.url >/dev/null; then
+	remote=gitstream
+elif git config remote.upstream.url >/dev/null; then
+	remote=upstream
+else
+	remote=origin
+fi
+
+_get_project_id() {
+	repo="$(echo "$1" \
+			| sed -e 's|https://||g' -e 's|%2F|.|' \
+			| tr '/' '.' )"
+
+	# Create cache directory if it doesn't exist
+	[ -d "$XDG_CACHE_HOME"/mkmr ] || mkdir -p "$XDG_CACHE_HOME"/mkmr
+
+	# The project ID is cached, read it out
+	if [ -f "$XDG_CACHE_HOME"/mkmr/"$repo" ]; then
+		cat "$XDG_CACHE_HOME"/mkmr/"$repo"
+		return 0
+	fi
+
+	# Call the GitLab API to see the id of the repo and write it to the cache
+	curl --silent "$1" | jq '.id // empty' | tee "$XDG_CACHE_HOME"/mkmr/"$repo"
+
+	[ -s "$XDG_CACHE_HOME"/mkmr/"$repo" ] || return 1
+}
+
+
+selectcommit() {
+	# If we are pushing against a non-default base then prefix it on the commit msg
+	[ "$TARGET_BRANCH" != master ] && printf "%s " "[$(alpine-stable-prefix "$TARGET_BRANCH")]"
+	git show -s --format=%s $(git log $remote/${TARGET_BRANCH}.."$1" --pretty='%h %s' |
+							  fzy |
+							  cut -d ' ' -f1)
+}
+
+lastcommit() {
+	# If we are pushing against a non-default base then prefix it on the commit msg
+	[ "$TARGET_BRANCH" != master ] && printf "%s " "[$(alpine-stable-prefix "$TARGET_BRANCH")]"
+	git show -s --format=%s
+}
+
+upstream_owner="$(get-repo-config repo-owner)"
+upstream_repo="$(get-repo-config repo-name)"
+
+origin_owner="$(get-repo-config origin-repo-owner)"
+origin_repo="$(get-repo-config origin-repo-name)"
+
+[ -z "$ASSIGN" ] && ASSIGN=0
+
+mr() {
+	if [ -z "$TARGET_BRANCH" ]; then
+		if [ -n "$(alpine-stable-prefix "$1")" ]; then
+			TARGET_BRANCH="$(alpine-stable-prefix "$1")"-stable
+		else
+			TARGET_BRANCH=master
+		fi
+	fi
+
+	# git rebase $remote/"$TARGET_BRANCH" >/dev/null 2>&1
+	# git push -uf origin "$1" >/dev/null 2>&1
+
+	# If the user didn't define MSG For us then check if we have
+	# more than 1 commit then ask the user to pick a commit for the
+	# title. If there is only one commit then just use it
+	if [ -z "$MSG" ]; then
+		if [ "$(git rev-list --count "$remote"/"$TARGET_BRANCH".."$1")" -gt 1 ]; then
+			MSG="$(selectcommit "$1")"
+		else
+			MSG="$(lastcommit)"
+		fi
+	fi
+
+
+	# JSON payload that will be used to create the branch
+	BODY="{
+		\"id\": \"${origin_owner}%2F${origin_repo}\",
+		\"source_branch\": \"$(git rev-parse --abbrev-ref HEAD)\",
+		\"remove_source_branch\": true,
+		\"target_branch\": \"$TARGET_BRANCH\",
+		\"title\": \"$(lastcommit)\",
+		\"assignee_id\": \"$ASSIGN\",
+		\"target_project_id\": $PROJECT_ID
+	}";
+
+	JSON="$(curl -X POST "$ENDPOINT"/merge_requests \
+			--header "PRIVATE-TOKEN: $(secret-tool lookup org.gitlab.leo.mkmr token)" \
+			--header "Content-Type: application/json" \
+			--data "$BODY" --silent)"
+
+	WEB_URL="$(echo "$JSON" | jq '.web_url // empty')"
+
+	if [ -z "$WEB_URL" ]; then
+		echo "$JSON" | jq -r .
+	else
+		echo "$WEB_URL" | tr -d '"'
+	fi
+}
+
+# Try to detect host, strip the .git suffix
+# This is where the domain is, most normally gitlab.com
+# but also works with other custom domains.
+HOST="$(git config remote.upstream.url | cut -d / -f -3)"
+
+# This is the ENDPOINT of the project you forked, if we call this with
+# curl we get a JSON payload that describes the repo, including stuff like
+# its :id and :name
+ENDPOINT="$HOST"/api/v4/projects/"$origin_owner"%2F"$origin_repo"
+
+# This is the ENDPOINT of the project itself, we need to get its :id value to
+# pass as the 'target_project_id'
+UPSTREAM_ENDPOINT="$HOST"/api/v4/projects/"$upstream_owner"%2F"$upstream_repo"
+
+PROJECT_ID="$(_get_project_id "$UPSTREAM_ENDPOINT")"
+
+if [ -z "$PROJECT_ID" ]; then
+	printerr "Failed to find ID of the project"
+	exit 1
+fi
+
+# Try to catch secret, abort if we can't since it is required for
+# us to use it
+
+for arg in $args
+do
+	mr "$arg"
+done
