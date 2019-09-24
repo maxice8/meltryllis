@@ -1,0 +1,57 @@
+#!/bin/bash
+append_arg() {
+	a="$a $1"
+}
+
+a="--bind /awine /" # Mount /awine on our root system as read-only
+
+append_arg "--dir /tmp" # Create a /var directory
+append_arg "--ro-bind /sys /sys" # Mount host /sys as read-only
+append_arg "--ro-bind /etc/pulse /etc/pulse"
+append_arg "--proc /proc" # Create a procfs mount
+append_arg "--dev /dev"  # Create a devfs mount
+append_arg "--ro-bind /etc/resolv.conf /etc/resolv.conf" # Mount our resolv configuration as read-only
+# append_arg "--chdir $PWD" # Change to the $HOME of the calling user
+append_arg "--unshare-all" # Unshare all namespaces
+append_arg "--die-with-parent" # Kill everything when we exit
+append_arg "--tmpfs /run" # Mount /run as an empty tmpfs
+append_arg "--bind /tmp/.X11-unix/X0 /tmp/.X11-unix/X0" # Mount the display server as :0 on the machine
+append_arg "--dir /run/user/$(id -u)" # Create /run/user/$(id of calling user)
+append_arg "--bind /run/user/$(id -u) /run/user/$(id -u)" # And mount it for us
+append_arg "--setenv XDG_RUNTIME_DIR /run/user/$(id -u)" # Set XDG_RUNTIME_DIR to the /run/user dir
+append_arg "--setenv DISPLAY $DISPLAY" # Set our display
+append_arg "--dev-bind /dev/dri /dev/dri" # Share our graphics card
+append_arg "--bind /dev/shm /dev/shm"
+append_arg "--bind /home /home" # Mount system /home so we can install wine games
+append_arg "--setenv WINEDEBUG -all"
+
+
+if [ "$2" ]; then
+	append_arg "--share-net"
+fi
+
+case "$1" in
+	hoi3) append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-hoi3" ;;
+	hoi4) 
+		append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-hoi4"
+		append_arg "--setenv WINEARCH win64"
+		;;
+	eu3) # EU3 is 32bit-only
+		append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-eu3"
+		append_arg "--setenv WINEARCH win32"
+		;;
+	eu4) append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-eu4" ;;
+	ftg) append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-ftg" ;;
+	ck)
+		append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-crusader-kings"
+		append_arg "--setenv WINEARCH win32"
+		;;
+	'') append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine" ;;
+	*) 
+		append_arg "--share-net" # But Share networking
+		echo "Invalid name for wineprefix: '$1'" >&2
+		exit 1
+		;;
+esac
+
+exec bwrap $a --chdir "$PWD" /bin/bash
