@@ -1,0 +1,290 @@
+#!/bin/sh
+
+# Author : Pavan Jadhaw
+# Github Profile : https://github.com/pavanjadhaw
+# Project Repository : https://github.com/pavanjadhaw/betterlockscreen
+
+# find your resolution so images can be resized to match your screen resolution
+res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
+
+# copy this block to ~/.config/betterlockscreenrc" to customize
+font="SF Pro Display"
+locktext='Type password to unlock...'
+
+# create folder in ~/.cache/i3lock directory
+res_folder="$XDG_CACHE_HOME/i3lock/$res"
+folder="$XDG_CACHE_HOME/i3lock/current"
+echo "Got" "$res" "$res_folder"
+if [ ! -d "$folder" ] || [ -n "$2" ]; then
+	rm -rf "$folder"
+	mkdir -p "$res_folder"
+	ln -s "$res_folder" "$folder"
+fi
+
+# ratio for rectangle to be drawn for time background on lockscreen
+# Original Image
+orig_wall="$folder/wall.png"
+
+# Versions (from here)
+# You can use these images to set different versions as wallpaper
+# lockscreen background.
+resized="$folder/resized.png" # resized image for your resolution
+
+# images to be used as wallpaper
+dim="$folder/dim.png" # image with subtle overlay of black
+
+# lockscreen images (images to be used as lockscreen background)
+l_resized="$folder/l_resized.png"
+l_dim="$folder/l_dim.png"
+
+prelock() {
+	pkill -u "$USER" -USR1 dunst &
+	loginctl lock-session &
+	dbus-send --print-reply --dest=com.github.chjj.compton._0 / \
+		com.github.chjj.compton.opts_set string:unredir_if_possible boolean:false &
+}
+
+lock() {
+	#$1 image path
+
+	i3lock-color \
+		-t -i "$1" \
+		--timepos='x+110:h-70' \
+		--datepos='x+43:h-45' \
+		--clock --date-align 1 --datestr "$locktext" \
+		--insidecolor=00000000 --ringcolor=ffffffff --line-uses-inside \
+		--keyhlcolor=d23c3dff --bshlcolor=d23c3dff --separatorcolor=00000000 \
+		--insidevercolor=00000000 --insidewrongcolor=d23c3dff \
+		--ringvercolor=ffffffff --ringwrongcolor=ffffffff --indpos='x+280:h-70' \
+		--radius=20 --ring-width=4 --veriftext='' --wrongtext='' \
+		--verifcolor=ffffffff --timecolor=ffffffff --datecolor=ffffffff \
+		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
+		--noinputtext='' --force-clock --pass-media-keys $lockargs 
+
+}
+
+postlock() {
+	pkill -u "$USER" -USR2 dunst &
+	loginctl unlock-session &
+
+	sleep 0.2
+	dbus-send --print-reply --dest=com.github.chjj.compton._0 / \
+	    com.github.chjj.compton.opts_set string:unredir_if_possible boolean:true
+}
+
+lockselect() {
+	prelock
+	case "$1" in
+		dim)
+			# lockscreen with dimmed background
+			lock "$l_dim"
+			;;
+
+		*)
+			# default lockscreen
+			lock "$l_resized"
+			;;
+	esac
+	postlock
+}
+
+update() {
+	# use
+	background="$1"
+
+	rectangles="$(xrandr --query \
+		| grep ' connected' \
+		| grep -o '[0-9][0-9]*x[0-9][0-9]*[^ ]*' \
+		| sed 's|[+x]| |g' \
+		| cut -d ' ' -f2-3 | while read -r SR1 SR2; do
+
+		CX=$(( SR2 + 25 ))
+		CY=$(( SR1 - 30 ))
+
+		echo "rectangle $CX,$CY $(( CX + 300 )),$(( CY - 80 )) "
+	done)"	
+
+	# User supplied Image
+	user_image="$folder/user_image.png"
+
+	# create folder
+	if [ ! -d "$folder" ]; then
+		echo "Creating '$folder' directory to cache processed images."
+		mkdir -p "$folder"
+	fi
+
+	# get user image
+	cp "$background" "$user_image"
+	if [ ! -f "$user_image" ]; then
+		echo 'Please specify the path to the image you would like to use'
+		exit 1
+	fi
+
+	# replace orignal with user image
+	cp "$user_image" "$orig_wall"
+	rm "$user_image"
+
+	echo 'Generating alternate images based on the image you specified,'
+	echo 'please wait this might take few seconds...'
+
+	# wallpapers
+
+	echo
+	echo 'Converting provided image to match your resolution...'
+	# resize image
+	convert "$orig_wall" -resize "$res""^" -gravity center -extent "$res" "$resized"
+
+	echo
+	echo 'Applying dim effect to resized image'
+	# dim
+	convert "$resized" -fill black -colorize 40% "$dim"
+
+	echo
+	echo 'Caching images for faster screen locking'
+	# resized
+	convert "$resized" -draw "fill #00000066 $rectangles" "$l_resized"
+
+	# dim
+	convert "$dim" -draw "fill #00000066 $rectangles" "$l_dim"
+
+	echo
+	echo 'All required changes have been applied'
+}
+
+wallpaper() {
+	case "$1" in
+		'')
+			# set resized image as wallpaper if no argument is supplied by user
+			feh --bg-fill "$resized"
+			;;
+
+		dim)
+			# set dimmed image as wallpaper
+			feh --bg-fill "$dim"
+			;;
+
+	esac
+}
+
+
+empty() {
+	if [ -f "$l_dim" ]; then
+		echo -e "\nSeems you haven't provided any arguments. See below for usage details."
+	else
+		echo 'Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg).'
+		echo
+		echo '		Image cache must be updated to initially configure or update the wallpaper used.'
+	fi
+
+	echo
+	echo 'For other sets of options and help, use the help command.'
+	echo 'e.g. betterlockscreen -h or betterlockscreen --help'
+	echo
+	echo 'See: https://github.com/pavanjadhaw/betterlockscreen for additional info...'
+	exit 1
+}
+
+
+usage() {
+	echo 'Important: Update the image cache (e.g. betterlockscreen -u path/to/image.jpg).'
+	echo '	Image cache must be updated to initially configure or update wallpaper used'
+	echo
+	echo
+	echo 'See: https://github.com/pavanjadhaw/betterlockscreen for additional info...'
+	echo
+	echo
+	echo 'Options:'
+	echo
+	echo '	-h --help'
+	echo '		For help (e.g. betterlockscreen -h or betterlockscreen --help).'
+	echo
+	echo
+	echo '	-u --update'
+	echo '		to update image cache, you should do this before using any other options'
+	echo '		E.g: betterlockscreen -u path/to/image.png when image.png is custom background'
+	echo '		Or you can use betterlockscreen -u path/to/imagedir and a random file will be selected.'
+	echo
+	echo
+	echo '	-l --lock'
+	echo '		to lock screen (e.g. betterlockscreen -l)'
+	echo '		you can also use dimmed or blurred background for lockscreen.'
+	echo '		E.g: betterlockscreen -l dim (for dimmed background)'
+	echo
+	echo
+	echo '	-s --suspend'
+	echo '		to suspend system and lock screen (e.g. betterlockscreen -s)'
+	echo '		you can also use dimmed or blurred background for lockscreen.'
+	echo '		E.g: betterlockscreen -s dim (for dimmed background)'
+	echo
+	echo
+	echo '	-w --wall'
+	echo '		you can also set lockscreen background as wallpaper'
+	echo '		to set wallpaper (e.g. betterlockscreen -w or betterlockscreen --wall)'
+	echo '		you can also use dimmed or blurred variants.'
+	echo '		E.g: betterlockscreen -w dim (for dimmed wallpaper)'
+	echo
+	echo
+	echo '	-t --text'
+	echo '		to set custom lockscreen text (max 31 chars)'
+	echo "		E.g: betterlockscreen -l dim -t \"Don't touch my machine!\""
+}
+
+
+# Options
+[ -z "$1" ] && empty
+
+for arg in "$@"; do
+	echo "$arg" | grep -q '^-' || continue
+
+	case "$1" in
+		-h | --help)
+			usage
+			break
+			;;
+
+		-s | --suspend)
+			runsuspend=true
+			;;
+
+		-l | --lock)
+			runlock=true
+			[ $runsuspend ] || lockargs="$lockargs -n"
+			if echo "$2" | grep -q '^-'; then
+				shift 1
+			else
+				lockstyle="$2"; shift 2
+			fi
+			;;
+
+		-w | --wall | --wallpaper)
+			wallpaper "$2"
+			shift 2
+			;;
+
+		-u | --update)
+			runupdate=true
+			imagepath="$2"
+			shift 2
+			;;
+
+		-t | --text)
+			locktext="$2"
+			shift 2
+			;;
+
+		*)
+			echo "invalid argument: $1"
+			break
+			;;
+	esac
+done
+
+# Run image generation
+[ $runupdate ] && update "$imagepath"
+
+# Activate lockscreen
+[ $runlock ] && lockselect "$lockstyle" && \
+	{ [ $runsuspend ] && loginctl suspend; }
+
+exit 0
+
