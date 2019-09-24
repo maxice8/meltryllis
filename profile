@@ -3,7 +3,7 @@
 #
 # Start gpg-agent 
 if ! pgrep -x ssh-agent -u $(id -u) >/dev/null; then
-	eval ssh-agent
+	eval "$(ssh-agent -s)"
 fi
 
 # Since these refer to $XDG_RUNTIME_DIR which is not set in .pam_environment
