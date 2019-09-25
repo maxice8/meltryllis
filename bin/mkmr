@@ -13,7 +13,7 @@ check_bin() {
 }
 
 # Check for binaries we need
-check_bin curl secret-tool jq git tee cat printf get-repo-config alpine-stable-prefix echo cut printerr &
+check_bin curl secret-tool jq git tee cat printf get-repo-config alpine-stable-prefix echo cut printerr gcp &
 wait
 
 while [ $# -gt 0 ]
@@ -24,7 +24,7 @@ do
 		shift
 	elif [ "$1" = "-l" ]
 	then
-		LABEL="-l $2"
+		LABEL="$2"
 		shift
 	elif [ "$1" = "-m" ]
 	then
@@ -88,6 +88,21 @@ lastcommit() {
 	git show -s --format=%s
 }
 
+upgradecommit() {
+	# Check if we have an upgrade commit
+	gcp | grep -q ': upgrade to [0-9]'
+}
+
+addcommit() {
+	# Check if we have a commit that adds a new aport
+	gcp | grep -q ': new aport$'
+}
+
+movecommit() {
+	# Check if we have a commit that moves a package to another repo
+	gcp | grep -q ': move from '
+}
+
 upstream_owner="$(get-repo-config repo-owner)"
 upstream_repo="$(get-repo-config repo-name)"
 
@@ -105,8 +120,8 @@ mr() {
 		fi
 	fi
 
-	# git rebase $remote/"$TARGET_BRANCH" >/dev/null 2>&1
-	# git push -uf origin "$1" >/dev/null 2>&1
+	git rebase $remote/"$TARGET_BRANCH" >/dev/null 2>&1
+	git push -uf origin "$1" >/dev/null 2>&1
 
 	# If the user didn't define MSG For us then check if we have
 	# more than 1 commit then ask the user to pick a commit for the
@@ -119,12 +134,46 @@ mr() {
 		fi
 	fi
 
+	# Special code handling for Alpine Linux
+	if [ "$upstream_owner"/"$upstream_repo" = alpine/aports ]; then
+		if upgradecommit; then
+			if [ -z "$LABEL" ]; then
+				LABEL=A-upgrade
+			else
+				LABEL="$LABEL",A-upgrade
+			fi
+		fi
+		
+		if addcommit; then
+			if [ -z "$LABEL" ]; then
+				LABEL=A-add
+			else
+				LABEL="$LABEL",A-add
+			fi
+		fi
+
+		if movecommit; then
+			if [ -z "$LABEL" ]; then
+				LABEL=A-move
+			else
+				LABEL="$LABEL",A-move
+			fi
+		fi
+	fi
 
 	# JSON payload that will be used to create the branch
 	BODY="{
 		\"id\": \"${origin_owner}%2F${origin_repo}\",
 		\"source_branch\": \"$(git rev-parse --abbrev-ref HEAD)\",
-		\"remove_source_branch\": true,
+		\"remove_source_branch\": true,"
+
+	# If we set labels then append it to body
+	if [ -n "$LABEL" ]; then
+		BODY="$BODY
+		\"labels\": \"$LABEL\","
+	fi
+
+	BODY="$BODY
 		\"target_branch\": \"$TARGET_BRANCH\",
 		\"title\": \"$(lastcommit)\",
 		\"assignee_id\": \"$ASSIGN\",
