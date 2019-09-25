@@ -46,6 +46,10 @@ case "$1" in
 		append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-crusader-kings"
 		append_arg "--setenv WINEARCH win32"
 		;;
+	worms)
+		append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-worms"
+		append_arg "--setenv WINEARCH win32"
+		;;
 	'') append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine" ;;
 	*) 
 		append_arg "--share-net" # But Share networking
