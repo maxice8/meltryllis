@@ -20,7 +20,10 @@ fi
 eval $(dbus-launch --sh-syntax --exit-with-session) # Needs to be before starting wm and terminals
 
 # Start gnome-keyring-daemon as secrets and ssh manager
-eval $(/usr/bin/gnome-keyring-daemon --start --components=secrets,ssh)
+if pgrep -x gnome-keyring-daemon -u $(id -u); then
+	eval $(/usr/bin/gnome-keyring-daemon --replace --components=secrets,ssh)
+	export SSH_AUTH_SOCK
+fi
 
 # Hotkey daemons
 sxhkd &
