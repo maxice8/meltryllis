@@ -18,19 +18,19 @@ wait
 
 while [ $# -gt 0 ]
 do
-	if [ "$1" = "-a" ]
+	if [ "$1" = "--assignees" ]
 	then
 		ASSIGN="$2"
 		shift
-	elif [ "$1" = "-l" ]
+	elif [ "$1" = "--labels" ]
 	then
 		LABEL="$2"
 		shift
-	elif [ "$1" = "-m" ]
+	elif [ "$1" = "--title" ]
 	then
-		MSG="$2"
+		TITLE="$2"
 		shift
-	elif [ "$1" = "-t" ]
+	elif [ "$1" = "--target-branch" ]
 	then
 		TARGET_BRANCH="$2"
 		shift
@@ -123,14 +123,14 @@ mr() {
 	git rebase $remote/"$TARGET_BRANCH" >/dev/null 2>&1
 	git push -uf origin "$1" >/dev/null 2>&1
 
-	# If the user didn't define MSG For us then check if we have
+	# If the user didn't define the title for us then check if we have
 	# more than 1 commit then ask the user to pick a commit for the
 	# title. If there is only one commit then just use it
-	if [ -z "$MSG" ]; then
+	if [ -z "$TITLE" ]; then
 		if [ "$(git rev-list --count "$remote"/"$TARGET_BRANCH".."$1")" -gt 1 ]; then
-			MSG="$(selectcommit "$1")"
+			TITLE="$(selectcommit "$1")"
 		else
-			MSG="$(lastcommit)"
+			TITLE="$(lastcommit)"
 		fi
 	fi
 
@@ -175,7 +175,7 @@ mr() {
 
 	BODY="$BODY
 		\"target_branch\": \"$TARGET_BRANCH\",
-		\"title\": \"$(lastcommit)\",
+		\"title\": \"$TITLE\",
 		\"assignee_id\": \"$ASSIGN\",
 		\"target_project_id\": $PROJECT_ID
 	}";
