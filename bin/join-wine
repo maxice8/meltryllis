@@ -23,39 +23,25 @@ append_arg "--setenv DISPLAY $DISPLAY" # Set our display
 append_arg "--dev-bind /dev/dri /dev/dri" # Share our graphics card
 append_arg "--bind /dev/shm /dev/shm"
 append_arg "--bind /home /home" # Mount system /home so we can install wine games
+
+# Disable wine debugging for performance
 append_arg "--setenv WINEDEBUG -all"
 
+# By default, have win32
+append_arg "--setenv WINEARCH win32"
+
+# If $1 is set then we have a custom wineprefix
+append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine$(test -n "$1" && echo "-$1")"
+
+case "$1" in
+	hoi4)
+		# hoi4 starting with 1.7.0 (Hybrid) is 64bits
+		append_arg "--setenv WINEARCH win64"
+		;;
+esac
 
 if [ "$2" ]; then
 	append_arg "--share-net"
 fi
-
-case "$1" in
-	hoi3) append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-hoi3" ;;
-	hoi4) 
-		append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-hoi4"
-		append_arg "--setenv WINEARCH win64"
-		;;
-	eu3) # EU3 is 32bit-only
-		append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-eu3"
-		append_arg "--setenv WINEARCH win32"
-		;;
-	eu4) append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-eu4" ;;
-	ftg) append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-ftg" ;;
-	ck)
-		append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-crusader-kings"
-		append_arg "--setenv WINEARCH win32"
-		;;
-	worms)
-		append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine-worms"
-		append_arg "--setenv WINEARCH win32"
-		;;
-	'') append_arg "--setenv WINEPREFIX $XDG_DATA_HOME/wine" ;;
-	*) 
-		append_arg "--share-net" # But Share networking
-		echo "Invalid name for wineprefix: '$1'" >&2
-		exit 1
-		;;
-esac
 
 exec bwrap $a --chdir "$PWD" /bin/bash
