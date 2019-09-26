@@ -30,6 +30,10 @@ do
 	then
 		TITLE="$2"
 		shift
+	elif [ "$1" = "--description" ]
+	then
+		DESCRIPTION="$2"
+		shift
 	elif [ "$1" = "--target-branch" ]
 	then
 		TARGET_BRANCH="$2"
@@ -73,19 +77,19 @@ _get_project_id() {
 	[ -s "$XDG_CACHE_HOME"/mkmr/"$repo" ] || return 1
 }
 
-
 selectcommit() {
-	# If we are pushing against a non-default base then prefix it on the commit msg
-	[ "$TARGET_BRANCH" != master ] && printf "%s " "[$(alpine-stable-prefix "$TARGET_BRANCH")]"
-	git show -s --format=%s $(git log $remote/${TARGET_BRANCH}.."$1" --pretty='%h %s' |
-							  fzy |
-							  cut -d ' ' -f1)
+	git log $remote/${TARGET_BRANCH}.."$1" --pretty='%h %s' | fzy | cut -d ' ' -f1
 }
 
-lastcommit() {
+title() {
 	# If we are pushing against a non-default base then prefix it on the commit msg
 	[ "$TARGET_BRANCH" != master ] && printf "%s " "[$(alpine-stable-prefix "$TARGET_BRANCH")]"
-	git show -s --format=%s
+	# If they do not give us any value then get the last commit
+	git show -s --format=%s "${1:-HEAD}"
+}
+
+description() {
+	git show -s --format=%b "${1:-HEAD}"
 }
 
 upgradecommit() {
@@ -128,9 +132,21 @@ mr() {
 	# title. If there is only one commit then just use it
 	if [ -z "$TITLE" ]; then
 		if [ "$(git rev-list --count "$remote"/"$TARGET_BRANCH".."$1")" -gt 1 ]; then
-			TITLE="$(selectcommit "$1")"
+			COMMIT="$(selectcommit "$1")"
+			TITLE="$(title "$COMMIT")"
 		else
-			TITLE="$(lastcommit)"
+			TITLE="$(title)"
+		fi
+	fi
+
+	if [ -z "$DESCRIPTION" ]; then
+		if [ "$(git rev-list --count "$remote"/"$TARGET_BRANCH".."$1")" -gt 1 ]; then
+			if [ -z "$COMMIT" ]; then
+				COMMIT="$(selectcommit "$1")"
+			fi
+			DESCRIPTION="$(description "$COMMIT")"
+		else
+			DESCRIPTION="$(description)"
 		fi
 	fi
 
@@ -171,6 +187,11 @@ mr() {
 	if [ -n "$LABEL" ]; then
 		BODY="$BODY
 		\"labels\": \"$LABEL\","
+	fi
+
+	if [ -n "$DESCRIPTION" ]; then
+		BODY="$BODY
+		\"description\": \"$(printf "%s" "$DESCRIPTION" | awk '{printf  "%s\\n", $0}' )\","
 	fi
 
 	BODY="$BODY
