@@ -39,7 +39,7 @@ run() {
 }
 
 isclean() {
-	git diff --quiet --cached --exit-code
+	git diff --quiet --exit-code
 }
 
 print_vars() {
@@ -130,12 +130,11 @@ move_repo() {
 	# mv if any of the repos given to us is one of the ones we accept
 	# exit otherwise with an error message
 	case "$to" in
-		main|community|testing|unmaintained) mv -f "$from" "$to" ;;
+		main|community|testing|unmaintained) git mv -f "$from" "$to" ;;
 		*) printf "repo '%s' does not exist\n" "$to" ; return 1 ;;
 	esac
 
 	if isclean; then
-		git add "$from" "$to"/"$pkgname"
 		NOAPKBUILD_LINT=1 NOAPORTS_LINT=1 NOPKGVERCHECK=1 git commit -m "${to}/${pkgname}: move from $repo"
 	fi
 }
@@ -198,11 +197,10 @@ rename_repo() {
 		return 1
 	fi
 
-	mv -f "$from" "$repo"/"$dst"
+	git mv -f "$from" "$repo"/"$dst"
 
 	# Check if there is nothing cached and try to commit it
 	if isclean; then
-		git add "$from" "$repo"/"$dst"
 		NOAPKBUILD_LINT=1 NOAPORTS_LINT=1 NOPKGVERCHECK=1 git commit -m "${repo}/${dst}: rename from $pkgname"
 	fi
 }
