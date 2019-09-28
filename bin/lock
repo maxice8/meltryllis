@@ -40,6 +40,7 @@ l_dim="$folder/l_dim.png"
 prelock() {
 	pkill -u "$USER" -USR1 dunst &
 	loginctl lock-session &
+	lock-keyring &
 	dbus-send --print-reply --dest=com.github.chjj.compton._0 / \
 		com.github.chjj.compton.opts_set string:unredir_if_possible boolean:false &
 }
