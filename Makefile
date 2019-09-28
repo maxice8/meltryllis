@@ -2,7 +2,7 @@ LN := ln -sfv
 MKDIR := mkdir -pv
 
 DOTFILES = profile mailcap pam_environment
-SUBDIRS = etc bin usr var
+SUBDIRS = etc bin usr var src
 
 .PHONY: $(DOTFILES) $(SUBDIRS)
 
