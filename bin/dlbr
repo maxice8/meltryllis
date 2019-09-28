@@ -1,19 +1,14 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
 # dlbr BRANCH... - Delete local and remote branches matching name
-user="$(get-repo-config origin-repo-owner)"
-repo="$(get-repo-config origin-repo-name)"
-
 delete_remote_branch() {
-	hub api repos/"$user"/"$repo"/git/refs/heads/"$1" \
-		-X DELETE >/dev/null 2>&1 ||
+	git push origin --delete "$1" >/dev/null 2>&1 || \
 		{ 
-			[ $? = 22 ] ||
+			[ $? = 1 ] ||
 				printerr "Failed to delete remote '$1'" ;
 				return 
 		 } &&
 		 printok "Deleted remote '$1'"
-
 }
 
 delete_local_branch() {
