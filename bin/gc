@@ -1,0 +1,4 @@
+#!/bin/sh
+# let it run the hooks
+git commit --no-edit "$@"
+
