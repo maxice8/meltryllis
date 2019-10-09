@@ -352,6 +352,12 @@ case "$cmd" in
 	d) run apkg-diff depends ;;
 	p) run apkg-diff provides ;;
 	c) run apkg-diff files ;;
+	mr)
+		git add "$branch"
+		gc
+		ax s
+		mkmr
+		;;
 	f)
 		apkbuild-fixer "$branch"/APKBUILD
 		;;
