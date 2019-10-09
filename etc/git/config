@@ -1,8 +1,6 @@
 [user]
 	email = thinkabit.ukim@gmail.com
 	name = Leo
-[credential]
-	helper = cache --timeout=999999999 --socket=${XDG_RUNTIME_DIR}/git/credential-cache
 [alias]
   ls = log --oneline --decorate --graph
   g = grep --break --heading --line-number
@@ -26,3 +24,7 @@ fsckObjects = true
 	confirm = always
 [diff]
 	noprefix = false
+[credential]
+	helper = cache --timeout=999999999
+[cola]
+	spellcheck = false
