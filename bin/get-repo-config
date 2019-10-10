@@ -35,7 +35,12 @@ origin_repo_name() {
 }
 
 origin_repo_owner() {
-	basename "$(dirname "$(origin_remote_url)")"
+	origin_remote_url="$(origin_remote_url)"
+	if echo "$origin_remote_url" | grep -q '^git@'; then
+		dirname "$(echo "$origin_remote_url" | rev | cut -d : -f1 | rev)"
+	else
+		basename "$(dirname "$origin_remote_url")"
+	fi
 }
 
 case "$1" in
