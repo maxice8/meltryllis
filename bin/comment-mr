@@ -1,0 +1,43 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+# appr PR-NUM - Approves a pull request by number
+repo="$(get-repo-config repo-name)"
+owner="$(get-repo-config repo-owner)"
+
+debug() {
+	[ -z "$DEBUG" ] && return 0
+	echo "$*"
+}
+
+# Try to detect host, strip the .git suffix
+# This is where the domain is, most normally gitlab.com
+# but also works with other custom domains.
+HOST="$(git config remote.upstream.url | cut -d / -f -3)"
+
+# This is the ENDPOINT of the project you forked, if we call this with
+# curl we get a JSON payload that describes the repo, including stuff like
+# its :id and :name
+ENDPOINT="$HOST"/api/v4/projects/"$owner"%2F"$repo"
+
+comment="$1"
+
+# JSON payload
+BODY="{
+	\"body\": \"$(printf "%s" "$comment" | awk '{printf  "%s\\n", $0}' )\"
+}";
+
+shift
+
+for mr in "$@"; do
+	RETURN="$(curl -X POST "$ENDPOINT"/merge_requests/"$mr"/notes \
+		--header "PRIVATE-TOKEN: $(secret-tool lookup org.gitlab.leo.mkmr token)" \
+		--header "Content-Type: application/json" \
+		--data "$BODY" --silent --output /dev/null --write-out "%{http_code}")"
+
+	debug Got error code "$RETURN"
+	if [ "$RETURN" -eq 201 ]; then
+		echo "Commented on #$mr"
+	else
+		echo "Failed to comment on #$mr"
+	fi
+done
