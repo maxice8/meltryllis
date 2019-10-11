@@ -19,25 +19,23 @@ HOST="$(git config remote.upstream.url | cut -d / -f -3)"
 # its :id and :name
 ENDPOINT="$HOST"/api/v4/projects/"$owner"%2F"$repo"
 
-comment="$1"
+mr="$1"
+shift
+comment="$*"
 
 # JSON payload
 BODY="{
 	\"body\": \"$(printf "%s" "$comment" | awk '{printf  "%s\\n", $0}' )\"
 }";
 
-shift
+RETURN="$(curl -X POST "$ENDPOINT"/merge_requests/"$mr"/notes \
+	--header "PRIVATE-TOKEN: $(secret-tool lookup org.gitlab.leo.mkmr token)" \
+	--header "Content-Type: application/json" \
+	--data "$BODY" --silent --output /dev/null --write-out "%{http_code}")"
 
-for mr in "$@"; do
-	RETURN="$(curl -X POST "$ENDPOINT"/merge_requests/"$mr"/notes \
-		--header "PRIVATE-TOKEN: $(secret-tool lookup org.gitlab.leo.mkmr token)" \
-		--header "Content-Type: application/json" \
-		--data "$BODY" --silent --output /dev/null --write-out "%{http_code}")"
-
-	debug Got error code "$RETURN"
-	if [ "$RETURN" -eq 201 ]; then
-		echo "Commented on #$mr"
-	else
-		echo "Failed to comment on #$mr"
-	fi
-done
+debug Got error code "$RETURN"
+if [ "$RETURN" -eq 201 ]; then
+	echo "Commented on #$mr"
+else
+	echo "Failed to comment on #$mr"
+fi
