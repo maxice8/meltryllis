@@ -9,12 +9,16 @@ set -e
 # holds all the commits and push it all at once
 if [ "$#" -gt 1 ]; then
 	branch="$1"-"$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
-	git switch --force-create "$branch"
+	git switch --force-create "$branch" origin/master
 	
 	git merge "$@" --no-edit --ff
+else
+	git switch "$@"
 fi
 
 pullp # Pull changes from where we are going to push
 pushp # Push our local changes
 
-dlbr "$@"
+dlbr "$@" 
+
+test -n "$branch" && dlbr "$branch"
