@@ -65,7 +65,15 @@ lock -w dim
 # Lock the screen after 360 seconds passed
 xidle -timeout 360 -program "$HOME/bin/lock -l dim" &
 
-sudo sh -c 'echo 300 > /sys/class/backlight/intel_backlight/brightness'
+# Unlock our password database
+secret-tool lookup keepass all | keepassxc --pw-stdin $HOME/usr/backup/Keys/KeePassXC/all.kdbx &
+
+# Start some programs i always use
+firefox &
+telegram-desktop &
+claws-mail &
+
+# sudo sh -c 'echo 300 > /sys/class/backlight/intel_backlight/brightness'
 
 # Exec into { while true do ; sleep inf ; done }
 export DISPLAY=:0 && exec xwait
