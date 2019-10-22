@@ -38,6 +38,10 @@ do
 	then
 		TARGET_BRANCH="$2"
 		shift
+	elif [ "$1" = "--edit" ]
+	then
+		EDIT=yes
+		checkbin quickedit "${EDITOR:-vi}" rm
 	else
 		args="$args $1"
 	fi
@@ -148,6 +152,10 @@ mr() {
 		else
 			DESCRIPTION="$(description)"
 		fi
+	fi
+
+	if [ -n "$EDIT" ]; then
+		DESCRIPTION="$(quickedit "$DESCRIPTION")"
 	fi
 
 	# Special code handling for Alpine Linux
