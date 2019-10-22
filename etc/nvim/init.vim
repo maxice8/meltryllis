@@ -4,14 +4,11 @@
 " Start pathogen
 call plug#begin('~/var/share/nvim/plugged')
 
-Plug 'scrooloose/nerdtree'
 Plug 'airblade/vim-gitgutter'
 Plug 'itchyny/lightline.vim'
-Plug 'w0rp/ale'
-Plug 'tpope/vim-git'
+Plug 'dense-analysis/ale'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
-Plug 'igankevich/mesonic'
 Plug 'KeitaNakamura/neodark.vim'
 
 " Add Plugins
@@ -22,11 +19,10 @@ let g:lightline = {
     \ 'colorscheme': 'neodark',
     \ 'active': {
     \   'left': [ [ 'mode', 'paste' ], [ 'filename' ] ],
-    \   'right': [ [ 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype'] ]
+    \   'right': [ [ 'lineinfo' ], ['percent'], [ 'fileencoding', 'filetype'] ]
     \ },
     \ 'component_function': {
     \   'filename': 'LightlineFilename',
-    \   'fileformat': 'LightlineFileformat',
     \   'filetype': 'LightlineFiletype',
     \   'fileencoding': 'LightlineFileencoding',
     \   'mode': 'LightlineMode',
@@ -54,10 +50,6 @@ function! LightlineFilename()
 
 endfunction
 
-function! LightlineFileformat()
-  return winwidth(0) > 70 ? &fileformat : ''
-endfunction
-
 function! LightlineFiletype()
   return winwidth(0) > 70 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
 endfunction
@@ -77,18 +69,6 @@ let g:gitgutter_override_sign_column_highlight = 0
 " Remove folding
 let g:vim_markdown_folding_disabled = 1
 
-" ale
-let g:airline#extensions#ale#enabled = 1
-let g:ale_set_quickfix = 1
-
-" If there's a `meson.build` file, use meson for linting.
-autocmd FileType c call ConsiderMesonForLinting()
-function ConsiderMesonForLinting()
-    if filereadable('meson.build')
-        let g:syntastic_c_checkers = ['meson']
-    endif
-endfunction
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -101,9 +81,6 @@ filetype indent on
 
 " Set to auto read when a file is changed from the outside
 set autoread
-
-set makeprg=pylint\ --reports=n\ --output-format=parseable\ %:p
-set errorformat=%f:%l:\ %m
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
@@ -156,12 +133,6 @@ set tm=500
 
 set cursorline
 
-" Syntastic error highlighting colors
-hi SpellBad ctermfg=015 ctermbg=160 guifg=#ffffff guibg=#d70000
-hi SpellCap ctermfg=015 ctermbg=160 guifg=#ffffff guibg=#d70000
-highlight link SyntasticError SpellBad
-highlight link SyntasticWarning SpellCap
-
 " Fast quitting
 nmap <leader>q :wq<cr>
 
@@ -180,15 +151,13 @@ autocmd FileType gitcommit setlocal spell
 " Get free word completion
 set complete+=kspell
 
-if has("autocmd")
-  " Highlight TODO, FIXME, NOTE, etc.
-  autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\)')
-  autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\|TEST\)')
-endif
+" Highlight TODO, FIXME, NOTE, etc.
+autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\)')
+autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\|TEST\)')
 
 " Required to keep sane cursor
 set guicursor=
-set guifont=Hack
+set guifont=
 
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
@@ -270,10 +239,6 @@ map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
-" Nerdtree
-map <A-f> :NERDTreeToggle<CR>
-map <A-r> :NERDTreeRefreshRoot<CR>
-
 " Specify the behavior when switching between buffers
 try
   set switchbuf=useopen,usetab,newtab
@@ -343,11 +308,3 @@ if executable('rg')
   set grepprg=rg\ --vimgrep\ --no-heading
   set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
-
-" NERDTree config
-autocmd BufEnter * lcd %:p:h
-let g:NERDTreeWinSize = 32
-let g:NERDTreeShowBookmarks = 1
-let g:NERDTreeChDirMode = 2
-let g:NERDTreeHijackNetrw = 0
-let g:NERDTreeCascadeSingleChildDir = 1
