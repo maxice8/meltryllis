@@ -19,6 +19,7 @@ fi
 pullp # Pull changes from where we are going to push
 pushp # Push our local changes
 
-dlbr "$@" 
+dlbr "$@" &
+test -n "$branch" && dlbr "$branch" &
 
-test -n "$branch" && dlbr "$branch"
+wait
