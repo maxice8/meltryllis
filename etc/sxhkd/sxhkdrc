@@ -16,6 +16,9 @@ super + shift + m
 super + s
 	maimmenu
 
+super + h
+	takes
+
 super + p
 	powermenu
 
