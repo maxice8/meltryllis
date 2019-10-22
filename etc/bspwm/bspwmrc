@@ -15,20 +15,23 @@ bspc config pointer_follows_focus true
 bspc rule -a "*" state=floating
 
 # Main browser and its download window
-bspc rule -a Firefox:Navigator desktop=^1 rectangle=1366x733+0+35 follow=on
+bspc rule -a Firefox:Navigator desktop=^1 rectangle=1366x733+0+35 follow=off
 bspc rule -a Firefox:SessionManager desktop=^1 layer=above
 
 # Messenger
-bspc rule -a TelegramDesktop:telegram-desktop desktop=^2 rectangle=1366x733+0+35 follow=on
+bspc rule -a TelegramDesktop:telegram-desktop desktop=^2 rectangle=1366x733+0+35 follow=off
 
 # Imageboard downloader.
-bspc rule -a Grabber:Grabber desktop=^4 rectangle=1366x733+0+35 follow=on
+bspc rule -a Grabber:Grabber desktop=^4 rectangle=1366x733+0+35 follow=off
 
 # Secondary browser.
-bspc rule -a '*:chromium' desktop=^4 rectangle=1366x733+0+35 follow=on
+bspc rule -a '*:chromium' desktop=^4 rectangle=1366x733+0+35 follow=off
 
 # Imageboard downloader.
-bspc rule -a '*:claws-mail' desktop=^5 rectangle=1366x733+0+35 follow=on
+bspc rule -a '*:claws-mail' desktop=^5 rectangle=1366x733+0+35 follow=off
+
+# Password program
+bspc rule -a '*:keepassxc' desktop=^4 rectangle=1366x733+0+35 follow=off
 
 # Adopt orphans
 bspc wm -o
