@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+set -eu
+
+for arg; do
+    case "$arg" in
+        --) shift; break;;
+        -*) echo "unrecognized option: $arg" >&2; exit 2;;
+        *) break;;
+        esac
+    done
+
+prog="$1"
+args=( "${@:2}" )
+if [[ ${#args[@]} -le 0 ]]; then
+    echo "needs an argument to open" >&2
+    exit 2
+fi
+
+last=$(( ${#args[@]} - 1 ))
+
+filename=${args[last]}
+
+tmpdir=$(mktemp -t ${XDG_RUNTIME_DIR+"-p" "$XDG_RUNTIME_DIR"} -d unprivopen.XXXX)
+
+tmpfile="$tmpdir/$(basename -- "$filename").tmp"
+args[last]="$tmpfile"
+
+if [ -e "$filename" ]; then
+    cp -Tf -- "$filename" "$tmpfile"
+else
+    touch -- "$tmpfile"
+fi
+
+syncer() {
+    if ! diff "$tmpfile" "$filename" >/dev/null 2>&1; then
+        doas dd "if=$tmpfile" "of=$filename" >/dev/null 2>&1
+	elif [ -z "$(cat "$tmpfile")" ]; then
+		doas rm -- "$filename"
+    else
+		exitc=1
+    fi
+}
+
+cleaner() {
+    rm    -- "$tmpfile"
+    rmdir -- "$tmpdir"
+
+    exit ${exitc-0}
+}
+
+
+trap syncer USR1
+trap cleaner EXIT
+
+"$prog" "${args[@]}" &
+mainpid=$!
+
+while [ -e /proc/$mainpid ]; do
+    inotifywait -qq -e modify -- "$tmpfile" &
+    wait -n || true
+    syncer
+done
