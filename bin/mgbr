@@ -20,6 +20,6 @@ pullp # Pull changes from where we are going to push
 pushp # Push our local changes
 
 dlbr "$@" &
-test -n "$branch" && dlbr "$branch" &
+test -n "$branch" && { git checkout master ; git branch -D "$branch" & }
 
 wait
