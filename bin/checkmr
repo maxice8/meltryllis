@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+# If no branch name is given to us then create a random one
+if [ -z "$2" ]; then
+	branch="$1"-"$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
+else
+	branch="$2"
+fi
+
+git switch --force-create "$branch" master
+mr "$1"
+pullp
