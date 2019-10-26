@@ -1,0 +1,9 @@
+#!/bin/sh
+ENDPOINT="$(git config remote.upstream.url | cut -d / -f -5 | sed 's|.git$||g')"
+if [ -z "$ENDPOINT" ]; then
+	ENDPOINT="$(git config remote.origin.url | cut -d / -f -5 | sed 's|.git$||g')"
+fi
+while [ $# -gt 0 ]; do
+	curl -Ls "$ENDPOINT"/merge_requests/"$1".patch | git am -3
+	shift
+done
