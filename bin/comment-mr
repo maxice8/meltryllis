@@ -29,7 +29,7 @@ BODY="{
 }";
 
 RETURN="$(curl -X POST "$ENDPOINT"/merge_requests/"$mr"/notes \
-	--header "PRIVATE-TOKEN: $(secret-tool lookup org.gitlab.leo.mkmr token)" \
+	--header "PRIVATE-TOKEN: $(secret-tool lookup Path a.o/gitlab/token/mkmr)" \
 	--header "Content-Type: application/json" \
 	--data "$BODY" --silent --output /dev/null --write-out "%{http_code}")"
 
