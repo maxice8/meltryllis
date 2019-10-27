@@ -26,7 +26,7 @@ fi
 mr="$1"
 
 RETURN="$(curl -X PUT "$ENDPOINT"/merge_requests/"$mr" \
-	--header "PRIVATE-TOKEN: $(secret-tool lookup org.gitlab.leo.mkmr token)" \
+	--header "PRIVATE-TOKEN: $(secret-tool lookup Path a.o/gitlab/token/mkmr)" \
 	--header "Content-Type: application/json" \
 	--data "$BODY" --silent --output /dev/null --write-out "%{http_code}")"
 
