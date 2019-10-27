@@ -1,19 +1,17 @@
 #
 # Load our actual configuration on a Read-Write place.
 #
-# This should be started automatically via PAM
-# Start gnome-keyring
-if ! pgrep -f gnome-keyring-daemon -u $(id -u) >/dev/null; then
-	# This sets the GNOME_KEYRING_CONTORL and SSH_AUTH_SOCK variables
-	eval "$(gnome-keyring-daemon --replace --daemonize --components=secrets,ssh)"
-	export GNOME_KEYRING_CONTROL SSH_AUTH_SOCK
-	cat > "$XDG_RUNTIME_DIR/gnome-keyring-env" <<- __EOF__
-	export GNOME_KEYRING_CONTROL=$GNOME_KEYRING_CONTROL
+if ! pgrep -f ssh-agent -u $(id -u) >/dev/null; then
+	# This sets SSH_AUTH_SOCK and SSH_AGENT_PID variables
+	eval "$(ssh-agent -s)"
+	export SSH_AUTH_SOCK SSH_AGENT_PID
+	cat > "$XDG_RUNTIME_DIR/ssh-agent-env" <<- __EOF__
 	export SSH_AUTH_SOCK=$SSH_AUTH_SOCK
+	export SSH_AGENT_PID=$SSH_AGENT_PID
 	__EOF__
 else
-	if [ -s "$XDG_RUNTIME_DIR/gnome-keyring-env" ]; then
-		. $XDG_RUNTIME_DIR/gnome-keyring-env
+	if [ -s "$XDG_RUNTIME_DIR/ssh-agent-env" ]; then
+		. $XDG_RUNTIME_DIR/ssh-agent-env
 	fi
 fi
 
