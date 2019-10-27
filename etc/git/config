@@ -26,5 +26,3 @@ fsckObjects = true
 	noprefix = false
 [credential]
 	helper = cache --timeout=999999999
-[cola]
-	spellcheck = false
