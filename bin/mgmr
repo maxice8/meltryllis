@@ -33,16 +33,18 @@ if [ "$#" -gt 1 ]; then
 		mr "$mr" || die "Failed to checkout mr !$mr"
 		commits="$(gcp | cut -d ' ' -f 1)"
 
-		# Check if the directory is empty and just write the commits out
-		# if it is
-		if is_empty "$tmpdir"; then
-			echo "$commits" > "$tmpdir"/"$mr"
-		else
-			# Sort all the commits that are stored in their MRs and get
-			# only the unique ones, that should be present only on the
-			# last-commited MR.
-			sort "$tmpdir"/* | uniq -u > "$tmpdir"/"$mr"
-		fi
+		# Write all commits out into the mr file
+		echo "$commits" > "$tmpdir"/"$mr"
+
+		# Sort the MR files and get only the unique results
+		# which are the newly added commits from the MR we are
+		# working on
+		commits="$(sort "$tmpdir"/* | uniq -u)"
+		
+		# Write the commits out in a separate step from the sort | uniq -u
+		# just in case there is a problem with shell and it ends up overriding
+		# it
+		printf "%s\\n" "$commits" > "$tmpdir"/"$mr"
 	done
 
 	mgbr || die "Failed to merge mrs $*"
@@ -53,7 +55,7 @@ if [ "$#" -gt 1 ]; then
 		# that were merged
 		comment-mr "$mr" 'This was merged on the following commits:
 
-'$(cat "$tmpdir"/"$mr")'
+'"$(cat "$tmpdir"/"$mr")"'
 
 Thanks for your contribution' &
 	done
