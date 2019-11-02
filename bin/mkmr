@@ -223,10 +223,16 @@ mr() {
 	fi
 }
 
-# Try to detect host, strip the .git suffix
-# This is where the domain is, most normally gitlab.com
-# but also works with other custom domains.
-HOST="$(git config remote.upstream.url | cut -d / -f -3)"
+# This might become obsolete once we get federated merge requests
+# but in the meantime we don't care about it
+HOST="$(get-endpoint gitlab | cut -d / -f -3)"
+
+# If we have the SSH url on the 
+if is_ssh "$HOST"; then
+	HOST="$(ssh_to_https "$HOST")"
+elif is_https "$HOST"; then
+	HOST="$(printf "%s\\n" "$HOST" | sed 's|.git$||g')"
+fi
 
 # This is the ENDPOINT of the project you forked, if we call this with
 # curl we get a JSON payload that describes the repo, including stuff like
@@ -243,9 +249,6 @@ if [ -z "$PROJECT_ID" ]; then
 	printerr "Failed to find ID of the project"
 	exit 1
 fi
-
-# Try to catch secret, abort if we can't since it is required for
-# us to use it
 
 for arg in $args
 do
