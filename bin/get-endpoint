@@ -1,0 +1,18 @@
+#!/bin/sh
+if [ "$1" ]; then
+	ENDPOINT="$(git config remote."$1".url | cut -d / -f -5)"
+fi
+if [ -z "$ENDPOINT" ]; then
+	ENDPOINT="$(git config remote.upstream.url | cut -d / -f -5)"
+fi
+if [ -z "$ENDPOINT" ]; then
+	ENDPOINT="$(git config remote.origin.url | cut -d / -f -5)"
+fi
+
+if is_ssh "$ENDPOINT"; then
+	ENDPOINT="$(ssh_to_https "$ENDPOINT")"
+elif is_https "$ENDPOINT"; then
+	ENDPOINT="$(printf "%s\\n" "$ENDPOINT" | sed -e 's|.git$||g')"
+fi
+
+echo "$ENDPOINT"
