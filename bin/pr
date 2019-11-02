@@ -1,0 +1,19 @@
+#!/bin/sh
+ENDPOINT="$(git config remote.gitlab.url | cut -d / -f -5)"
+if [ -z "$ENDPOINT" ]; then
+	ENDPOINT="$(git config remote.upstream.url | cut -d / -f -5)"
+fi
+if [ -z "$ENDPOINT" ]; then
+	ENDPOINT="$(git config remote.origin.url | cut -d / -f -5)"
+fi
+
+if is_ssh "$ENDPOINT"; then
+	ENDPOINT="$(ssh_to_https "$ENDPOINT")"
+elif is_https "$ENDPOINT"; then
+	ENDPOINT="$(printf "%s\\n" "$ENDPOINT" | sed -e 's|.git$||g')"
+fi
+
+while [ $# -gt 0 ]; do
+	curl -Ls "$ENDPOINT"/merge_requests/"$1".patch | git am -3
+	shift
+done
