@@ -1,8 +1,9 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
 # mgpr PR-NUM - Merges a pull request by number
+newpr="$1"-"$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
+git switch --force-create "$newpr"
 for pr in "$@"; do
-	newpr="$pr"-"$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
-	checkpr "$pr" "$newpr"
-	mgbr "$newpr"
+	pr "$pr"
 done
+mgbr "$newpr"
