@@ -1,5 +1,5 @@
 #!/bin/sh
-ENDPOINT="$(git config remote.gitlab.url | cut -d / -f -5)"
+ENDPOINT="$(git config remote.github.url | cut -d / -f -5)"
 if [ -z "$ENDPOINT" ]; then
 	ENDPOINT="$(git config remote.upstream.url | cut -d / -f -5)"
 fi
@@ -14,6 +14,6 @@ elif is_https "$ENDPOINT"; then
 fi
 
 while [ $# -gt 0 ]; do
-	curl -Ls "$ENDPOINT"/merge_requests/"$1".patch | git am -3
+	curl -Ls "$ENDPOINT"/pull/"$1".patch | git am -3
 	shift
 done
