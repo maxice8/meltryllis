@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
-# appr MR-NUM - Close a Merge Request by number
+# close-mr MR-NUM - Close a Merge Request by number
 HOST="$(get-endpoint gitlab)"
 
 # If we have the SSH url on the 
