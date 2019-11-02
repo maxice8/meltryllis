@@ -53,7 +53,7 @@ if [ "$#" -gt 1 ]; then
 		close-mr "$mr" & 
 		# Read out the mr file for the mr itself, this should contain the commits
 		# that were merged
-		comment-mr "$mr" 'This was merged on the following commits:
+		comment-mr "$mr" 'This was merged as the following commits:
 
 '"$(cat "$tmpdir"/"$mr")"'
 
@@ -66,7 +66,7 @@ else
 	commits="$(gcp | cut -d ' ' -f 1)"
 	mgbr || die "Failed to merge mr !$1"
 	close-mr "$1" & 
-	comment-mr "$1" 'This was merged on the following commits:
+	comment-mr "$1" 'This was merged as the following commits:
 
 '"$commits"'
 
