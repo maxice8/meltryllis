@@ -5,21 +5,64 @@
 
 set -e
 
-# If we have more than one branch given to us then create a temporary branch that
-# holds all the commits and push it all at once
-if [ "$#" -gt 1 ]; then
-	branch="$1"-"$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
-	git switch --force-create "$branch" origin/master
-	
-	git merge "$@" --no-edit --ff
-else
-	git switch "$@"
-fi
+merge_branch() {
+	# Assume that the first branch given to us has the
+	# prefix that we are pushing to on alpine, if we are
+	# not pushing to alpine then this just noop to the master
+	# branch, if it is  alpine we add -stable to the version
+	# prefix
+	prefix="$(alpine-stable-prefix "$1" || echo master)"
+	[ "$prefix" = master ] || prefix="$prefix"-stable
 
-pullp # Pull changes from where we are going to push
-pushp # Push our local changes
+	# If we have more than one branch given to us then create a temporary branch that
+	# holds all the commits and push it all at once
+	if [ "$#" -gt 1 ]; then
+		branch="$prefix"-"$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
+		git switch --force-create "$branch" "$prefix"
 
-dlbr "$@" &
-test -n "$branch" && { git checkout master ; git branch -D "$branch" & }
+		git merge "$@" --no-edit --ff
+	else
+		git switch "$@"
+	fi
 
-wait
+	pullp # Pull changes from where we are going to push
+	pushp # Push our local changes
+
+	dlbr "$@" &
+	test -n "$branch" && { git checkout master ; git branch -D "$branch" & }
+
+	wait
+}
+
+# Parse every branch given to us and separate them if they are meant for
+# different branches of alpine, like 3.10-stable.
+for branch in "$@"; do
+	case "$(alpine-stable-prefix "$branch")" in
+		'')
+			EDGE="$EDGE $branch"
+			shift
+			;;
+		3.10)
+			stable310="${stable310} $branch"
+			shift
+			;;
+		3.9)
+			stable39="${stable39} $branch"
+			shift
+			;;
+		3.8)
+			stable38="${stable38} $branch"
+			shift
+			;;
+		3.7)
+			stable37="${stable37} $branch"
+			shift
+			;;
+	esac
+done
+
+[ -n "$EDGE" ] && merge_branch $EDGE
+[ -n "${stable310}" ] && merge_branch ${stable310}
+[ -n "${stable39}" ] && merge_branch ${stable39}
+[ -n "${stable38}" ] && merge_branch ${stable38}
+[ -n "${stable37}" ] && merge_branch ${stable37}
