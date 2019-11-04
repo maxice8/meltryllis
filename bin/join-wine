@@ -11,7 +11,6 @@ append_arg "--ro-bind /etc/pulse /etc/pulse"
 append_arg "--proc /proc" # Create a procfs mount
 append_arg "--dev /dev"  # Create a devfs mount
 append_arg "--ro-bind /etc/resolv.conf /etc/resolv.conf" # Mount our resolv configuration as read-only
-# append_arg "--chdir $PWD" # Change to the $HOME of the calling user
 append_arg "--unshare-all" # Unshare all namespaces
 append_arg "--die-with-parent" # Kill everything when we exit
 append_arg "--tmpfs /run" # Mount /run as an empty tmpfs
