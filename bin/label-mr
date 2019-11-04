@@ -3,7 +3,7 @@
 # label-mr LABELS MR-NUMS... - Applies a comma-separated list of labels to Merge Requests
 HOST="$(get-endpoint gitlab)"
 
-# If we have the SSH url on the 
+# If we have the SSH url on the
 if is_ssh "$HOST"; then
 	HOST="$(ssh_to_https "$HOST")"
 elif is_https "$HOST"; then
