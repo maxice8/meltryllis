@@ -111,12 +111,6 @@ movecommit() {
 	gcp | grep -q ': move from '
 }
 
-upstream_owner="$(get-repo-config repo-owner)"
-upstream_repo="$(get-repo-config repo-name)"
-
-origin_owner="$(get-repo-config origin-repo-owner)"
-origin_repo="$(get-repo-config origin-repo-name)"
-
 [ -z "$ASSIGN" ] && ASSIGN=0
 
 mr() {
@@ -209,7 +203,7 @@ mr() {
 		\"target_project_id\": $PROJECT_ID
 	}";
 
-	JSON="$(curl -X POST "$ENDPOINT"/merge_requests \
+	JSON="$(curl -X POST "$ORIGIN_ENDPOINT"/merge_requests \
 			--header "PRIVATE-TOKEN: $(secret-tool lookup Path a.o/gitlab/token/mkmr)" \
 			--header "Content-Type: application/json" \
 			--data "$BODY" --silent)"
@@ -223,25 +217,27 @@ mr() {
 	fi
 }
 
-# This might become obsolete once we get federated merge requests
-# but in the meantime we don't care about it
-HOST="$(get-endpoint gitlab | cut -d / -f -3)"
+# Get the host of the GitLab repos we are dealing with
+ORIGIN_HOST="$(get-endpoint origin)"
+UPSTREAM_HOST="$(get-endpoint gitlab)"
 
-# If we have the SSH url on the 
-if is_ssh "$HOST"; then
-	HOST="$(ssh_to_https "$HOST")"
-elif is_https "$HOST"; then
-	HOST="$(printf "%s\\n" "$HOST" | sed 's|.git$||g')"
-fi
+# Extract owner and repo for the origin (us) and the upstream repo
+origin_owner="$(printf "%s\\n" "$ORIGIN_HOST" | cut -d / -f 4)"
+origin_repo="$(printf "%s\\n" "$ORIGIN_HOST" | cut -d / -f 5)"
+
+upstream_owner="$(printf "%s\\n" "$UPSTREAM_HOST" | cut -d / -f 4)"
+upstream_repo="$(printf "%s\\n" "$UPSTREAM_HOST" | cut -d / -f 5)"
 
 # This is the ENDPOINT of the project you forked, if we call this with
 # curl we get a JSON payload that describes the repo, including stuff like
 # its :id and :name
-ENDPOINT="$HOST"/api/v4/projects/"$origin_owner"%2F"$origin_repo"
+ORIGIN_ENDPOINT="$(printf "%s\\n" "$ORIGIN_HOST" \
+	| cut -d / -f -3)"/api/v4/projects/"$origin_owner"%2F"$origin_repo"
 
 # This is the ENDPOINT of the project itself, we need to get its :id value to
 # pass as the 'target_project_id'
-UPSTREAM_ENDPOINT="$HOST"/api/v4/projects/"$upstream_owner"%2F"$upstream_repo"
+UPSTREAM_ENDPOINT="$(printf "%s\\n" "$UPSTREAM_HOST" \
+	| cut -d / -f -3)"/api/v4/projects/"$upstream_owner"%2F"$upstream_repo"
 
 PROJECT_ID="$(_get_project_id "$UPSTREAM_ENDPOINT")"
 
