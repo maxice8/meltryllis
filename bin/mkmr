@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # mkmr [BRANCH] ... - mkmr create a merge request
 
-# We need XDG_CACHE_HOME to cache the ID of repositories
-: "${XDG_CACHE_HOME:-$HOME/.cache}"
-
 check_bin() {
 	if ! type "$1" >/dev/null 2>&1; then
 		echo "Failed to find program '$1'"
