@@ -19,7 +19,7 @@ follow-pulse | grep --line-buffered . | while read -r vol; do
 	if echo "$vol" | grep -Fq '!'; then
 		# Remove the ! character
 		vol="${vol%%!*}"
-	
+
 		# Set the other icons to mute values
 		icon="%{T1}$mute_color$mute_icon%{T-} "
 		soft_color=$mute_color
