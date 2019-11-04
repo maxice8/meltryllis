@@ -10,9 +10,7 @@ if [ -z "$ENDPOINT" ]; then
 fi
 
 if is_ssh "$ENDPOINT"; then
-	ENDPOINT="$(ssh_to_https "$ENDPOINT")"
+	ssh_to_https "$ENDPOINT"
 elif is_https "$ENDPOINT"; then
-	ENDPOINT="$(printf "%s\\n" "$ENDPOINT" | sed -e 's|.git$||g')"
+	printf "%s\\n" "$ENDPOINT" | sed -e 's|.git$||g'
 fi
-
-echo "$ENDPOINT"
