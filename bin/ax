@@ -12,7 +12,7 @@ help() {
 usage
 	cat <<EOF
 
-keys: 
+keys:
 u : unpack
 e : edit APKBUILD
 t : build the package and install
@@ -52,7 +52,7 @@ print_vars() {
 
 find_repo() {
 	# Check if the branch name is already a fully working path
-	# 
+	#
 	# This allows us to find_repo if we are given the complete name
 	# in the form of <repo>/<package> like main/openrc
 	if [ -d "$1" ]; then
@@ -123,7 +123,7 @@ move_repo() {
 	# Check if the package doesn't exist and error out
 	if [ ! -d "$from" ]; then
 		printf "move operation failed: package '%s' doesn't exist\n" "$from"
-		print_vars from "$from" to "$to" 
+		print_vars from "$from" to "$to"
 		return 1
 	fi
 
@@ -174,7 +174,7 @@ rename_repo() {
 	# Check if the package doesn't exist and error out
 	if [ ! -d "$repo"/"$src" ]; then
 		printf "rename operation failed: package '%s' doesn't exist\n" "$src"
-		print_vars src "$src" dst "$dst" 
+		print_vars src "$src" dst "$dst"
 		return 1
 	fi
 
@@ -299,7 +299,7 @@ else
 	case "$2" in
 		main|community|testing|unmaintained)
 			branch="$(find_repo "$_branch")";;
-		*) 
+		*)
 			# Deal with branches with alpine stable prefixes
 			if [ -n "$(alpine-stable-prefix "$2")" ]; then
 				branch="$(echo "$2" | cut -d - -f2-)"
@@ -361,7 +361,7 @@ case "$cmd" in
 	f)
 		apkbuild-fixer "$branch"/APKBUILD
 		;;
-	l) 
+	l)
 		apkbuild-lint "$branch"/APKBUILD
 		aports-lint "$branch"/APKBUILD
 		;;
