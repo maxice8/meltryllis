@@ -66,7 +66,7 @@ annotate_commit() {
 
 		printf "%s\\n"  "$input" >> "$commitfile"
 
-		# Strip all empty lines	
+		# Strip all empty lines
 		sed -i '/^$/d' "$commitfile"
 
 		# Replace all newlines with '@@@' but restore the last one
@@ -104,7 +104,7 @@ annotate_file() {
 
 		printf "%s\\n"  "$input" >> "$filefile"
 
-		# Strip all empty lines	
+		# Strip all empty lines
 		sed -i '/^$/d' "$filefile"
 
 		# Replace all newlines with '@@@' but restore the last one
@@ -182,7 +182,7 @@ if [ -n "$user" ]; then
 		case $yn in
 			[Yy]* |'') break ;;
 			[Nn]* ) exit 0 ;;
-			[Oo]* ) 
+			[Oo]* )
 				echo "Opening in a browser"
 				hub browse -- issues/$pr_num
 				;;
@@ -259,7 +259,7 @@ while true; do
 
 	case "$yn" in
 		'') break ;; # This is reached with 'fzy' when the user presses ctrl-c
-		*) annotate_commit "$yn" "$tempdir" ;; 
+		*) annotate_commit "$yn" "$tempdir" ;;
 	esac
 done
 
@@ -286,7 +286,7 @@ while true; do
 
 	case "$yn" in
 		'') break ;; # This is reached if the user presses ctrl-c
-		*) annotate_file "$yn" "$tempdir" ;; 
+		*) annotate_file "$yn" "$tempdir" ;;
 	esac
 done
 
@@ -310,7 +310,7 @@ done
 if [ "$needsinput" ] && [ "$needsinput" -eq 1 ]; then
 	msg Getting user input on \#$pr_num after shell tests
 	${EDITOR:-vi}  "$tempdir"/.in-general
-	
+
 	# Get general comments from the user
 	if [ -s "$tempdir"/.in-general ]; then
 		header="general comments:"
