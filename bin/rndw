@@ -1,9 +1,0 @@
-#!/bin/sh
-dir="$HOME"/usr/walls
-
-file="$(ls -1 "$dir"/*.png "$dir"/*.jpg|shuf|head -n1)"
-
-[ "$file" = "$(readlink -f ~/.wall)" ] && exec rndw
-
-basename "$file"
-setwall "$file"
