@@ -30,6 +30,6 @@ do
 			printok "Closed Pull Request #$1" ;
 			r=0
 		 }
-	
+
 	shift
 done
