@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
-# mkmr [BRANCH] ... - mkmr create a pull request
+# mkmr [BRANCH] ... - mkmr create a merge request
 
 # We need XDG_CACHE_HOME to cache the ID of repositories
 : "${XDG_CACHE_HOME:-$HOME/.cache}"
