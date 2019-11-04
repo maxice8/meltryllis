@@ -12,7 +12,7 @@ is_empty() (
 	set -- .[!.]* ; test -f "$1" && return 1
 	set -- ..?* ; test -f "$1" && return 1
 	set -- * ; test -f "$1" && return 1
-	return 0 
+	return 0
 )
 
 die() {
@@ -40,7 +40,7 @@ if [ "$#" -gt 1 ]; then
 		# which are the newly added commits from the MR we are
 		# working on
 		commits="$(sort "$tmpdir"/* | uniq -u)"
-		
+
 		# Write the commits out in a separate step from the sort | uniq -u
 		# just in case there is a problem with shell and it ends up overriding
 		# it
@@ -50,7 +50,7 @@ if [ "$#" -gt 1 ]; then
 	mgbr || die "Failed to merge mrs $*"
 
 	for mr in "$@"; do
-		close-mr "$mr" & 
+		close-mr "$mr" &
 		# Read out the mr file for the mr itself, this should contain the commits
 		# that were merged
 		comment-mr "$mr" 'This was merged as the following commits:
@@ -59,13 +59,13 @@ if [ "$#" -gt 1 ]; then
 
 Thanks for your contribution' &
 	done
-	wait 
+	wait
 
 else
 	checkmr "$1" || die "Failed to check out mr !$1"
 	commits="$(gcp | cut -d ' ' -f 1)"
 	mgbr || die "Failed to merge mr !$1"
-	close-mr "$1" & 
+	close-mr "$1" &
 	comment-mr "$1" 'This was merged as the following commits:
 
 '"$commits"'
