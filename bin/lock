@@ -60,7 +60,7 @@ lock() {
 		--radius=20 --ring-width=4 --veriftext='' --wrongtext='' \
 		--verifcolor=ffffffff --timecolor=ffffffff --datecolor=ffffffff \
 		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-		--noinputtext='' --force-clock --pass-media-keys $lockargs 
+		--noinputtext='' --force-clock --pass-media-keys $lockargs
 
 }
 
@@ -103,7 +103,7 @@ update() {
 		CY=$(( SR1 - 30 ))
 
 		echo "rectangle $CX,$CY $(( CX + 300 )),$(( CY - 80 )) "
-	done)"	
+	done)"
 
 	# User supplied Image
 	user_image="$folder/user_image.png"
