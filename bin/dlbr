@@ -3,10 +3,10 @@
 # dlbr BRANCH... - Delete local and remote branches matching name
 delete_remote_branch() {
 	git push origin --delete "$1" >/dev/null 2>&1 || \
-		{ 
+		{
 			[ $? = 1 ] ||
 				printerr "Failed to delete remote '$1'" ;
-				return 
+				return
 		 } &&
 		 printok "Deleted remote '$1'"
 }
