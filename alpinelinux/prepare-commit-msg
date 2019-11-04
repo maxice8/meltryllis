@@ -34,7 +34,9 @@ prepend_msg() {
 
 newpkgver() {
 	# Get new version of a package
-	printf 'upgrade to %s' "$(git diff --cached HEAD -- '**/APKBUILD' | grep -m1 '^+pkgver=.*' | cut -d= -f2)"
+	_apkbuildpath="$(git diff --cached --name-only HEAD -- '**/APKBUILD' | head -1)"
+	. $_apkbuildpath
+	printf 'upgrade to %s' "$pkgver"
 }
 
 isupdate() {
