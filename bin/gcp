@@ -23,6 +23,6 @@ fi
 
 while [ $# -gt 0 ]
 do
-	git log $remote/"${_REALBASE:-master}".."$1" --pretty='%C(yellow)%h %C(white)%s' 
+	git log $remote/"${_REALBASE:-master}".."$1" --pretty='%C(yellow)%h %C(white)%s'
 	shift
 done
