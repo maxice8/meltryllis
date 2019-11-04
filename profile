@@ -1,7 +1,7 @@
 #
 # Load our actual configuration on a Read-Write place.
 #
-if ! pgrep -f ssh-agent -u $(id -u) >/dev/null; then
+if ! pgrep -x ssh-agent -u $(id -u) >/dev/null; then
 	# This sets SSH_AUTH_SOCK and SSH_AGENT_PID variables
 	eval "$(ssh-agent -s)"
 	export SSH_AUTH_SOCK SSH_AGENT_PID
