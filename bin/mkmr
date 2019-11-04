@@ -161,7 +161,7 @@ mr() {
 				LABEL="$LABEL",A-upgrade
 			fi
 		fi
-		
+
 		if addcommit; then
 			if [ -z "$LABEL" ]; then
 				LABEL=A-add
