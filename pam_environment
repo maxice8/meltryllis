@@ -40,6 +40,7 @@ BSPWM_STATE=@{XDG_RUNTIME_DIR}/bspwm-state.json
 AX_ABUILD		DEFAULT=dabuild
 AX_ASUM			DEFAULT=/usr/bin/abuild
 APKBUILD_STYLE	DEFAULT=leo
+APORTSDIR		DEFAULT=@{HOME}/usr/src/aports
 
 _JAVA_AWT_WM_NONREPARENTING	DEFAULT=1
 _JAVA_OPTIONS				DEFAULT="-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
