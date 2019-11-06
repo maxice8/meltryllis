@@ -2,10 +2,6 @@
 NORMAL="\033[1;0m"
 RED="\033[1;31m"
 
-multiline() {
-	echo "$*" | awk '{ printf "%s\\n", $0 }'
-}
-
 # https://www.etalabs.net/sh_tricks.html
 is_empty() (
 	cd "$1" || return 1
@@ -26,7 +22,7 @@ if [ "$#" -gt 1 ]; then
 	# shellcheck disable=2064
 	trap "rm -rf '$tmpdir'" INT EXIT
 
-	branch="$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
+	branch="$1-$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
 	git switch --force-create "$branch" master
 
 	for mr in "$@"; do
