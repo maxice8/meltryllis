@@ -2,6 +2,7 @@
 # shellcheck shell=ash
 : "${AX_ABUILD:=abuild}"
 : "${AX_ASUM:=abuild}"
+: "${APORTSDIR:=$PWD}"
 
 
 usage() {
@@ -33,7 +34,7 @@ EOF
 }
 
 run() {
-	cd "$branch"
+	cd "$APORTSDIR"/"$branch"
 	$@
 	cd - >/dev/null
 }
@@ -281,6 +282,11 @@ mkgit() {
 	}
 
 	tmpsh "$builddir"
+}
+
+cd "$APORTSDIR" || {
+	printf "APORTSDIR=%s given but couldn't cd to it" "$APORTSDIR" >&2 
+	exit 1
 }
 
 cmd="$1"
