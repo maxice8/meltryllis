@@ -42,5 +42,7 @@ AX_ASUM			DEFAULT=/usr/bin/abuild
 APKBUILD_STYLE	DEFAULT=leo
 APORTSDIR		DEFAULT=@{HOME}/usr/src/aports
 
+QT_STYLE_OVERRIDE	DEFAULT=kvantum-dark
+
 _JAVA_AWT_WM_NONREPARENTING	DEFAULT=1
 _JAVA_OPTIONS				DEFAULT="-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
