@@ -30,7 +30,7 @@ case $chosen in
 		lock -s dim
         ;;
     $log_out)
-		pkill -15 firefox
+		pkill -15 chromium
 		pkill wm # Kills wm shell script and together with it, bspwm
 		pkill X
         ;;
