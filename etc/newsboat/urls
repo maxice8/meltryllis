@@ -1,4 +1,3 @@
-
 https://github.com/BLAKE2/libb2/releases.atom
 https://github.com/Bionus/imgbrd-grabber/releases.atom
 https://github.com/Cyan4973/xxHash/releases.atom
@@ -8,7 +7,6 @@ https://github.com/KDE/falkon/releases.atom
 https://github.com/KhronosGroup/SPIRV-Headers/releases.atom
 https://github.com/KhronosGroup/SPIRV-Tools/releases.atom
 https://github.com/KhronosGroup/glslang/releases.atom
-https://github.com/Knio/dominate//releases.atom
 https://github.com/Knio/dominate/releases.atom
 https://github.com/Microsoft/GSL/releases.atom
 https://github.com/PandorasFox/i3lock-color/releases.atom
@@ -114,3 +112,15 @@ https://github.com/ubuntu/yaru/releases.atom
 https://github.com/wmutils/core/releases.atom
 https://github.com/zaquestion/lab/releases.atom
 https://github.com/zchunk/zchunk/releases.atom
+
+https://github.com/ximion/appstream/releases.atom
+https://code.videolan.org/videolan/dav1d/-/tags?format=atom
+https://github.com/xkbcommon/libxkbcommon/releases.atom
+https://gitlab.freedesktop.org/pulseaudio/pulseaudio/-/tags?format=atom
+https://gitlab.freedesktop.org/pulseaudio/paprefs/-/tags?format=atom
+https://github.com/pyinvoke/invoke/releases.atom
+https://github.com/pypa/twine/releases.atom
+https://source.winehq.org/git/vkd3d.git/atom
+https://gitlab.freedesktop.org/libevdev/python-libevdev/-/tags?format=atom
+https://gitlab.gnome.org/GNOME/totem-pl-parser/-/tags?format=atom
+https://gitlab.freedesktop.org/hadess/low-memory-monitor/-/tags?format=atom
