@@ -31,7 +31,7 @@ merge_branch() {
 	pullp # Pull changes from where we are going to push
 	pushp # Push our local changes
 
-	dlbr "$kill"
+	dlbr $kill
 }
 
 # Parse every branch given to us and separate them if they are meant for
