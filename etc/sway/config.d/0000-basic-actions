@@ -25,3 +25,6 @@ bindsym $mod+Ctrl+s exec grimshot area
 # Alt-tab behaviour
 bindsym $mod+tab exec alt-tab next
 bindsym $mod+Shift+tab exec alt-tab prev
+
+# Lock screen
+bindsym alt+l exec lock
