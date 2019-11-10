@@ -1,30 +1,15 @@
 #!/bin/sh
 
-# Author : Pavan Jadhaw
-# Github Profile : https://github.com/pavanjadhaw
-# Project Repository : https://github.com/pavanjadhaw/betterlockscreen
+loginctl lock-session &
 
-# copy this block to ~/.config/betterlockscreenrc" to customize
-font="SF Pro Display"
+swaylock \
+	--image "$HOME"/usr/walls/texas.png \
+	--scaling fit --hide-keyboard-layout \
+	--disable-caps-lock-text \
+	--inside-color=00000000 --ring-color=ffffffff --line-uses-inside \
+	--key-hl-color=d23c3dff --bs-hl-color=d23c3dff --separator-color=00000000 \
+	--inside-ver-color=00000000 --inside-wrong-color=d23c3dff \
+	--ring-ver-color=ffffffff --ring-wrong-color=ffffffff \
+	--font="Roboto"
 
-prelock() {
-	loginctl lock-session &
-}
-
-lock() {
-	loginctl lock-session &
-
-	swaylock \
-		--image "$HOME"/usr/walls/texas.png \
-		--scaling fit --hide-keyboard-layout \
-		--disable-caps-lock-text \
-		--inside-color=00000000 --ring-color=ffffffff --line-uses-inside \
-		--key-hl-color=d23c3dff --bs-hl-color=d23c3dff --separator-color=00000000 \
-		--inside-ver-color=00000000 --inside-wrong-color=d23c3dff \
-		--ring-ver-color=ffffffff --ring-wrong-color=ffffffff \
-		--font="$font" $lockargs
-
-	loginctl unlock-session &
-}
-
-lock
+loginctl unlock-session &
