@@ -14,12 +14,6 @@ set $down o
 set $up k
 set $right l
 
-for_window [app_id="keepassxc"] floating enable, resize set 1366 748, move absolute position 0 20, move window to workspace 6
-
-# Make big windows
-for_window [class="TelegramDesktop"] resize set 1366 748, move absolute position 0 20, move container to workspace 2
-for_window [class="Chromium"] resize set 1366 748, move absolute position 0 20, move container to workspace 1
-
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
@@ -94,4 +88,4 @@ bindsym XF86AudioPrev exec mpc prev
 bindsym $mod+tab exec alt-tab next
 bindsym $mod+Shift+tab exec alt-tab prev
 
-include /home/impreza/etc/sway/config.d/*
+include config.d/*

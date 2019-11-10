@@ -5,10 +5,10 @@ bindsym $mod+Return exec alacritty
 bindsym $mod+q kill
 
 # Exit sway
-bindsym --release $mod+Shift+q exec swaymsg exit
+bindsym $mod+Shift+q exec swaymsg exit
 
 # Start appmenu
-bindsym --release $mod+d exec appmenu
+bindsym $mod+d exec appmenu
 
 # Reload the configuration file
 bindsym $mod+Shift+c reload
@@ -18,5 +18,6 @@ bindsym $mod+f fullscreen
 
 # Take screenshot of whole screen or of taken area via slurp
 # and copy it to clipboard
-bindsym --release $mod+m exec grim -o - | wl-copy
-bindsym --release $mod+n exec grim -g \"$(slurp)" -o - | wl-copy
+bindsym $mod+s exec grimshot screen
+bindsym $mod+Shift+s exec grimshot window
+bindsym $mod+Ctrl+s exec grimshot area

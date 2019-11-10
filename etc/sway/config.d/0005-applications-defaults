@@ -1,0 +1,4 @@
+for_window [app_id="telegramdesktop"] resize set 1366 748, move absolute position 0 20, move container to workspace 2
+for_window [class="Chromium"] resize set 1366 748, move absolute position 0 20, move container to workspace 1
+for_window [app_id="geary"] resize set 1366 748, move absolute position 0 20, move container to workspace 5
+for_window [app_id="keepassxc"] resize set 1366 748, move absolute position 0 20, move container to workspace 6
