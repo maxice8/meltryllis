@@ -6,7 +6,7 @@ delete_remote_branch() {
 		{
 			[ $? = 1 ] ||
 				printerr "Failed to delete remote '$1'" ;
-				return
+				return 0
 		 } &&
 		 printok "Deleted remote '$1'"
 }
@@ -23,7 +23,7 @@ delete_local_branch() {
 	fi
 
 	git branch -D "$1" >/dev/null 2>&1 ||
-		{ printerr "Failed to delete local '$1'"; return ; } &&
+		{ printerr "Failed to delete local '$1'"; return 0 ; } &&
 		printok "Deleted local '$1'"
 }
 
