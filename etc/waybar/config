@@ -1,0 +1,75 @@
+{
+    "layer": "top", // Waybar at top layer
+	"height": 30,
+    // Choose the order of the modules
+    "modules-left": ["sway/workspaces"],
+    "modules-center": ["sway/window"],
+    "modules-right": ["pulseaudio", "battery", "clock"],
+    // Modules configuration
+    "sway/workspaces": {
+        "disable-scroll": false,
+        "all-outputs": true,
+		"format": "{icon}",
+		"persistant_workspaces": {
+			"1": [],
+			"2": [],
+			"3": [],
+			"4": [],
+			"5": [],
+			"6": [],
+			"7": [],
+			"8": [],
+			"9": []
+		},
+		"format-icons": {
+			"default": "⬦",
+			"focused": "⬥", 
+			"urgent": "⟐"
+		}
+    },
+    "sway/window": {
+    	"format": "{}",
+		"max-length": 50
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        }
+    },
+    "clock": {
+        "tooltip-format": "{:%Y-%m-%d | %H:%M}",
+        "format": "{:%H:%M:%S}  ",
+        "interval": 1,
+        "format-alt": "{:%Y-%m-%d}  ",
+        "on-click-right": "wl-copy $(date '+%Y-%m-%d %T')"
+    },
+    "battery": {
+        "states": {
+            // "good": 95,
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{capacity}% {icon}",
+        // "format-good": "", // An empty format will hide the module
+        "format-full": "{icon}",
+        "format-icons": ["", "", "", "", ""]
+    },
+    "pulseaudio": {
+        "scroll-step": 5,
+        "format": "{volume}% {icon}",
+        "format-bluetooth": "{volume}% {icon}",
+        "format-muted": "",
+        "format-icons": {
+            "headphones": "",
+            "handsfree": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", ""]
+        },
+        "on-click": "pulseaudio-ctl mute"
+    }
+}
