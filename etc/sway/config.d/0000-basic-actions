@@ -4,14 +4,14 @@ bindsym $mod+Return exec alacritty
 # Kill focused window
 bindsym $mod+q kill
 
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+
 # Exit sway
 bindsym $mod+Shift+q exec swaymsg exit
 
 # Start appmenu
 bindsym $mod+d exec appmenu
-
-# Reload the configuration file
-bindsym $mod+Shift+c reload
 
 # Make the current focus fullscreen
 bindsym $mod+f fullscreen
@@ -21,3 +21,7 @@ bindsym $mod+f fullscreen
 bindsym $mod+s exec grimshot screen
 bindsym $mod+Shift+s exec grimshot window
 bindsym $mod+Ctrl+s exec grimshot area
+
+# Alt-tab behaviour
+bindsym $mod+tab exec alt-tab next
+bindsym $mod+Shift+tab exec alt-tab prev

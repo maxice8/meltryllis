@@ -13,7 +13,7 @@ bindsym $mod+Ctrl+i move up 5
 bindsym $mod+Ctrl+l move right 5
 # Move window to the center
 bindsym $mod+g move absolute position center
-bindsym $mod+y move absolute position 10 30
-bindsym $mod+u move absolute position 600 30
-bindsym $mod+b move absolute position 10 308
-bindsym $mod+n move absolute position 600 308
+bindsym $mod+y move absolute position 10 40
+bindsym $mod+u move absolute position 600 40
+bindsym $mod+b move absolute position 10 298
+bindsym $mod+n move absolute position 600 298
