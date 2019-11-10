@@ -4,7 +4,7 @@
     // Choose the order of the modules
     "modules-left": ["sway/workspaces"],
     "modules-center": ["sway/window"],
-    "modules-right": ["pulseaudio", "battery", "clock"],
+    "modules-right": ["cpu", "temperature", "pulseaudio", "battery", "clock"],
     // Modules configuration
     "sway/workspaces": {
         "disable-scroll": false,
@@ -41,7 +41,7 @@
     "clock": {
         "tooltip-format": "{:%Y-%m-%d | %H:%M}",
         "format": "{:%H:%M:%S}  ",
-        "interval": 1,
+        "interval": 60,
         "format-alt": "{:%Y-%m-%d}  ",
         "on-click-right": "wl-copy $(date '+%Y-%m-%d %T')"
     },
@@ -71,5 +71,16 @@
             "default": ["", ""]
         },
         "on-click": "pulseaudio-ctl mute"
-    }
+    },
+	"temperature": {
+		"critical-threshold": 75,
+		"interval": 30,
+		"format": "{temperatureC}°C {icon}",
+		"format-icons": ["", "", ""]
+	},
+	"cpu": {
+		"interval": 10,
+		"format": "{usage}% ",
+		"tooltip": false
+	}
 }
