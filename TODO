@@ -4,3 +4,4 @@
  because the lockscreen was called
 - Make WebGL work on chromium (Requires support for DRI3 on libva)
 - Add wayland equivalent to xbanish
+- Make alt-tab switch faster by reducing number of calls done
