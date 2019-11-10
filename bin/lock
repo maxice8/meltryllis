@@ -38,39 +38,24 @@ l_resized="$folder/l_resized.png"
 l_dim="$folder/l_dim.png"
 
 prelock() {
-	pkill -u "$USER" -USR1 dunst &
 	loginctl lock-session &
-	lock-keyring &
-	dbus-send --print-reply --dest=com.github.chjj.compton._0 / \
-		com.github.chjj.compton.opts_set string:unredir_if_possible boolean:false &
 }
 
 lock() {
-	#$1 image path
-
-	i3lock-color \
-		-t -i "$1" \
-		--timepos='x+110:h-70' \
-		--datepos='x+43:h-45' \
-		--clock --date-align 1 --datestr "$locktext" \
-		--insidecolor=00000000 --ringcolor=ffffffff --line-uses-inside \
-		--keyhlcolor=d23c3dff --bshlcolor=d23c3dff --separatorcolor=00000000 \
-		--insidevercolor=00000000 --insidewrongcolor=d23c3dff \
-		--ringvercolor=ffffffff --ringwrongcolor=ffffffff --indpos='x+280:h-70' \
-		--radius=20 --ring-width=4 --veriftext='' --wrongtext='' \
-		--verifcolor=ffffffff --timecolor=ffffffff --datecolor=ffffffff \
-		--time-font="$font" --date-font="$font" --layout-font="$font" --verif-font="$font" --wrong-font="$font" \
-		--noinputtext='' --force-clock --pass-media-keys $lockargs
+	swaylock \
+		--image "$HOME"/usr/walls/texas.png \
+		--scaling fit --hide-keyboard-layout \
+		--disable-caps-lock-text \
+		--inside-color=00000000 --ring-color=ffffffff --line-uses-inside \
+		--key-hl-color=d23c3dff --bs-hl-color=d23c3dff --separator-color=00000000 \
+		--inside-ver-color=00000000 --inside-wrong-color=d23c3dff \
+		--ring-ver-color=ffffffff --ring-wrong-color=ffffffff \
+		--font="$font" $lockargs
 
 }
 
 postlock() {
-	pkill -u "$USER" -USR2 dunst &
 	loginctl unlock-session &
-
-	sleep 0.2
-	dbus-send --print-reply --dest=com.github.chjj.compton._0 / \
-	    com.github.chjj.compton.opts_set string:unredir_if_possible boolean:true
 }
 
 lockselect() {
