@@ -1,0 +1,17 @@
+#
+# Resizing containers:
+#
+mode "resize" {
+	bindsym j resize shrink width 10px
+	bindsym $mod+j reize shrink width 5px
+	bindsym k resize grow height 10px
+	bindsym $mod+k resize grow height 5px
+	bindsym i resize shrink height 10px
+	bindsym $mod+i resize shrink height 5px
+	bindsym l resize grow width 10px
+	bindsym $mod+l grow width 5px
+
+	bindsym Return mode "default"
+	bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"

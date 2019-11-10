@@ -1,0 +1,15 @@
+#
+# Moving around:
+#
+# Move the focused window with the same, but add Shift
+bindsym $mod+j move left 20
+bindsym $mod+k move down 20
+bindsym $mod+i move up 20
+bindsym $mod+l move right 20
+# Ditto, with arrow keys
+bindsym $mod+Ctrl+j move left 5
+bindsym $mod+Ctrl+k move down 5
+bindsym $mod+Ctrl+i move up 5
+bindsym $mod+Ctrl+l move right 5
+# Move window to the center
+bindsym $mod+h move absolute position center

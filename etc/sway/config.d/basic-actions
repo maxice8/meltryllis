@@ -1,0 +1,22 @@
+# Start a terminal
+bindsym $mod+Return exec alacritty
+
+# Kill focused window
+bindsym $mod+q kill
+
+# Exit sway
+bindsym --release $mod+Shift+q exec swaymsg exit
+
+# Start appmenu
+bindsym --release $mod+d exec appmenu
+
+# Reload the configuration file
+bindsym $mod+Shift+c reload
+
+# Make the current focus fullscreen
+bindsym $mod+f fullscreen
+
+# Take screenshot of whole screen or of taken area via slurp
+# and copy it to clipboard
+bindsym --release $mod+m exec grim -o - | wl-copy
+bindsym --release $mod+n exec grim -g \"$(slurp)" -o - | wl-copy
