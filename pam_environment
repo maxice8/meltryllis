@@ -46,5 +46,9 @@ QT_STYLE_OVERRIDE	DEFAULT=kvantum-dark
 GTK_THEME			DEFAULT=Adapta-Nokto-Eta:dark
 GTK2_RC_FILES		DEFAULT=/usr/share/themes/Adapta-Nokto-Eta/gtk-2.0/gtkrc
 
+QT_QPA_PLATFORM		DEFAULT=wayland
+SDL_VIDEODRIVER		DEFAULT=wayland
+CLUTTER_BACKEND		DEFAULT=wayland
+
 _JAVA_AWT_WM_NONREPARENTING	DEFAULT=1
 _JAVA_OPTIONS				DEFAULT="-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
