@@ -39,8 +39,8 @@
         }
     },
     "clock": {
-        "tooltip-format": "{:%Y-%m-%d | %H:%M}",
-        "format": "{:%H:%M:%S}  ",
+		"tooltip": false,
+        "format": "{:%H:%M}  ",
         "interval": 60,
         "format-alt": "{:%Y-%m-%d}  ",
         "on-click-right": "wl-copy $(date '+%Y-%m-%d %T')"
@@ -51,16 +51,16 @@
             "warning": 30,
             "critical": 15
         },
-        "format": "{capacity}% {icon}",
+        "format": "{capacity}%  {icon}",
         // "format-good": "", // An empty format will hide the module
         "format-full": "{icon}",
         "format-icons": ["", "", "", "", ""]
     },
     "pulseaudio": {
         "scroll-step": 5,
-        "format": "{volume}% {icon}",
+        "format": "{volume}%  {icon}",
         "format-bluetooth": "{volume}% {icon}",
-        "format-muted": "",
+        "format-muted": "MUT ",
         "format-icons": {
             "headphones": "",
             "handsfree": "",
@@ -75,12 +75,12 @@
 	"temperature": {
 		"critical-threshold": 75,
 		"interval": 30,
-		"format": "{temperatureC}°C {icon}",
+		"format": "{temperatureC}°C  {icon}",
 		"format-icons": ["", "", ""]
 	},
 	"cpu": {
 		"interval": 10,
-		"format": "{usage}% ",
+		"format": "{usage}%  ",
 		"tooltip": false
 	}
 }
