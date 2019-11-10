@@ -3,9 +3,9 @@
 loginctl lock-session &
 
 swaylock \
+	--daemonize --disable-caps-lock-text \
 	--image "$HOME"/usr/walls/texas.png \
 	--scaling fit --hide-keyboard-layout \
-	--disable-caps-lock-text \
 	--inside-color=00000000 --ring-color=ffffffff --line-uses-inside \
 	--key-hl-color=d23c3dff --bs-hl-color=d23c3dff --separator-color=00000000 \
 	--inside-ver-color=00000000 --inside-wrong-color=d23c3dff \
