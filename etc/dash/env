@@ -21,7 +21,8 @@ export GPG_TTY
 if [ "$(tty)" = /dev/tty1 ]; then
   case " $(cat /proc/cmdline) " in
     *' text '*)	;;
-    *) startx ${XDG_CONFIG_HOME}/X11/xinitrc -- vt1;;
+	*' xorg '*) startx ${XDG_CONFIG_HOME}/X11/xinitrc -- vt1 ;;
+	*) sway ;;
   esac
 fi
 #
