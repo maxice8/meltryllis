@@ -38,6 +38,10 @@ case "$1" in
 		append_arg "--setenv WINEARCH win64"
 		DIR_TO_CHDIR="$XDG_DATA_HOME/wine-hoi4/drive_c/HOI4"
 		;;
+	aoe)
+		# AoE DE requires 64bit
+		append_arg "--setenv WINEARCH win64"
+		;;
 esac
 
 if [ "$2" ]; then
