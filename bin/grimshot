@@ -1,0 +1,29 @@
+#!/bin/sh
+
+notify() {
+	notify-send --expire-time=3000 --app-name=grimshot "$@"
+}
+
+case "$1" in
+	area)
+		geometry="$(slurp -d)"
+		what="Selected Area"
+		;;
+	window)
+		focused="$(swaymsg -t get_tree | jq -r 'recurse(.nodes[]?, .floating_nodes[]?) | select(.focused)')"
+		geometry="$(echo "$focused" | jq -r '.rect | "\(.x),\(.y) \(.width)x\(.height)"')"
+		app_id="$(echo "$focused" | jq -r '.app_id')"
+		what="$app_id window"
+		;;
+	screen)
+		what="screen"
+		grim - | wl-copy ||
+			notify Screenshot "Error taking screen of $what with grim" &&
+			notify Screenshot "$what copied to buffer"
+		exit 0
+		;;
+esac
+
+grim -g "$geometry" - | wl-copy ||
+	notify Screenshot "Error taking screen of $what with grim" &&
+	notify Screenshot "$what copied to buffer"
