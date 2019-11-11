@@ -3,8 +3,6 @@
 # mgbr BRANCH-NAME ... - mgbr merge branches
 [ $# -lt 1 ] && set -- $(git current-branch)
 
-set -e
-
 merge_branch() {
 	# Assume that the first branch given to us has the
 	# prefix that we are pushing to on alpine, if we are
