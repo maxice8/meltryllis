@@ -305,6 +305,8 @@ endfunction
 "
 set pastetoggle=<F2>
 
+let g:onedark_terminal_italics = 1
+
 " Use ripgrep as grep if possible
 if executable('rg')
   set grepprg=rg\ --vimgrep\ --no-heading
