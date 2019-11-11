@@ -31,7 +31,6 @@ case $chosen in
         ;;
     $log_out)
 		pkill -15 chromium
-		pkill wm # Kills wm shell script and together with it, bspwm
-		pkill X
+		swaymsg exit # Kills wm shell script and together with it, bspwm
         ;;
 esac
