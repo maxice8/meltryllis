@@ -12,6 +12,8 @@ bindsym $mod+Shift+q exec swaymsg exit
 
 # Start appmenu
 bindsym $mod+d exec appmenu
+bindsym $mod+m exec mpdmenu
+bindsym $mod+Shift+m exec playmenu
 
 # Make the current focus fullscreen
 bindsym $mod+x fullscreen
