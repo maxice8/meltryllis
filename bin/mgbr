@@ -64,3 +64,5 @@ done
 [ -n "${stable39}" ] && merge_branch ${stable39}
 [ -n "${stable38}" ] && merge_branch ${stable38}
 [ -n "${stable37}" ] && merge_branch ${stable37}
+
+exit 0
