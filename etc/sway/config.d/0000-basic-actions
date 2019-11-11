@@ -34,3 +34,6 @@ bindsym $mod+Shift+tab exec alt-tab prev
 
 # Lock screen
 bindsym alt+l exec lock
+
+# Dismiss a notification
+bindsym $mod+Space exec makoctl dismiss
