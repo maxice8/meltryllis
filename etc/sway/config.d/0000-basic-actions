@@ -14,13 +14,17 @@ bindsym $mod+Shift+q exec swaymsg exit
 bindsym $mod+d exec appmenu
 
 # Make the current focus fullscreen
-bindsym $mod+f fullscreen
+bindsym $mod+x fullscreen
 
 # Take screenshot of whole screen or of taken area via slurp
 # and copy it to clipboard
 bindsym $mod+s exec grimshot screen
 bindsym $mod+Shift+s exec grimshot window
 bindsym $mod+Ctrl+s exec grimshot area
+
+bindsym $mod+a exec wf-recordershot screen
+bindsym $mod+Shift+a exec wf-recordershot window
+bindsym $mod+Ctrl+a exec wf-recordershot area
 
 # Alt-tab behaviour
 bindsym $mod+tab exec alt-tab next
