@@ -15,20 +15,18 @@ TREE
 │   ├── alacritty
 │   ├── bspwm
 │   ├── dash
-│   ├── dunst
 │   ├── fish
 │   ├── git
 │   ├── gtk-3.0
 │   ├── gtk-4.0
 │   ├── mpd
 │   ├── mpv
-│   ├── neomutt
+│   ├── newsboat
 │   ├── nvim
 │   ├── ranger
 │   ├── rofi
-│   ├── sx
-│   └── sxhkd
-├── src
+│   ├── sway
+│   └── waybar
 ├── usr
 │   ├── Images
 │   ├── Music
@@ -36,11 +34,11 @@ TREE
 │   ├── screenshots
 │   ├── videos
 │   └── walls
-└─── var
-    ├── cache
-    ├── log
-    ├── mail
-    └── share
+└── var
+    ├── cache
+    ├── log
+    ├── mail
+    └── share
 ```
 
 LICENSE
