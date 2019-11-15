@@ -30,7 +30,7 @@ INPUTRC				DEFAULT=${XDG_CONFIG_HOME}/inputrc
 
 LANG		DEFAULT=en_US.UTF-8
 LANGUAGE	DEFAULT=en_US:en
-TZ			DEFAULT=Brazil/East
+TZ			DEFAULT=Europe/Berlin
 
 AX_ABUILD		DEFAULT=dabuild
 AX_ASUM			DEFAULT=/usr/bin/abuild
