@@ -12,6 +12,13 @@ if ! pgrep -x ssh-agent -u $(id -u) >/dev/null; then
 else
 	if [ -s "$XDG_RUNTIME_DIR/ssh-agent-env" ]; then
 		. $XDG_RUNTIME_DIR/ssh-agent-env
+	else
+		eval "$(ssh-agent -s)"
+		export SSH_AUTH_SOCK SSH_AGENT_PID
+		cat > "$XDG_RUNTIME_DIR/ssh-agent-env" <<- __EOF__
+		export SSH_AUTH_SOCK=$SSH_AUTH_SOCK
+		export SSH_AGENT_PID=$SSH_AGENT_PID
+		__EOF__
 	fi
 fi
 
