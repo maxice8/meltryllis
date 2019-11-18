@@ -14,7 +14,6 @@ https://github.com/Microsoft/GSL/releases.atom
 https://github.com/PapirusDevelopmentTeam/adapta-kde/releases.atom
 https://github.com/adapta-project/adapta-gtk-theme/releases.atom
 https://github.com/bougyman/wifish/releases.atom
-https://github.com/catchorg/Catch2/releases.atom
 https://github.com/chromium/gyp/releases.atom
 https://github.com/cjbassi/gotop/releases.atom
 https://github.com/commonmark/cmark/releases.atom
@@ -104,4 +103,4 @@ https://gitlab.freedesktop.org/libevdev/python-libevdev/-/tags?format=atom
 https://gitlab.freedesktop.org/pulseaudio/paprefs/-/tags?format=atom
 https://gitlab.freedesktop.org/pulseaudio/pulseaudio/-/tags?format=atom
 https://gitlab.gnome.org/GNOME/totem-pl-parser/-/tags?format=atom
-https://source.winehq.org/git/vkd3d.git/atom
+https://github.com/python-gitlab/python-gitlab/releases.atom
