@@ -26,8 +26,20 @@ merge_branch() {
 		kill="$@"
 	fi
 
-	pullp # Pull changes from where we are going to push
-	pushp # Push our local changes
+	# Pull changes from where we are going to push
+	pullp || {
+		echo "Failed to pull changes from upstream" >&2
+		git switch master
+		git branch --delete --force "$branch"
+		exit 1
+	}
+	# Push our local changes
+	pushp || {
+		echo "Failed to push changes to upstream" >&2
+		git switch master
+		git branch --delete --force "$branch"
+		exit 1
+	}
 
 	dlbr $kill
 }
@@ -38,6 +50,10 @@ for branch in "$@"; do
 	case "$(alpine-stable-prefix "$branch")" in
 		'')
 			EDGE="$EDGE $branch"
+			shift
+			;;
+		3.11)
+			stable310="${stable310} $branch"
 			shift
 			;;
 		3.10)
@@ -60,6 +76,7 @@ for branch in "$@"; do
 done
 
 [ -n "$EDGE" ] && merge_branch $EDGE
+[ -n "${stable310}" ] && merge_branch ${stable310}
 [ -n "${stable310}" ] && merge_branch ${stable310}
 [ -n "${stable39}" ] && merge_branch ${stable39}
 [ -n "${stable38}" ] && merge_branch ${stable38}
