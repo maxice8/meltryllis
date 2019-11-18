@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+
+if test -n "${1-}"; then
+	printf "%s" "$*" | wl-copy
+	printf "%s" "$*" | wl-copy --primary
+	exit $?
+fi
+
+printf "%s" "$(cat)" | wl-copy
+printf "%s" "$(cat)" | wl-copy --primary
+
