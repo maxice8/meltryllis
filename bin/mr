@@ -2,6 +2,6 @@
 ENDPOINT="$(get-endpoint gitlab)"
 
 while [ $# -gt 0 ]; do
-	curl -Ls "$ENDPOINT"/merge_requests/"$1".patch | git am -3
+	curl -Ls "$ENDPOINT"/merge_requests/"$1".patch | git am -3 || exit 1
 	shift
 done
