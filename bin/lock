@@ -1,6 +1,6 @@
 #!/bin/sh
 
-loginctl lock-session &
+loginctl lock-session $XDG_SESSION_ID &
 
 swaylock \
 	--daemonize --disable-caps-lock-text \
@@ -12,4 +12,4 @@ swaylock \
 	--ring-ver-color=ffffffff --ring-wrong-color=ffffffff \
 	--font="Roboto"
 
-loginctl unlock-session &
+loginctl unlock-session $XDG_SESSION_ID &
