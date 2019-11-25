@@ -76,7 +76,7 @@ for branch in "$@"; do
 done
 
 [ -n "$EDGE" ] && merge_branch $EDGE
-[ -n "${stable310}" ] && merge_branch ${stable310}
+[ -n "${stable311}" ] && merge_branch ${stable311}
 [ -n "${stable310}" ] && merge_branch ${stable310}
 [ -n "${stable39}" ] && merge_branch ${stable39}
 [ -n "${stable38}" ] && merge_branch ${stable38}
