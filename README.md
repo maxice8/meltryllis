@@ -13,7 +13,6 @@ TREE
 ├── bin
 ├── etc
 │   ├── alacritty
-│   ├── bspwm
 │   ├── dash
 │   ├── fish
 │   ├── git
@@ -37,7 +36,6 @@ TREE
 └── var
     ├── cache
     ├── log
-    ├── mail
     └── share
 ```
 
