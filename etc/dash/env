@@ -1,16 +1,9 @@
 #
 # Set path
 #
-PATH="$HOME"/.cargo/bin:"$HOME"/bin:"$HOME"/.local/bin:"$PATH"
+PATH="$HOME"/bin:"$HOME"/.local/bin:"$PATH"
 
 export PATH
-#
-# Export our TTY, it needs to be here since we need to run it before
-# fish starts so other shells get it
-#
-GPG_TTY="$(tty)"
-
-export GPG_TTY
 #
 # If snooze-getmail is not running, start it
 #
