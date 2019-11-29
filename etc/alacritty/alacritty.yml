@@ -11,6 +11,7 @@ env:
   # check the local terminfo database and use 'alacritty' if it is
   # available, otherwise 'xterm-256color' is used.
   TERM: alacritty
+  TERMCOLOR: truecolor
 
 window:
   # Window dimensions (changes require restart)
@@ -48,16 +49,6 @@ scrolling:
   # scrollback is enabled (history > 0).
   multiplier: 1
 
-  # Faux Scrolling
-  #
-  # The `faux_multiplier` setting controls the number of lines the terminal
-  # should scroll when the alternate screen buffer is active. This is used
-  # to allow mouse scrolling for applications like `man`.
-  #
-  # Specifying `0` will disable faux scrolling.
-  faux_multiplier: 3
-
-  # Scroll to the bottom when new text is written to the terminal.
   auto_scroll: false
 
 # Spaces per Tab (changes require restart)
@@ -129,39 +120,31 @@ font:
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 
-# Colors (Oxide)
+# Colors (One Half Dark)
 colors:
-  # Default colors
   primary:
-    background: '0x212121'
-    foreground: '0xc0c5ce'
-    bright_foreground: '0xf3f4f5'
+    background: '0x282c34'
+    foreground: '0xdcdfe4'
 
-  cursor:
-    text: '0x212121'
-    cursor: '0xc0c5ce'
-
-  # Normal colors
   normal:
-    black:   '0x212121'
-    red:     '0xe57373'
-    green:   '0xa6bc69'
-    yellow:  '0xfac863'
-    blue:    '0x6699cc'
-    magenta: '0xc594c5'
-    cyan:    '0x5fb3b3'
-    white:   '0xc0c5ce'
+    black: '0x282c34'
+    red: '0xe06c75'
+    green: '0x98c379'
+    yellow: '0xe5c07b'
+    blue: '0x61afef'
+    magenta: '0xc678dd'
+    cyan: '0x56b6c2'
+    white: '0xdcdfe4'
 
-  # Bright colors
   bright:
-    black:   '0x5c5c5c'
-    red:     '0xe57373'
-    green:   '0xa6bc69'
-    yellow:  '0xfac863'
-    blue:    '0x6699cc'
-    magenta: '0xc594c5'
-    cyan:    '0x5fb3b3'
-    white:   '0xf3f4f5'
+    black: '0x282c34'
+    red: '0xe06c75'
+    green: '0x98c379'
+    yellow: '0xe5c07b'
+    blue: '0x61afef'
+    magenta: '0xc678dd'
+    cyan: '0x56b6c2'
+    white: '0xdcdfe4'
 
   # Indexed Colors
   #
