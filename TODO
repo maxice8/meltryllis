@@ -1,5 +1,3 @@
-- Make mgmr usable against stable branches
-- Make mgbr usable against stable branches
 - Fix keepassxc getting focus when database is locked
  because the lockscreen was called
 - Make WebGL work on chromium (Requires support for DRI3 on libva)
