@@ -63,8 +63,8 @@ exec --no-startup-id mako
 # exec --no-startup-id dbus-run-session sway
 
 exec swayidle -w \
-	timeout 120 'lock' \
-	timeout 360 'swaymsg "output * dpms off"' \
+	timeout 1800 'lock' \
+	timeout 2700 'swaymsg "output * dpms off"' \
 		resume 'swaymsg "output * dpms on"'
 
 include config.d/*
