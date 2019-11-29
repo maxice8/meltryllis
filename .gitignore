@@ -1,9 +1,24 @@
+# We need to ignore both directories and everything inside
 etc/ranger/*
 etc/ranger/colorschemes/*
+
+# But not the configuration files
 !etc/ranger/rc.conf
 !etc/ranger/scope.sh
-!etc/ranger/colorschemes/classytouch.py
+
+# Somehow not even the directory itself
+!etc/ranger/colorschemes
+
+# And the important parth, the theme file
+!etc/ranger/colorschemes/butter.py
+
+# These are created for some reason by fish, i'm sure it is important to
+# have them on the running system but not in git.
 etc/fish/fishd.*
+
+# IDK why this is here
 etc/nvim/plugged
+
+# This is annoying
 etc/nvim/.netrwhist
 etc/fish/fishd*
