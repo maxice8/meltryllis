@@ -9,14 +9,15 @@ Plug 'itchyny/lightline.vim'
 Plug 'dense-analysis/ale'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
-Plug 'KeitaNakamura/neodark.vim'
+Plug 'igankevich/mesonic'
+Plug 'sonph/onehalf',{'rtp':'vim'}
 
 " Add Plugins
 "
 call plug#end()
 
 let g:lightline = {
-    \ 'colorscheme': 'neodark',
+    \ 'colorscheme': 'onehalfdark',
     \ 'active': {
     \   'left': [ [ 'mode', 'paste' ], [ 'filename' ] ],
     \   'right': [ [ 'lineinfo' ], ['percent'], [ 'fileencoding', 'filetype'] ]
@@ -74,6 +75,13 @@ set clipboard=unnamedplus
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Truecolor support
+if exists('+termguicolors')
+  let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
+endif
+
 " Sets how many lines of history VIM has to remember
 set history=500
 
@@ -161,12 +169,10 @@ autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\|TEST\)')
 set guicursor=
 set guifont=
 
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-
 set t_Co=256
 set background=dark
 
-colorscheme neodark
+colorscheme onehalfdark
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
@@ -304,8 +310,6 @@ endfunction
 " User funtions
 "
 set pastetoggle=<F2>
-
-let g:onedark_terminal_italics = 1
 
 " Use ripgrep as grep if possible
 if executable('rg')
