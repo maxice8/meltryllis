@@ -4,15 +4,6 @@ etc/ranger/colorschemes/*
 !etc/ranger/scope.sh
 !etc/ranger/colorschemes/classytouch.py
 etc/fish/fishd.*
-etc/weechat/*
-!etc/weechat/weechat.conf
 etc/nvim/plugged
 etc/nvim/.netrwhist
 etc/fish/fishd*
-etc/mpd/*
-!etc/mpd/mpd.conf
-etc/neomutt/thinkabit
-etc/neomutt/ahri
-etc/neomutt/miller
-bin/nochildren
-bin/xwait
