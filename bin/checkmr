@@ -8,6 +8,6 @@ else
 	branch="$2"
 fi
 
-git switch --force-create "$branch" master
+git switch --force-create "$branch" "${TARGET_BRANCH:-master}"
 mr "$1"
 pullp
