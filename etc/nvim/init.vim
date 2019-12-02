@@ -159,7 +159,7 @@ autocmd BufRead,BufNewFile *.7 setlocal spell
 autocmd FileType gitcommit setlocal spell
 
 " Get free word completion
-set complete+=kspell
+" set complete+=kspell
 
 " Highlight TODO, FIXME, NOTE, etc.
 autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\)')
