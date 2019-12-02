@@ -170,12 +170,14 @@ rename_repo() {
 		fi
 
 		from="$repo"/"$pkgname"
+	else
+		from="$src"
 	fi
 
 	# Check if the package doesn't exist and error out
-	if [ ! -d "$repo"/"$src" ]; then
+	if [ ! -d "$from" ]; then
 		printf "rename operation failed: package '%s' doesn't exist\n" "$src"
-		print_vars src "$src" dst "$dst"
+		print_vars from "$from" dst "$dst"
 		return 1
 	fi
 
@@ -194,7 +196,7 @@ rename_repo() {
 
 	if [ "$realrepo" ]; then
 		printf "rename operation failed: package '%s' exists in '%s'\n" "$dst" "$realrepo"
-		print_vars src "$src" dst "$dst"
+		print_vars from "$from" dst "$dst"
 		return 1
 	fi
 
