@@ -14,7 +14,11 @@ export PATH
 if [ "$(tty)" = /dev/tty1 ]; then
   case " $(cat /proc/cmdline) " in
     *' text '*)	;;
-	*) XDG_SESSION_TYPE=wayland exec dbus-run-session sway > $HOME/var/log/sway.log ;;
+	*) 
+		export QT_QPA_PLATFORM=wayland
+		export SDL_VIDEODRIVER=wayland
+		export CLUTTER_BACKEND=wayland
+		XDG_SESSION_TYPE=wayland exec dbus-run-session sway > $HOME/var/log/sway.log ;;
   esac
 fi
 #
