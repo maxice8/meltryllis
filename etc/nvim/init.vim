@@ -71,7 +71,7 @@ let g:gitgutter_override_sign_column_highlight = 0
 " Remove folding
 let g:vim_markdown_folding_disabled = 1
 
-" set clipboard=unnamedplus
+set clipboard=unnamed,unnamedplus
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
