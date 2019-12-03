@@ -12,7 +12,7 @@ set $mod Mod4
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /home/impreza/usr/walls/texas.png fill
+output * bg /home/impreza/usr/walls/curvedpurpleline.png fill
 #
 # Example configuration:
 #
