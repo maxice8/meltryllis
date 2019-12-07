@@ -23,7 +23,7 @@ if [ "$#" -gt 1 ]; then
 	trap "rm -rf '$tmpdir'" INT EXIT
 
 	branch="${TARGET_BRANCH:-merge-request}-$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
-	git switch --force-create "$branch" master
+	git switch --force-create "$branch" "${TARGET_BRANCH:-master}"
 
 	for mr in "$@"; do
 		mr "$mr" || die "Failed to checkout mr !$mr"
