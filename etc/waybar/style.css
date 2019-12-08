@@ -1,43 +1,37 @@
 * {
     border: none;
     border-radius: 0;
-    font-family: Roboto;
+	font-family: "SF Mono", "Material Icons", monospace;
 	font-weight: bold;
     font-size: 13px;
     min-height: 0;
 }
 
 window#waybar {
-	background: black;
-    border-bottom: 3px solid rgba(0, 0, 0, 0.5);
-    color: #ffffff;
+	background: #1d2021;
+	color: #ffffff;
 }
 
 #workspaces button {
-	background: rgba(0, 0, 0, 0.4);
-    padding: 0 5px;
-    color: #ffffff;
-    border-bottom: 3px solid transparent;
+    padding: 0 4px;
+	background: transparent;
+	color: #ffffff;
 }
 
 #workspaces button:hover {
 	padding: 0 5px;
 	box-shadow: inherit;
 	text-shadow: inherit;
-	border-bottom: 3px solid rgba(255, 255, 255, 0.3);
 	background: rgba(255, 255, 255, 0.1);
 }
 
 #workspaces button.focused {
-    background: rgba(0, 0, 0, 0.3);
+	background: #181818;
 }
 
 #mode {
     background: rgba(0, 0, 0, 0.3);
     font-style: italic;
-}
-
-#mode, #workspaces button.focused {
     border-bottom: 3px solid rgba(255, 255, 255, 0.8);
 }
 
@@ -46,14 +40,13 @@ window#waybar {
 #pulseaudio,
 #temperature,
 #cpu,
-#mpd,
 #mode {
-    padding: 0 10px;
+    padding: 0 11px;
     margin: 0 0px;
 }
 
 #clock {
-    background-color: rgba(31, 58, 147, 1);
+	background-color: rgba(31, 58, 147, 1);
 }
 
 #battery {
@@ -72,8 +65,8 @@ window#waybar {
 
 @keyframes blink {
     to {
-        background-color: #ffffff;
-        color: #000000;
+        background-color: #26A64B;
+        color: #fb4934;
     }
 }
 
