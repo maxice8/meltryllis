@@ -6,7 +6,12 @@ from typing import List
 import os
 import asyncio
 
-SOCKET = os.join.path(os.environ['XDG_RUNTIME_DIR'], 'alt-tab.sock')
+SOCKET = os.path.join(os.environ['XDG_RUNTIME_DIR'], 'alt-tab.sock')
+
+
+def log(s: str):
+    if os.environ['ALT_TAB_DEBUG']:
+        print(s)
 
 
 def get_ids(container: Con) -> List[int]:
@@ -52,12 +57,23 @@ def next_prev(list: List[int], index: int, goto: bool) -> int:
     of a list, if we are then we just return the first index of the list,
     otherwise we return the index + 1
     """
+    print('List of ids: %s' % list)
+    print('Current index: %s' % index)
+    print('Length of List: %s' % len(list))
+    print('goto value: %s' % goto)
     if not goto:
-        return list[index - 1]
+        if index == 0:
+            print('Switching to id: %s' % list[len(list) - 1])
+            return list[len(list) - 1]
+        else:
+            print('Switching to id: %s' % list[index - 1])
+            return list[index - 1]
     else:
         if index == len(list) - 1:
+            print('Switching to id: %s' % list[0])
             return list[0]
         else:
+            print('Switching to id: %s' % list[index + 1])
             return list[index + 1]
 
 
@@ -100,6 +116,7 @@ def main():
         await connection.subscribe([Event.WINDOW])
         connection.on(Event.WINDOW_NEW, refresh_async)
         connection.on(Event.WINDOW_CLOSE, refresh_async)
+        connection.on(Event.WINDOW_FOCUS, refresh_async)
 
         print("Subscribing to Workspace events")
         await connection.subscribe([Event.WORKSPACE])
@@ -127,6 +144,12 @@ def main():
             await connection.command('[con_id=%s] focus' % next_prev(ids,
                                                                      index,
                                                                      False))
+
+        """
+        Reload the information after running the command
+        await refresh_async(connection, None)
+        """
+
 
         writer.write(data)
         await writer.drain()
