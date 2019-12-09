@@ -12,7 +12,7 @@ set $mod Mod4
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /home/impreza/usr/walls/curvedpurpleline.png fill
+# output * bg /home/impreza/usr/walls/curvedpurpleline.png fill
 #
 # Example configuration:
 #
@@ -63,8 +63,9 @@ exec --no-startup-id mako
 # exec --no-startup-id dbus-run-session sway
 
 exec swayidle -w \
-	timeout 1800 'lock' \
-	timeout 2700 'swaymsg "output * dpms off"' \
-		resume 'swaymsg "output * dpms on"'
+	timeout 300 'lock' \
+	timeout 450 'swaymsg "output * dpms off"' \
+		resume 'swaymsg "output * dpms on"' \
+	before-sleep 'lock'
 
 include config.d/*
