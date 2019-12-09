@@ -2,9 +2,11 @@
 
 loginctl lock-session $XDG_SESSION_ID &
 
+# --image "$HOME"/usr/walls/curvedpurpleline.png \
+
 swaylock \
 	--daemonize --disable-caps-lock-text \
-	--image "$HOME"/usr/walls/curvedpurpleline.png \
+	--color 000000 \
 	--scaling fit --hide-keyboard-layout \
 	--inside-color=00000000 --ring-color=ffffffff --line-uses-inside \
 	--key-hl-color=d23c3dff --bs-hl-color=d23c3dff --separator-color=00000000 \
