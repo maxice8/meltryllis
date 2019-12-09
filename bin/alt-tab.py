@@ -113,35 +113,39 @@ def main():
         print("Subscribed to main loop")
         await connection.main()
 
-    async def read_socket(ids, index):
-        connection = await Connection().connect()
+    async def read_socket(reader, writer):
+        nonlocal ids, index
+        connection = await AsyncConnection().connect()
 
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind((HOST, PORT))
-            s.listen()
-            while True:
-                conn, addr = s.accept()
-                with conn:
-                    data = conn.recv(1024)
-                    if not data:
-                        break
-                    if len(ids) < 2:
-                        break
-                    if data == 'next':
-                        connection.command('[con_id=%s] focus' % next_prev(ids,
-                                                                           index,
-                                                                           True))
-                    elif data == 'prev':
-                        connection.command('[con_id=%s] focus' % next_prev(ids,
-                                                                           index,
-                                                                           False))
+        data = await reader.read(100)
+        message = data.decode()
+    
+        if not message:
+            None
+        if len(ids) < 2:
+            None
+        if message == 'next':
+            await connection.command('[con_id=%s] focus' % next_prev(ids,
+                                                                     index,
+                                                                     True))
+        elif message == 'prev':
+            await connection.command('[con_id=%s] focus' % next_prev(ids,
+                                                                     index,
+                                                                     False))
 
-    sway = asyncio.ensure_future(event_loop())
-    ipc = asyncio.ensure_future(read_socket(ids, index))
+        writer.write(data)
+        await writer.drain()
+
+        writer.close()
 
     loop = asyncio.get_event_loop()
-    loop.run_forever()
 
+    asyncio.ensure_future(event_loop())
+    asyncio.ensure_future(asyncio.start_unix_server(read_socket,
+                                                    '/tmp/alt-tab.sock',
+                                                    loop=loop))
+
+    loop.run_forever()
 
     """
     container = connection.get_tree().find_focused()
