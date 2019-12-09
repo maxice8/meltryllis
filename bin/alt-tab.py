@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
 
 from i3ipc import Con, Connection, Event
-from i3ipc.aio import Con as AsyncCon
 from i3ipc.aio import Connection as AsyncConnection
 from typing import List
-from multiprocessing import Process
+import os
 import asyncio
-import socket
-import threading
 
-
-HOST = '127.0.0.1'
-PORT = 8888
+SOCKET = os.join.path(os.environ['XDG_RUNTIME_DIR'], 'alt-tab.sock')
 
 
 def get_ids(container: Con) -> List[int]:
@@ -119,7 +114,7 @@ def main():
 
         data = await reader.read(100)
         message = data.decode()
-    
+
         if not message:
             None
         if len(ids) < 2:
@@ -142,7 +137,7 @@ def main():
 
     asyncio.ensure_future(event_loop())
     asyncio.ensure_future(asyncio.start_unix_server(read_socket,
-                                                    '/tmp/alt-tab.sock',
+                                                    SOCKET,
                                                     loop=loop))
 
     loop.run_forever()
@@ -165,4 +160,12 @@ def main():
 
 
 if __name__ == '__main__':
+    if os.path.exists(SOCKET):
+        """
+        Remove the SOCKET path
+        it is automatically created via asyncio.start_unix_server later
+        and the function will fail it the SOCKET exists
+        """
+        os.remove(SOCKET)
+
     main()
