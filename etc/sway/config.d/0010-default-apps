@@ -1,0 +1,4 @@
+exec gtk-launch chromium
+exec gtk-launch telegramdesktop
+exec gtk-launch claws-mail
+exec gtk-launch org.keepassxc.KeePassXC
