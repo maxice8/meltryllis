@@ -32,6 +32,8 @@ TREE
 │   ├── backup
 │   ├── screenshots
 │   ├── videos
+│   ├── Camera
+│   ├── secrets
 │   └── walls
 └── var
     ├── cache
