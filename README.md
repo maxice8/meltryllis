@@ -18,8 +18,6 @@ TREE
 │   ├── git
 │   ├── gtk-3.0
 │   ├── gtk-4.0
-│   ├── mpd
-│   ├── mpv
 │   ├── newsboat
 │   ├── nvim
 │   ├── ranger
@@ -27,13 +25,14 @@ TREE
 │   ├── sway
 │   └── waybar
 ├── usr
+│   ├── Camera
 │   ├── Images
 │   ├── Music
 │   ├── backup
 │   ├── screenshots
-│   ├── videos
-│   ├── Camera
 │   ├── secrets
+│   ├── src
+│   ├── videos
 │   └── walls
 └── var
     ├── cache
