@@ -28,3 +28,7 @@ bindsym alt+l exec lock
 
 # Dismiss a notification
 bindsym $mod+Space exec makoctl dismiss
+
+# Start smooth-fading-sway and alt-tab sway
+exec smooth-fading-sway.py
+exec alt-tab.py
