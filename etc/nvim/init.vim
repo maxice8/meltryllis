@@ -2,7 +2,7 @@
 " nvim plug
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Start pathogen
-call plug#begin('~/var/share/nvim/plugged')
+call plug#begin('~/etc/nvim/autoload')
 
 Plug 'airblade/vim-gitgutter'
 Plug 'itchyny/lightline.vim'
