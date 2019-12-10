@@ -1,0 +1,4 @@
+#!/bin/sh
+for file in "$@"; do
+	stat -c "%a %U %G" "$file"
+done
