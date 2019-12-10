@@ -149,8 +149,6 @@ def main():
         Reload the information after running the command
         await refresh_async(connection, None)
         """
-
-
         writer.write(data)
         await writer.drain()
 
