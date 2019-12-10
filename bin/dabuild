@@ -38,9 +38,9 @@ fi
 ## setup volumes; use named volumes as cache if desired
 ABUILD_VOLUMES="
     -v ${HOME}/.abuild:/home/builder/.abuild
-    -v ${HOME}/.abuild:/home/enterprise/.abuild
+    -v ${HOME}/.abuild:${HOME}/.abuild
     -v ${PWD%/aports*}/aports:/home/builder/aports
-	-v ${HOME}/packages:/home/enterprise/packages
+	-v ${HOME}/packages:${HOME}/packages
 	-v ${HOME}/packages:/home/builder/packages
 	-v /etc/apk/repositories:/etc/apk/repositories
 	-v /etc/apk/keys:/etc/apk/keys
