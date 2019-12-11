@@ -1,8 +1,1 @@
 exec gtk-launch chromium
-exec gtk-launch telegramdesktop
-exec alacritty --class 'alagotop' --command 'gotop'
-exec gtk-launch claws-mail
-
-
-
-exec alacritty --class 'snooze-newsboat' --command 'snooze-newsboat'
