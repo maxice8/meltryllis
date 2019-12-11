@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 from i3ipc import Con, Connection, Event
 from i3ipc.aio import Connection as AsyncConnection
@@ -109,20 +109,16 @@ def main():
         print(index)
 
     async def event_loop():
-        print("Starting event loop")
         connection = await AsyncConnection().connect()
 
-        print("Subscribing to Window events")
         await connection.subscribe([Event.WINDOW])
         connection.on(Event.WINDOW_NEW, refresh_async)
         connection.on(Event.WINDOW_CLOSE, refresh_async)
         connection.on(Event.WINDOW_FOCUS, refresh_async)
 
-        print("Subscribing to Workspace events")
         await connection.subscribe([Event.WORKSPACE])
         connection.on(Event.WORKSPACE_FOCUS, refresh_async)
 
-        print("Subscribed to main loop")
         await connection.main()
 
     async def read_socket(reader, writer):
