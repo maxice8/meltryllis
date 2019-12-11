@@ -18,19 +18,18 @@ chosen="$(printf "%s\\n%s\\n%s\\n%s\\n%s\\n" \
 
 case $chosen in
     $power_off)
-		sudo busybox poweroff
+		loginctl poweroff
         ;;
     $reboot)
-		sudo busybox reboot
+		loginctl reboot
         ;;
     $lock)
-		lock -l dim
+		loginctl lock-session $XDG_SESSION_ID
         ;;
     $suspend)
-		lock -s dim
+		loginctl suspend
         ;;
     $log_out)
-		pkill -15 chromium
-		swaymsg exit # Kills wm shell script and together with it, bspwm
+		loginctl terminate-session $XDG_SESSION_ID
         ;;
 esac
