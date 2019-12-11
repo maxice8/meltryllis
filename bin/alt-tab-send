@@ -4,7 +4,7 @@ import socket
 import os
 import sys
 
-SOCKET = os.path.join(os.environ['XDG_RUNTIME_DIR'], 'alt-tab.sock')
+SOCKET = os.path.join(os.environ['XDG_RUNTIME_DIR'], 'alt-tab-daemon.sock')
 
 
 def main(action: bytes):
