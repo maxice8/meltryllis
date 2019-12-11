@@ -15,10 +15,13 @@ if [ "$(tty)" = /dev/tty1 ]; then
   case " $(cat /proc/cmdline) " in
     *' text '*)	;;
 	*) 
+		if [ -s "$HOME"/var/log/sway.log ]; then
+			mv "$HOME"/var/log/sway.log "$HOME"/var/log/sway.log.old
+		fi
 		export QT_QPA_PLATFORM=wayland
 		export SDL_VIDEODRIVER=wayland
 		export CLUTTER_BACKEND=wayland
-		XDG_SESSION_TYPE=wayland exec dbus-run-session sway > $HOME/var/log/sway.log ;;
+		XDG_SESSION_TYPE=wayland exec dbus-run-session sway > $HOME/var/log/sway.log 2>&1 ;;
   esac
 fi
 #
