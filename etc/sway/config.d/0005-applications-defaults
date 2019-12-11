@@ -3,3 +3,5 @@ for_window [class="Chromium"] resize set 1366 738, move absolute position 0 30, 
 for_window [app_id="firefox"] resize set 1366 738, move absolute position 0 30, move container to workspace 1
 for_window [class="Claws-mail"] resize set 1366 738, move absolute position 0 30, move container to workspace 5
 for_window [app_id="keepassxc"] resize set 1366 738, move absolute position 0 30, move container to workspace 6
+for_window [app_id="alagotop"] move container to workspace 3
+for_window [app_id="snooze-newsboat"] move container to workspace 9
