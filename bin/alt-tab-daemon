@@ -4,6 +4,7 @@ from i3ipc import Con, Connection, Event
 from i3ipc.aio import Connection as AsyncConnection
 from typing import List
 import os
+import sys
 import asyncio
 
 SOCKET = os.path.join(os.environ['XDG_RUNTIME_DIR'], 'alt-tab-daemon.sock')
@@ -36,12 +37,13 @@ def find_in_list(list: List[int], num) -> int:
     returns the first occurrence of the value on the index.
     """
     try:
-        x = list.index(num)
+        return list.index(num)
     except ValueError:
         print(f'Number {num} not found in List {list}')
-        pass
-
-    return x
+        return None
+    else:
+        print("Unexpected error:", sys.exc_info()[0])
+        return None
 
 
 def next_prev(list: List[int], index: int, goto: bool) -> int:
