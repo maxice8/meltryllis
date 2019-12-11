@@ -29,6 +29,10 @@ bindsym alt+l exec lock
 # Dismiss a notification
 bindsym $mod+Space exec makoctl dismiss
 
-# Start smooth-fading-sway and alt-tab sway
-exec --no-startup-id smooth-fading-sway.py
-exec --no-startup-id alt-tab-daemon
+# Upstart integration
+exec initctl set-env --global SWAYSOCK="$SWAYSOCK"
+exec initctl set-env --global I3SOCK="$I3SOCK"
+exec initctl set-env --global WAYLAND_DISPLAY="$WAYLAND_DISPLAY"
+exec initctl set-env --global DISPLAY="$DISPLAY" # Required for XWayland
+
+exec initctl emit sway-session
