@@ -31,4 +31,4 @@ bindsym $mod+Space exec makoctl dismiss
 
 # Start smooth-fading-sway and alt-tab sway
 exec --no-startup-id smooth-fading-sway.py
-exec --no-startup-id alt-tab.py
+exec --no-startup-id alt-tab-daemon
