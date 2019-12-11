@@ -1,3 +1,6 @@
+# Set the mod key to the Super key
+set $mod Mod4
+
 # Start a terminal
 bindsym $mod+Return exec alacritty
 
