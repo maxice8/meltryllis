@@ -58,6 +58,4 @@ bar {
 	swaybar_command waybar
 }
 
-exec --no-startup-id pulseaudio --start
-
 include config.d/*
