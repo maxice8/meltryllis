@@ -161,22 +161,6 @@ def main():
 
     loop.run_forever()
 
-    """
-    container = connection.get_tree().find_focused()
-
-    ids: List[int] = get_ids(container)
-    ids_len = len(ids)
-
-    if ids_len < 2:
-        sys.exit()
-
-    ids.sort()
-
-    index = find_in_list(ids, container.id)
-
-    connection.command('[con_id=%s] focus' % next_prev(ids, index, args.prev))
-    """
-
 
 if __name__ == '__main__':
     if os.path.exists(SOCKET):
