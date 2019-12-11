@@ -59,13 +59,5 @@ bar {
 }
 
 exec --no-startup-id pulseaudio --start
-exec --no-startup-id mako
-# exec --no-startup-id dbus-run-session sway
-
-exec swayidle -w \
-	timeout 300 'lock' \
-	timeout 450 'swaymsg "output * dpms off"' \
-		resume 'swaymsg "output * dpms on"' \
-	before-sleep 'lock'
 
 include config.d/*
