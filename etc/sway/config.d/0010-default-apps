@@ -2,7 +2,6 @@ exec gtk-launch chromium
 exec gtk-launch telegramdesktop
 exec alacritty --class 'alagotop' --command 'gotop'
 exec gtk-launch claws-mail
-exec gtk-launch org.keepassxc.KeePassXC
 
 
 
