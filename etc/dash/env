@@ -1,32 +1,16 @@
 #
-# Set path
+# Get some environment variables from 'startup'
 #
-PATH="$HOME"/bin:"$HOME"/.local/bin:"$PATH"
-
-export PATH
-#
-# If snooze-getmail is not running, start it
-#
-# pgrep -u "$(id -u)" -x snooze-getmail || fork snooze-getmail
-#
-# if we log in on VT1 and there is no text in the kernel cmdline start sx
-#
-if [ "$(tty)" = /dev/tty1 ]; then
-  case " $(cat /proc/cmdline) " in
-    *' text '*)	;;
-	*) 
-		if [ -s "$HOME"/var/log/sway.log ]; then
-			mv "$HOME"/var/log/sway.log "$HOME"/var/log/sway.log.old
-		fi
-		export QT_QPA_PLATFORM=wayland
-		export SDL_VIDEODRIVER=wayland
-		export CLUTTER_BACKEND=wayland
-		XDG_SESSION_TYPE=wayland exec dbus-run-session sway > $HOME/var/log/sway.log 2>&1 ;;
-  esac
+if [ -n "$(initctl get-env SSH_AUTH_SOCK 2>/dev/null)" ]; then
+	SSH_AUTH_SOCK="$(initctl get-env SSH_AUTH_SOCK 2>/dev/null)"
+	export SSH_AUTH_SOCK
 fi
-#
-# If we start a dash shell as interfactive we exec it as a fish shell
-#
+
+if [ -n "$(initctl get-env SSH_AGENT_PID 2>/dev/null)" ]; then
+	SSH_AGENT_PID="$(initctl get-env SSH_AGENT_PID 2>/dev/null)"
+	export SSH_AGENT_PID
+fi
+
 case $- in
   *i* )
     test -n "$NOFISH" && return
