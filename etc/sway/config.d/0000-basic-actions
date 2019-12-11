@@ -20,8 +20,8 @@ bindsym $mod+Shift+m exec playmenu
 bindsym $mod+x fullscreen
 
 # Alt-tab behaviour
-bindsym $mod+tab exec echo -n next | nc -w 1 -U "$XDG_RUNTIME_DIR"/alt-tab.sock
-bindsym $mod+Shift+tab exec echo -n prev | nc -w 1 -U "$XDG_RUNTIME_DIR"/alt-tab.sock
+bindsym $mod+tab exec alt-tab-send next
+bindsym $mod+Shift+tab exec alt-tab-send prev
 
 # Lock screen
 bindsym alt+l exec lock
@@ -30,5 +30,5 @@ bindsym alt+l exec lock
 bindsym $mod+Space exec makoctl dismiss
 
 # Start smooth-fading-sway and alt-tab sway
-exec smooth-fading-sway.py
-exec alt-tab.py
+exec --no-startup-id smooth-fading-sway.py
+exec --no-startup-id alt-tab.py
