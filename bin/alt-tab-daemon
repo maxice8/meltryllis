@@ -6,7 +6,7 @@ from typing import List
 import os
 import asyncio
 
-SOCKET = os.path.join(os.environ['XDG_RUNTIME_DIR'], 'alt-tab.sock')
+SOCKET = os.path.join(os.environ['XDG_RUNTIME_DIR'], 'alt-tab-daemon.sock')
 
 
 def log(s: str):
