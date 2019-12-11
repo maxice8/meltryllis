@@ -24,7 +24,7 @@ bindsym $mod+tab exec alt-tab-send next
 bindsym $mod+Shift+tab exec alt-tab-send prev
 
 # Lock screen
-bindsym alt+l exec lock
+bindsym alt+l exec loginctl lock-session
 
 # Dismiss a notification
 bindsym $mod+Space exec makoctl dismiss
