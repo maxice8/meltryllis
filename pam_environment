@@ -40,3 +40,5 @@ GTK2_RC_FILES		DEFAULT=/usr/share/themes/Adapta-Nokto-Eta/gtk-2.0/gtkrc
 
 _JAVA_AWT_WM_NONREPARENTING	DEFAULT=1
 _JAVA_OPTIONS				DEFAULT="-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
+
+NO_AT_BRIDGE		DEFAULT=1
