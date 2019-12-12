@@ -3,15 +3,15 @@
 from i3ipc import Con, Connection, Event
 from i3ipc.aio import Connection as AsyncConnection
 from typing import List
-import os
+from os import environ, path, remove
 import sys
 import asyncio
 
-SOCKET = os.path.join(os.environ['XDG_RUNTIME_DIR'], 'alt-tab-daemon.sock')
+SOCKET = path.join(environ['SESSION_DIR'], 'alt-tab-daemon')
 
 
 def log(s: str):
-    if os.environ['ALT_TAB_DEBUG']:
+    if environ['ALT_TAB_DEBUG']:
         print(s)
 
 
@@ -163,12 +163,12 @@ def main():
 
 
 if __name__ == '__main__':
-    if os.path.exists(SOCKET):
+    if path.exists(SOCKET):
         """
         Remove the SOCKET path
         it is automatically created via asyncio.start_unix_server later
         and the function will fail it the SOCKET exists
         """
-        os.remove(SOCKET)
+        remove(SOCKET)
 
     main()
