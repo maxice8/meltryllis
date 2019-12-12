@@ -30,6 +30,6 @@ case $chosen in
 		loginctl suspend
         ;;
     $log_out)
-		loginctl terminate-session $XDG_SESSION_ID
+		initctl stop session
         ;;
 esac
