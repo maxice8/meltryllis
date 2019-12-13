@@ -1,0 +1,44 @@
+#!/bin/sh
+
+set -eu
+
+usage() {
+	printf 'Usage: %s enable|disable conf\n' "$(basename "$0")"
+}
+
+case "${1:-}" in
+	"enable") action=enable ;;
+	"disable") action=disable ;;
+	"-h"|"--help") usage; exit 0;;
+	*) usage; exit 2;;
+esac
+
+shift
+
+test "${1:-}" || { usage; exit 2; }
+
+: ${SUCONF_DIR:="${XDG_CONFIG_HOME:-"$HOME/.config"}/startup"}
+over="${SUCONF_DIR}/${1}.override"
+
+trap 'exit 1' INT HUP TERM
+
+if [ $action = enable ]; then
+	if [ -s "$over" ]; then
+		sed -i '/^manual$/d' "$over"
+		if [ ! -s "$over" ]; then
+			rm -f "$over"
+		fi
+		exit 0
+	fi
+	printf '%s: already enabled\n' "$1"
+	exit 1
+fi
+
+if [ $action = disable ]; then
+	if grep -q -x manual "$over"; then
+		printf '%s: already disabled\n' "$1"
+		exit 1
+	fi
+	printf '%s\n' manual >> "$over"
+fi
+
