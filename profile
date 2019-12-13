@@ -8,5 +8,5 @@ export ENV PATH
 
 case "$(tty)" in
 	# If we start on a tty, start an upstart session
-	/dev/tty*) exec dbus-run-session startup --user ;;
+	/dev/tty1) exec startup --user ;;
 esac
