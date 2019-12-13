@@ -35,7 +35,7 @@ if [ $action = enable ]; then
 fi
 
 if [ $action = disable ]; then
-	if grep -q -x manual "$over"; then
+	if grep -q -x manual "$over" 2>/dev/null; then
 		printf '%s: already disabled\n' "$1"
 		exit 1
 	fi
