@@ -1,3 +1,3 @@
 # We reached here because we done all other initialization
-exec --no-startup-id initctl emit sway-start
+exec --no-startup-id printf '\n' >&$READY_FD
 
