@@ -30,6 +30,6 @@ case $chosen in
 		loginctl suspend
         ;;
     $log_out)
-		initctl stop session
+		initctl stop session action=stop
         ;;
 esac
