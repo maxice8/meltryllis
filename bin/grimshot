@@ -12,7 +12,10 @@ case "$1" in
 	window)
 		focused="$(swaymsg -t get_tree | jq -r 'recurse(.nodes[]?, .floating_nodes[]?) | select(.focused)')"
 		geometry="$(echo "$focused" | jq -r '.rect | "\(.x),\(.y) \(.width)x\(.height)"')"
-		app_id="$(echo "$focused" | jq -r '.app_id')"
+		app_id="$(echo "$focused" | jq -r '.app_id // empty')"
+		if [ -z "$app_id" ]; then
+			app_id="$(echo "$focused" | jq -r '.window_properties | .class')"
+		fi
 		what="$app_id window"
 		;;
 	screen)
