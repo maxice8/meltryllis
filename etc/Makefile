@@ -3,7 +3,7 @@ MKDIR := mkdir -pv
 
 ETCDIR = $(XDG_CONFIG_HOME)
 ETCDIRS = $(shell find . -type d)
-ETCFILES = $(shell find . -type f -o -type l -not -name Makefile)
+ETCFILES = $(shell find . \( -type f -o -type l \) -a -not -name Makefile)
 
 .PHONY: $(ETCDIRS) $(ETCFILES)
 
