@@ -1,4 +1,5 @@
 #!/bin/sh
+[ -z "$1" ] && set -- master
 for branch in "$@"; do
 	gbr "$branch" || continue
 	pullp || sh
