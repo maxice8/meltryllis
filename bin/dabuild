@@ -75,7 +75,7 @@ ABUILD_VOLUMES="-v ${HOME}/.abuild:/home/builder/.abuild \
   -v /etc/apk/repositories:/etc/apk/repositories
   -v /var/cache/distfiles:/var/cache/distfiles
   -v /var/cache/apk:/var/cache/apk
-  -v ${HOME}/packages:${HOME}/packages
+  -v ${ABUILD_PACKAGES}:${HOME}/packages
   -v ${ABUILD_PACKAGES}:/home/builder/packages"
 
 if [ -f "/etc/abuild.conf" ]; then
