@@ -10,6 +10,10 @@ bindsym $mod+q kill
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 
+# This is required until a 5.4.x comes that does not cause Intel
+# Graphics to hang at random times.
+bindsym $mod+Shift+v exec sudo sh -c 'echo mem > /sys/power/state'
+
 # Exit sway
 bindsym $mod+Shift+q exec swaymsg exit
 
