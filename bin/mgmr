@@ -1,6 +1,14 @@
 #!/bin/sh
+BINARY="${0##*/}"
+TARGET_BRANCH="${BINARY#mgmr-*}"
+[ "$TARGET_BRANCH" = mgmr ] \
+	&& TARGET_BRANCH=master \
+	|| TARGET_BRANCH="$TARGET_BRANCH"-stable
 NORMAL="\033[1;0m"
 RED="\033[1;31m"
+
+# Required for checkmr and other binaries
+export TARGET_BRANCH
 
 # https://www.etalabs.net/sh_tricks.html
 is_empty() (
@@ -22,7 +30,7 @@ if [ "$#" -gt 1 ]; then
 	# shellcheck disable=2064
 	trap "rm -rf '$tmpdir'" INT EXIT
 
-	branch="${TARGET_BRANCH:-merge-request}-$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
+	branch="$TARGET_BRANCH-$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
 	git switch --force-create "$branch" "${TARGET_BRANCH:-master}"
 
 	for mr in "$@"; do
@@ -58,7 +66,7 @@ Thanks for your contribution' &
 	wait
 
 else
-	checkmr "$1" "${TARGET_BRANCH:-merge-request}" || die "Failed to check out mr !$1"
+	checkmr "$1" "$TARGET_BRANCH-merge-request" || die "Failed to check out mr !$1"
 	commits="$(gcp | cut -d ' ' -f 1)"
 	mgbr || die "Failed to merge mr !$1"
 	close-mr "$1" &
