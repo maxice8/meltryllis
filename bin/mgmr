@@ -1,14 +1,25 @@
 #!/bin/sh
-BINARY="${0##*/}"
+BINARY="${0##*/}" # The name of the binary, most commonly 'mgmr'
+
+# Strip 'mgmr-' from the binary name, if the binary is called 'mgmr'
+# it will just return 'mgmr', for the expected case of it being 'mgmr-<branch-name>'
+# it will return '<branch-name>'. The suffix '-stable' is then added
+# to the branch name, This is Alpine Linux specific; but might change in the
+# future.
+#
+# After doing all this magic export TARGET_BRANCH to the environment
+# so the other utilities we call like checkmr also work
 TARGET_BRANCH="${BINARY#mgmr-*}"
-[ "$TARGET_BRANCH" = mgmr ] \
-	&& TARGET_BRANCH=master \
-	|| TARGET_BRANCH="$TARGET_BRANCH"-stable
+
+if [ "$TARGET_BRANCH" = mgmr ]; then
+	TARGET_BRANCH=master
+else
+	TARGET_BRANCH="$TARGET_BRANCH"-stable
+fi
+export TARGET_BRANCH
+
 NORMAL="\033[1;0m"
 RED="\033[1;31m"
-
-# Required for checkmr and other binaries
-export TARGET_BRANCH
 
 # https://www.etalabs.net/sh_tricks.html
 is_empty() (
