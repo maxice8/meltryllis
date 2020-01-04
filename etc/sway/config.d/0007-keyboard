@@ -2,4 +2,10 @@ input "1:1:AT_Translated_Set_2_keyboard" {
 	repeat_rate 100
 	repeat_delay 250
 	xkb_layout "br"
+	xkb_options caps:swapescape,eurosign:e,ctrl:swap_lalt_lctl
+}
+
+input "1739:30149:DELL07DE:00_06CB:75C5_Touchpad" {
+	tap disabled
+	natural_scroll disabled
 }
