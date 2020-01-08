@@ -10,7 +10,7 @@
         "disable-scroll": false,
         "all-outputs": true,
 		"format": "{icon}",
-		"persistant_workspaces": {
+		"persistent_workspaces": {
 			"1": [],
 			"2": [],
 			"3": [],
