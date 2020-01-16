@@ -20,13 +20,13 @@ case "$1" in
 		;;
 	screen)
 		what="screen"
-		grim - | wl-copy ||
+		grim - | wl-copy --type image/png ||
 			notify Screenshot "Error taking screen of $what with grim" &&
 			notify Screenshot "$what copied to buffer"
 		exit 0
 		;;
 esac
 
-grim -g "$geometry" - | wl-copy ||
+grim -g "$geometry" - | wl-copy --type image/png ||
 	notify Screenshot "Error taking screen of $what with grim" &&
 	notify Screenshot "$what copied to buffer"
