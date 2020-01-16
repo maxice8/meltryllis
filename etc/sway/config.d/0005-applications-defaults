@@ -4,4 +4,5 @@ for_window [app_id="firefox"] resize set 1366 738, move absolute position 0 30, 
 for_window [class="Claws-mail"] resize set 1366 738, move absolute position 0 30, move container to workspace 5
 for_window [app_id="keepassxc"] resize set 1366 738, move absolute position 0 30, move container to workspace 6
 for_window [app_id="alacritty-gotop"] move container to workspace 3
+for_window [class="Code"] resize set 1366 738, move absolute position 0 30, move container to workspace 4
 for_window [class="hoi4"] resize 1366 768, mobe absolute position 0 0, fullscreen enable, move container to workspace 4
