@@ -1,10 +1,10 @@
 * {
     border: none;
     border-radius: 0;
-	font-family: "Droid Sans Mono", "Material Icons", monospace;
+	font-family: "Overpass Mono";
 	font-weight: bold;
-    font-size: 12px;
-    min-height: 0;
+    font-size: 13px;
+    min-height: 0px;
 }
 
 window#waybar {
