@@ -1,7 +1,7 @@
 * {
   /* General */
-  text-font:                            "Overpass 14";
-  text-font-mono:                       "Overpass Mono 14";
+  text-font:                            "Roboto Condensed 14";
+  text-font-mono:                       "Roboto Mono 14";
   icon-font:                            "Hurmit Nerd Font Mono 50";
   icon-font-small:                      "Hurmit Nerd Font Mono 24";
   inputbar-margin:                      4px 4px;
