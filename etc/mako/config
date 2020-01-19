@@ -1,0 +1,9 @@
+font=Roboto Mono 10
+background-color=#282c34
+text-color=#dcdfe4
+margin=8
+padding=4
+border-size=2
+border-color=#ebdbb2
+markup=1
+default-timeout=3000
