@@ -1,0 +1,12 @@
+#!/bin/sh
+message="$1"
+
+printf "%s" "$message ? "
+while true; do
+	read -r yn
+	case $yn in
+		[Yy]* ) exit 0 ;;
+		[Nn]* ) exit 1 ;;
+		* ) printf "%s" "$message ? " ;;
+	esac
+done
