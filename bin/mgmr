@@ -57,6 +57,21 @@ if [ "$#" -gt 1 ]; then
 		printf "%s\\n" "$commits" > "$tmpdir"/"$mr"
 	done
 
+	clear
+	gcp
+	printf "\\n%s" "Merge commits? "
+	while true; do
+		read -r yn
+		case $yn in 
+			[Yy]* ) ;;
+			[Nn]* )
+				dlbr $(git current-branch)
+				exit 0 
+				;;
+			* ) printf "%s" "Merge commits? " ;;
+		esac
+	done
+
 	mgbr || die "Failed to merge mrs $*"
 
 	for mr in "$@"; do
@@ -74,6 +89,20 @@ Thanks for your contribution' &
 else
 	checkmr "$1" "$TARGET_BRANCH-merge-request" || die "Failed to check out mr !$1"
 	commits="$(gcp | cut -d ' ' -f 1)"
+	clear
+	gcp
+	printf "\\n%s" "Merge commits? "
+	while true; do
+		read -r yn
+		case $yn in 
+			[Yy]* ) ;;
+			[Nn]* )
+				dlbr $(git current-branch)
+				exit 0 
+				;;
+			* ) printf "%s" "Merge commits? " ;;
+		esac
+	done
 	mgbr || die "Failed to merge mr !$1"
 	close-mr "$1" &
 	comment-mr "$1" 'This was merged as the following commits:
