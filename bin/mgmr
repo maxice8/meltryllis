@@ -59,18 +59,10 @@ if [ "$#" -gt 1 ]; then
 
 	clear
 	gcp
-	printf "\\n%s" "Merge commits? "
-	while true; do
-		read -r yn
-		case $yn in 
-			[Yy]* ) ;;
-			[Nn]* )
-				dlbr $(git current-branch)
-				exit 0 
-				;;
-			* ) printf "%s" "Merge commits? " ;;
-		esac
-	done
+	if ! prompt-for-answer "Merge commits"; then
+		dlbr $(git current-branch)
+		exit 0
+	fi
 
 	mgbr || die "Failed to merge mrs $*"
 
@@ -91,18 +83,10 @@ else
 	commits="$(gcp | cut -d ' ' -f 1)"
 	clear
 	gcp
-	printf "\\n%s" "Merge commits? "
-	while true; do
-		read -r yn
-		case $yn in 
-			[Yy]* ) ;;
-			[Nn]* )
-				dlbr $(git current-branch)
-				exit 0 
-				;;
-			* ) printf "%s" "Merge commits? " ;;
-		esac
-	done
+	if ! prompt-for-answer "Merge commits"; then
+		dlbr $(git current-branch)
+		exit 0
+	fi
 	mgbr || die "Failed to merge mr !$1"
 	close-mr "$1" &
 	comment-mr "$1" 'This was merged as the following commits:
