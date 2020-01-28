@@ -7,6 +7,7 @@ while true; do
 	case $yn in
 		''|[Yy]* ) exit 0 ;;
 		[Nn]* ) exit 1 ;;
+		[Ww]* ) exit 2 ;;
 		* ) printf "%s" "$message ? " ;;
 	esac
 done
