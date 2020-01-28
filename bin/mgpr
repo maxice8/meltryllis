@@ -6,4 +6,10 @@ git switch --force-create "$newpr" "${TARGET_BRANCH:-master}"
 for pr in "$@"; do
 	pr "$pr"
 done
+clear
+gcp
+if ! prompt-for-answer "Merge commits"; then
+	dlbr $(git current-branch)
+	exit 0
+fi
 mgbr "$newpr"
