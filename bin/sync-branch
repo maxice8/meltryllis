@@ -3,5 +3,5 @@
 for branch in "$@"; do
 	gbr "$branch" || continue
 	pullp || sh
-	ax s
+	git push
 done
