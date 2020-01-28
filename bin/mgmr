@@ -57,9 +57,10 @@ if [ "$#" -gt 1 ]; then
 		printf "%s\\n" "$commits" > "$tmpdir"/"$mr"
 	done
 
+	# TODO: make this accept the work options like it does when dealing with a singe mr
 	clear
 	gcp
-	if ! prompt-for-answer "Merge commits"; then
+	if ! prompt-for-answer "Merge commits (y/n)"; then
 		dlbr $(git current-branch)
 		exit 0
 	fi
@@ -80,13 +81,21 @@ Thanks for your contribution' &
 
 else
 	checkmr "$1" "$TARGET_BRANCH-merge-request" || die "Failed to check out mr !$1"
+	while true; do
+		reset
+		gcp
+		prompt-for-answer "Merge commits (y/n/w)"
+		case $? in
+			0) break ;;
+			1) 
+				dlbr $(git current-branch)
+				exit 0
+				;;
+			2) sh -l ;;
+			* ) exit $? ;;
+		esac
+	done
 	commits="$(gcp | cut -d ' ' -f 1)"
-	clear
-	gcp
-	if ! prompt-for-answer "Merge commits"; then
-		dlbr $(git current-branch)
-		exit 0
-	fi
 	mgbr || die "Failed to merge mr !$1"
 	close-mr "$1" &
 	comment-mr "$1" 'This was merged as the following commits:
