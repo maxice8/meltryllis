@@ -45,7 +45,7 @@ if [ "$#" -gt 1 ]; then
 		while true; do
 			reset
 			gcp
-			prompt-for-answer "Merge commits (y/n/w)"
+			prompt-for-answer "Merge commits (y/n/w/d)"
 			case $? in
 				0) break ;;
 				1) 
@@ -53,6 +53,7 @@ if [ "$#" -gt 1 ]; then
 					exit 0
 					;;
 				2) sh -l ;;
+				3) prch ;;
 				* ) exit $? ;;
 			esac
 		done
@@ -92,7 +93,7 @@ else
 	while true; do
 		reset
 		gcp
-		prompt-for-answer "Merge commits (y/n/w)"
+		prompt-for-answer "Merge commits (y/n/w/d)"
 		case $? in
 			0) break ;;
 			1) 
@@ -100,6 +101,7 @@ else
 				exit 0
 				;;
 			2) sh -l ;;
+			3) prch ;;
 			* ) exit $? ;;
 		esac
 	done
