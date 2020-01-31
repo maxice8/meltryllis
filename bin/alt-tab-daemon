@@ -111,7 +111,7 @@ def main():
         print(index)
 
     async def event_loop():
-        connection = await AsyncConnection().connect()
+        connection = await AsyncConnection(None, True).connect()
 
         await connection.subscribe([Event.WINDOW])
         connection.on(Event.WINDOW_NEW, refresh_async)
@@ -125,7 +125,7 @@ def main():
 
     async def read_socket(reader, writer):
         nonlocal ids, index
-        connection = await AsyncConnection().connect()
+        connection = await AsyncConnection(None, True).connect()
 
         data = await reader.read(100)
         message = data.decode()
