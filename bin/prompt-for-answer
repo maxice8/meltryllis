@@ -8,6 +8,7 @@ while true; do
 		''|[Yy]* ) exit 0 ;;
 		[Nn]* ) exit 1 ;;
 		[Ww]* ) exit 2 ;;
+		[Dd]* ) exit 3 ;;
 		* ) printf "%s" "$message ? " ;;
 	esac
 done
