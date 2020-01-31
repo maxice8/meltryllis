@@ -41,6 +41,22 @@ if [ "$#" -gt 1 ]; then
 
 	for mr in "$@"; do
 		mr "$mr" || die "Failed to checkout mr !$mr"
+
+		while true; do
+			reset
+			gcp
+			prompt-for-answer "Merge commits (y/n/w)"
+			case $? in
+				0) break ;;
+				1) 
+					dlbr $(git current-branch)
+					exit 0
+					;;
+				2) sh -l ;;
+				* ) exit $? ;;
+			esac
+		done
+
 		commits="$(gcp | cut -d ' ' -f 1)"
 
 		# Write all commits out into the mr file
@@ -56,14 +72,6 @@ if [ "$#" -gt 1 ]; then
 		# it
 		printf "%s\\n" "$commits" > "$tmpdir"/"$mr"
 	done
-
-	# TODO: make this accept the work options like it does when dealing with a singe mr
-	clear
-	gcp
-	if ! prompt-for-answer "Merge commits (y/n)"; then
-		dlbr $(git current-branch)
-		exit 0
-	fi
 
 	mgbr || die "Failed to merge mrs $*"
 
