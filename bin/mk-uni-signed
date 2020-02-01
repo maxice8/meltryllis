@@ -14,13 +14,15 @@
 [ "$(id -u)" != 0 ] && exit 1
 #
 #
-bootdir="$(bootctl -x)"
+bootdir="$(bootctl -x)" # Root directory of bootloader (commonly /boot)
 certdir=/home/enty/usr/secrets/$(hostname)-keys # Can't use $HOME here since we run this as root
-kernel="$bootdir"/vmlinuz-lts
-initramfs="$bootdir"/initramfs-lts
-microcode="$bootdir"/intel-ucode.img
-image="$bootdir"/EFI/Linux/linux.efi
-bootloader="$bootdir"/EFI/systemd/systemd-bootx64.efi
+kernel="$bootdir"/vmlinuz-lts # Where the kernel is
+initramfs="$bootdir"/initramfs-lts # Where the initramfs
+microcode="$bootdir"/intel-ucode.img # Where the intel microcode is
+image="$bootdir"/EFI/Linux/linux.efi # Where the Unified Kernel Image will be
+bootloader=/usr/lib/systemd/boot/efi/systemd-bootx64.efi # Where the bootloader is
+bootloader_systemd="$bootdir"/EFI/systemd/systemd-bootx64.efi # Where the signed bootloader will reside
+bootloader_boot="$bootdir"/EFI/BOOT/BOOTX64.EFI # Where the signed bootlaoder will reside but with win10 quirk compat
 #
 # Create a initramfs with intel microcode by concatenating both together. This works
 # suprisingly, thanks UNIX.
@@ -45,8 +47,11 @@ objcopy \
 sbsign --key "$certdir"/db.key --cert "$certdir"/db.crt --output $image $image && \
 	printok "Signed Unified Kernel Image" || \
 	printerr "Failed to sign Unified Kernel Image"
-sbsign --key "$certdir"/db.key --cert "$certdir"/db.crt --output $bootloader $bootloader && \
-	printok "Signed bootloader" || \
-	printerr "Failed to sign bootloader"
+sbsign --key "$certdir"/db.key --cert "$certdir"/db.crt --output $bootloader_systemd $bootloader && \
+	printok "Signed bootloader in $bootloader_systemd" || \
+	printerr "Failed to sign bootloader in $bootloader_systemd"
+sbsign --key "$certdir"/db.key --cert "$certdir"/db.crt --output $bootloader_boot $bootloader && \
+	printok "Signed bootloader in $bootloader_boot" || \
+	printerr "Failed to sign bootloader in $bootloader_boot"
 
 rm -f /tmp/unified-initramfs
