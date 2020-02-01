@@ -1,0 +1,52 @@
+#!/bin/sh
+#
+# This is meant to produce a unified kernel image that is signed with keys from a
+# known location. It hardcodes all sorts of things like:
+# - Arch (x86_64)
+# - Kernel Image name (vmlinuz-lts)
+# - Initramfs name (initramfs-lts)
+# - Intel Microcode support and its name (intel-ucode.img)
+# - Location of keys for signing the image and bootloader ($HOME/usr/secrets/$hostname-keys)
+# - Which bootloader you're using (systemd-boot)
+#
+# Don't run unless we are root, since we need to modify boot partition.
+#
+[ "$(id -u)" != 0 ] && exit 1
+#
+#
+bootdir="$(bootctl -x)"
+certdir=/home/enty/usr/secrets/$(hostname)-keys # Can't use $HOME here since we run this as root
+kernel="$bootdir"/vmlinuz-lts
+initramfs="$bootdir"/initramfs-lts
+microcode="$bootdir"/intel-ucode.img
+image="$bootdir"/EFI/Linux/linux.efi
+bootloader="$bootdir"/EFI/systemd/systemd-bootx64.efi
+#
+# Create a initramfs with intel microcode by concatenating both together. This works
+# suprisingly, thanks UNIX.
+#
+cat "$microcode" "$initramfs" > /tmp/unified-initramfs && \
+	printok "created microcode-enabled initramfs" || \
+	printere "Failed to create microcode-enabled initramfs"
+#
+# Create the efi image
+#
+objcopy \
+	--add-section .osrel="/etc/os-release" --change-section-vma .osrel=0x20000 \
+	--add-section .cmdline="/proc/cmdline" --change-section-vma .cmdline=0x30000 \
+	--add-section .linux="$kernel" --change-section-vma .linux=0x40000 \
+	--add-section .initrd="/tmp/unified-initramfs" --change-section-vma .initrd=0x3000000 \
+	/usr/lib/systemd/boot/efi/linuxx64.efi.stub $image && \
+	printok "Created Unified Kernel Image" || \
+	printerr "Failed to create Unified Kernel Image"
+#
+# Sign the kernel then the bootloader
+#
+sbsign --key "$certdir"/db.key --cert "$certdir"/db.crt --output $image $image && \
+	printok "Signed Unified Kernel Image" || \
+	printerr "Failed to sign Unified Kernel Image"
+sbsign --key "$certdir"/db.key --cert "$certdir"/db.crt --output $bootloader $bootloader && \
+	printok "Signed bootloader" || \
+	printerr "Failed to sign bootloader"
+
+rm -f /tmp/unified-initramfs
