@@ -1,7 +1,7 @@
 * {
     border: none;
     border-radius: 0;
-	font-family: "Roboto";
+	font-family: "BlexMono Nerd Font";
 	font-weight: bold;
     font-size: 13px;
     min-height: 0px;
@@ -41,7 +41,7 @@ window#waybar {
 #temperature,
 #cpu,
 #mode {
-    padding: 0 11px;
+    padding: 0px 11px;
     margin: 0 0px;
 }
 
