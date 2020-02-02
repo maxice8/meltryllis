@@ -31,7 +31,7 @@ cat "$microcode" "$initramfs" > /tmp/unified-initramfs && \
 	printok "created microcode-enabled initramfs" || \
 	printere "Failed to create microcode-enabled initramfs"
 #
-# Create the efi image
+# Create the efi image, use the systemd-boot bootloader
 #
 objcopy \
 	--add-section .osrel="/etc/os-release" --change-section-vma .osrel=0x20000 \
@@ -42,7 +42,8 @@ objcopy \
 	printok "Created Unified Kernel Image" || \
 	printerr "Failed to create Unified Kernel Image"
 #
-# Sign the kernel then the bootloader
+# Sign the kernel and the bootloader on its normal location and a location that is picked
+# up by defective EFI implementations that look only on the location of the WIN10 bootloader
 #
 sbsign --key "$certdir"/db.key --cert "$certdir"/db.crt --output $image $image && \
 	printok "Signed Unified Kernel Image" || \
