@@ -14,15 +14,12 @@
 [ "$(id -u)" != 0 ] && exit 1
 #
 #
-bootdir="$(bootctl -x)" # Root directory of bootloader (commonly /boot)
+bootdir=/boot # Root directory of bootloader (commonly /boot)
 certdir=/home/enty/usr/secrets/$(hostname)-keys # Can't use $HOME here since we run this as root
 kernel="$bootdir"/vmlinuz-lts # Where the kernel is
 initramfs="$bootdir"/initramfs-lts # Where the initramfs
 microcode="$bootdir"/intel-ucode.img # Where the intel microcode is
-image="$bootdir"/EFI/Linux/linux.efi # Where the Unified Kernel Image will be
-bootloader=/usr/lib/systemd/boot/efi/systemd-bootx64.efi # Where the bootloader is
-bootloader_systemd="$bootdir"/EFI/systemd/systemd-bootx64.efi # Where the signed bootloader will reside
-bootloader_boot="$bootdir"/EFI/BOOT/BOOTX64.EFI # Where the signed bootlaoder will reside but with win10 quirk compat
+image="$bootdir"/alpine.efi # Where the Unified Kernel Image will be
 #
 # Create a initramfs with intel microcode by concatenating both together. This works
 # suprisingly, thanks UNIX.
@@ -38,7 +35,7 @@ objcopy \
 	--add-section .cmdline="/proc/cmdline" --change-section-vma .cmdline=0x30000 \
 	--add-section .linux="$kernel" --change-section-vma .linux=0x40000 \
 	--add-section .initrd="/tmp/unified-initramfs" --change-section-vma .initrd=0x3000000 \
-	/usr/lib/systemd/boot/efi/linuxx64.efi.stub $image && \
+	/usr/lib/gummiboot/linuxx64.efi.stub $image && \
 	printok "Created Unified Kernel Image" || \
 	printerr "Failed to create Unified Kernel Image"
 #
@@ -48,11 +45,19 @@ objcopy \
 sbsign --key "$certdir"/db.key --cert "$certdir"/db.crt --output $image $image && \
 	printok "Signed Unified Kernel Image" || \
 	printerr "Failed to sign Unified Kernel Image"
-sbsign --key "$certdir"/db.key --cert "$certdir"/db.crt --output $bootloader_systemd $bootloader && \
-	printok "Signed bootloader in $bootloader_systemd" || \
-	printerr "Failed to sign bootloader in $bootloader_systemd"
-sbsign --key "$certdir"/db.key --cert "$certdir"/db.crt --output $bootloader_boot $bootloader && \
-	printok "Signed bootloader in $bootloader_boot" || \
-	printerr "Failed to sign bootloader in $bootloader_boot"
+#
+# Only install the UEFI variable if we don't already have a boot entry
+#
+if ! efibootmgr | grep -q 'Boot.*Alpine  Linux'; then
+	efibootmgr \
+		--create \
+		--disk /dev/sda \
+		--part 1 \
+		--label "Alpine Linux" \
+		--loader "\alpine.efi" \
+		--quiet && \
+		printok "Created UEFI entry for Alpine Linux" || \
+		printerr "Failed to create UEFI entry for Alpine Linux"
+fi
 
 rm -f /tmp/unified-initramfs
