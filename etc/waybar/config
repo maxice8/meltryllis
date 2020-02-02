@@ -45,7 +45,7 @@
         },
         "format": "{capacity}%  {icon}",
         // "format-good": "", // An empty format will hide the module
-        "format-full": "{icon}",
+        "format-full": "{icon} ",
         "format-icons": ["", "", "", "", ""]
     },
     "pulseaudio": {
@@ -54,7 +54,7 @@
         "format-bluetooth": "{volume}% {icon}",
         "format-muted": "MUT ",
         "format-icons": {
-            "headphones": "",
+            "headphones": " ",
             "handsfree": "",
             "headset": "",
             "phone": "",
