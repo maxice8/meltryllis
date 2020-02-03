@@ -1,0 +1,18 @@
+#!/bin/sh
+for apk in "$@"; do
+	path="$apk"
+	. "$path"/APKBUILD
+	
+	for file in "$path"/*; do
+		if [ ! -f "$file" ] || [ "${file##*/}" = APKBUILD ]; then
+			continue
+		fi
+		if echo "$source" | grep -q "${file##*/}"; then
+			continue
+		fi
+		if echo "${file##*/}" | grep -Eq ".((post|pre)-(upgrade|(de|)install)|.trigger)$"; then
+			continue
+		fi
+		printf "%s\\n" "$file"
+	done
+done
