@@ -1,0 +1,9 @@
+#!/bin/sh
+for pkg in "$@"; do
+	for repo in main community testing unmaintained non-free; do
+		if [ -f "$repo"/"$pkg"/APKBUILD ]; then
+			echo "$repo"/"$pkg"
+			continue
+		fi
+	done
+done
