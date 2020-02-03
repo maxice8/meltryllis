@@ -6,13 +6,9 @@ from typing import List
 from os import environ, path, remove
 import sys
 import asyncio
+import logging
 
 SOCKET = path.join(environ['SESSION_DIR'], 'alt-tab-daemon')
-
-
-def log(s: str):
-    if environ['ALT_TAB_DEBUG']:
-        print(s)
 
 
 def get_ids(container: Con) -> List[int]:
@@ -39,10 +35,10 @@ def find_in_list(list: List[int], num) -> int:
     try:
         return list.index(num)
     except ValueError:
-        print(f'Number {num} not found in List {list}')
+        logging.warn(f'Number {num} not found in List {list}')
         return None
     else:
-        print("Unexpected error:", sys.exc_info()[0])
+        logging.warn("Unexpected error:", sys.exc_info()[0])
         return None
 
 
@@ -59,23 +55,23 @@ def next_prev(list: List[int], index: int, goto: bool) -> int:
     of a list, if we are then we just return the first index of the list,
     otherwise we return the index + 1
     """
-    print('List of ids: %s' % list)
-    print('Current index: %s' % index)
-    print('Length of List: %s' % len(list))
-    print('goto value: %s' % goto)
+    logging.debug('List of ids: %s' % list)
+    logging.debug('Current index: %s' % index)
+    logging.debug('Length of List: %s' % len(list))
+    logging.debug('goto value: %s' % goto)
     if not goto:
         if index == 0:
-            print('Switching to id: %s' % list[len(list) - 1])
+            logging.info('Switching to id: %s' % list[len(list) - 1])
             return list[len(list) - 1]
         else:
-            print('Switching to id: %s' % list[index - 1])
+            logging.info('Switching to id: %s' % list[index - 1])
             return list[index - 1]
     else:
         if index == len(list) - 1:
-            print('Switching to id: %s' % list[0])
+            logging.info('Switching to id: %s' % list[0])
             return list[0]
         else:
-            print('Switching to id: %s' % list[index + 1])
+            logging.info('Switching to id: %s' % list[index + 1])
             return list[index + 1]
 
 
@@ -95,8 +91,8 @@ def main():
         ids = get_ids(container)
         ids.sort()
         index = find_in_list(ids, container.id)
-        print(ids)
-        print(index)
+        logging.info(ids)
+        logging.info(index)
 
     refresh(connection)
 
@@ -107,8 +103,8 @@ def main():
         ids = get_ids(container)
         ids.sort()
         index = find_in_list(ids, container.id)
-        print(ids)
-        print(index)
+        logging.info(ids)
+        logging.info(index)
 
     async def event_loop():
         connection = await AsyncConnection(None, True).connect()
@@ -148,7 +144,9 @@ def main():
         await refresh_async(connection, None)
         """
         writer.write(data)
+        """
         await writer.drain()
+        """
 
         writer.close()
 
