@@ -48,7 +48,9 @@ sbsign --key "$certdir"/db.key --cert "$certdir"/db.crt --output $image $image &
 #
 # Only install the UEFI variable if we don't already have a boot entry
 #
-if ! efibootmgr | grep -q 'Boot.*Alpine  Linux'; then
+if efibootmgr | grep -q 'Boot.*Alpine Linux'; then
+	printok "Alpine Linux entry already present"
+else
 	efibootmgr \
 		--create \
 		--disk /dev/sda \
