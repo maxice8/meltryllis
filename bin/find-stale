@@ -3,6 +3,7 @@ for apk in "$@"; do
 	path="$apk"
 	. "$path"/APKBUILD
 	
+	(
 	for file in "$path"/*; do
 		if [ ! -f "$file" ] || [ "${file##*/}" = APKBUILD ]; then
 			continue
@@ -15,4 +16,6 @@ for apk in "$@"; do
 		fi
 		printf "%s\\n" "$file"
 	done
+	) &
 done
+wait
