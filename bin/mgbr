@@ -29,14 +29,12 @@ merge_branch() {
 	# Pull changes from where we are going to push
 	pullp || {
 		printerr "Failed to pull changes from upstream"
-		git switch --quiet master
 		DLBR_LOCAL=yes dlbr "$branch"
 		exit 1
 	}
 	# Push our local changes
 	pushp || {
 		printerr "Failed to push changes to upstream"
-		git switch --quiet master
 		DLBR_LOCAL=yes dlbr "$branch"
 		exit 1
 	}
