@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # dlbr BRANCH... - Delete local and remote branches matching name
 delete_remote_branch() {
-	git push origin --delete "$1" >/dev/null 2>&1 || \
+	git push --quiet origin --delete "$1" || \
 		{
 			[ $? = 1 ] ||
 				printerr "Failed to delete remote '$1'" ;
@@ -19,7 +19,7 @@ delete_local_branch() {
 
 	if [ "$1" = "$(git rev-parse --abbrev-ref HEAD)" ]
 	then
-		git checkout master >/dev/null 2>&1
+		PRINTOK_QUIET=yes gbr master
 	fi
 
 	git branch -D "$1" >/dev/null 2>&1 ||
@@ -29,7 +29,7 @@ delete_local_branch() {
 
 while [ $# -gt 0 ]
 do
-	delete_remote_branch "$1" &
+	[ -n "$DLBR_LOCAL" ] || delete_remote_branch "$1" &
 	delete_local_branch "$1" &
 	shift
 done

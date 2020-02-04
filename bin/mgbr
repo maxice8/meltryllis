@@ -16,28 +16,28 @@ merge_branch() {
 	# holds all the commits and push it all at once
 	if [ "$#" -gt 1 ]; then
 		branch="$prefix"-"$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
-		git switch --force-create "$branch" "$prefix"
+		gbr "$branch"
 
-		git merge "$@" --no-edit --ff
+		git merge --quiet "$@" --no-edit --ff
 
 		kill="$@ $branch"
 	else
-		git switch "$@"
+		gbr "$@"
 		kill="$@"
 	fi
 
 	# Pull changes from where we are going to push
 	pullp || {
-		echo "Failed to pull changes from upstream" >&2
-		git switch master
-		git branch --delete --force "$branch"
+		printerr "Failed to pull changes from upstream"
+		git switch --quiet master
+		DLBR_LOCAL=yes dlbr "$branch"
 		exit 1
 	}
 	# Push our local changes
 	pushp || {
-		echo "Failed to push changes to upstream" >&2
-		git switch master
-		git branch --delete --force "$branch"
+		printerr "Failed to push changes to upstream"
+		git switch --quiet master
+		DLBR_LOCAL=yes dlbr "$branch"
 		exit 1
 	}
 

@@ -17,13 +17,19 @@ fi
 
 while [ $# -gt 0 ]; do
 	if git rev-parse --quiet --verify "$1" >/dev/null 2>&1; then
-		git switch "$1"
+		git switch --quiet "$1" || \
+			printerr "Failed to switch to '$1'" && \
+			printok "Switched to '$1'"
 	else
 		_RELBASE="$(alpine-stable-prefix "$1")"
 		if [ -n "$_RELBASE" ]; then
-			git switch --force-create "$1" $remote/"$_RELBASE"-stable
+			git switch --quiet --force-create "$1" $remote/"$_RELBASE"-stable || \
+				printerr "Failed to switch to '$1'" && \
+				printok "Switched to '$1'"
 		else
-			git switch --force-create "$1" $remote/master
+			git switch --quiet --force-create "$1" $remote/master || \
+				printerr "Failed to switch to '$1'" && \
+				printok "Switched to '$1'"
 		fi
 	fi
 	shift

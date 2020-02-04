@@ -15,4 +15,8 @@ else
 	remote=origin
 fi
 
-git push $remote "$(git rev-parse --abbrev-ref HEAD)":"${_REALBASE:-master}"
+branch="$(git-current-branch)"
+
+git push --quiet $remote "$(git rev-parse --abbrev-ref HEAD)":"${_REALBASE:-master}" || \
+	printerr "Failed to push '$branch' on '$remote/${_REALBASE:-master}'" && \
+	printok "Pushed '$branch' on '$remote/${_REALBASE:-master}'"

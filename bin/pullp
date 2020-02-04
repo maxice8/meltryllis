@@ -15,4 +15,8 @@ else
 	remote=origin
 fi
 
-git pull $remote --rebase "${_REALBASE:-master}"
+branch="$(git-current-branch)"
+
+git pull --quiet $remote --rebase "${_REALBASE:-master}" || \
+	printerr "Failed to rebase '$branch' on '$remote/${_REALBASE:-master}'" && \
+	printok "Rebased '$branch' on '$remote/${_REALBASE:-master}'"
