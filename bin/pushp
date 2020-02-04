@@ -7,7 +7,9 @@ fi
 # gitstream is the git remote that i push via SSH
 # to alpine, in the future this will be joined into
 # upstream which will hold gitlab
-if git config remote.gitstream.url >/dev/null; then
+if [ "$1" ]; then
+	remote="$1"
+elif git config remote.gitstream.url >/dev/null; then
 	remote=gitstream
 elif git config remote.upstream.url >/dev/null; then
 	remote=upstream
