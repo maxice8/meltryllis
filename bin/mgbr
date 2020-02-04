@@ -27,14 +27,15 @@ merge_branch() {
 	fi
 
 	# Pull changes from where we are going to push
-	pullp || {
-		printerr "Failed to pull changes from upstream"
+	PRINTOK_QUIET=yes PRINTERR_QUIET=yes pullp || {
 		DLBR_LOCAL=yes dlbr "$branch"
 		exit 1
 	}
-	# Push our local changes
+	# Push our local changes to the upstream repo, we don't
+	# provide any info to pushp because it can detect whether
+	# we are using 'gitstream' as our remote, and in the future
+	# we will use 'upstream' as the remote.
 	pushp || {
-		printerr "Failed to push changes to upstream"
 		DLBR_LOCAL=yes dlbr "$branch"
 		exit 1
 	}
