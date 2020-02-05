@@ -8,13 +8,13 @@ cd "$HOME"/.ionwall
 
 while [ $# -gt 0 ] ; do
 	if [ ! -e "${bindir}"/"$1" ]; then
-		printf "[%s] not found\\n" "$1" >&2
+		printerr "[$1] not found"
 	else
 		if [ -L "${bindir}"/"$1" ]; then
 			return 1
 		else
-			(mv -- "${bindir}"/"$1" bin/"$1" || (printf "[%s] failed to move" "$1" >&2 ; return 1 ) )
-			(ln -sf -- "$gitdir"/bin/"$1" "$bindir" || (printf "[%s] failed to make symlink" "$1" >&2 ; return 1 ) )
+			(mv -- "${bindir}"/"$1" bin/"$1" || (printerr "[$1] failed to move"; return 1 ) )
+			(ln -sf -- "$gitdir"/bin/"$1" "$bindir" || (printerr "[$1] failed to make symlink"; return 1 ) )
 		fi
 	fi
 	shift
