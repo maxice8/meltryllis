@@ -1,4 +1,4 @@
 #!/bin/sh
 # prch - show all commits that will be merged into master
 # check changes
-git show -"$(gcp | wc -l)"
+GIT_PAGER=cat git show --color=always -"$(gcp | wc -l)" | less -r
