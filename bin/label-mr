@@ -32,8 +32,8 @@ for mr in "$@"; do
 		--data "$BODY" --silent --output /dev/null --write-out "%{http_code}")"
 
 	if [ "$RETURN" -eq 200 ]; then
-		echo "Added $labels labels to #$mr"
+		printok "Added $labels labels to #$mr"
 	else
-		echo "Failed to add $labels labels to #$mr"
+		printerr "Failed to add $labels labels to #$mr"
 	fi
 done
