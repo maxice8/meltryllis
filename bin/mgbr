@@ -16,13 +16,13 @@ merge_branch() {
 	# holds all the commits and push it all at once
 	if [ "$#" -gt 1 ]; then
 		branch="$prefix"-"$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
-		gbr "$branch"
+		PRINTOK_QUIET=yes gbr "$branch"
 
 		git merge --quiet "$@" --no-edit --ff
 
 		kill="$@ $branch"
 	else
-		gbr "$@"
+		PRINTOK_QUIET=yes gbr "$@"
 		kill="$@"
 	fi
 
