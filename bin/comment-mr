@@ -37,7 +37,7 @@ RETURN="$(curl -X POST "$ENDPOINT"/merge_requests/"$mr"/notes \
 
 debug Got error code "$RETURN"
 if [ "$RETURN" -eq 201 ]; then
-	echo "Commented on #$mr"
+	printok "Commented on #$mr"
 else
-	echo "Failed to comment on #$mr"
+	printerr "Failed to comment on #$mr"
 fi
