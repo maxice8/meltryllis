@@ -1,7 +1,13 @@
 #!/bin/sh
-_REALBASE="$(alpine-stable-prefix)"
-if [ -n "$_REALBASE" ]; then
-	_REALBASE="$_REALBASE-stable"
+if [ "$2" ]; then
+	remote_branch="$2"
+else
+	_REALBASE="$(alpine-stable-prefix)"
+	if [ -n "$_REALBASE" ]; then
+		remote_branch="$_REALBASE-stable"
+	else
+		remote_branch=master
+	fi
 fi
 
 # gitstream is the git remote that i push via SSH
@@ -21,6 +27,6 @@ branch="$(git-current-branch)"
 
 [ -n "$FORCE_PUSH" ] && args="--force"
 
-git push --quiet $args $remote "$branch":"${_REALBASE:-master}" || \
-	printerr "Failed to push '$branch' to '$remote/${_REALBASE:-master}'" && \
-	printok "Pushed '$branch' to '$remote/${_REALBASE:-master}'"
+git push --quiet $args $remote "$branch":"$remote_branch" || \
+	printerr "Failed to push '$branch' to '$remote/$remote_branch'" && \
+	printok "Pushed '$branch' to '$remote/$remote_branch'"
