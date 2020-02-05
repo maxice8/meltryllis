@@ -22,5 +22,5 @@ branch="$(git-current-branch)"
 [ -n "$FORCE_PUSH" ] && args="--force"
 
 git push --quiet $args $remote "$branch":"${_REALBASE:-master}" || \
-	printerr "Failed to push '$branch' on '$remote/${_REALBASE:-master}'" && \
-	printok "Pushed '$branch' on '$remote/${_REALBASE:-master}'"
+	printerr "Failed to push '$branch' to '$remote/${_REALBASE:-master}'" && \
+	printok "Pushed '$branch' to '$remote/${_REALBASE:-master}'"
