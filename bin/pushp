@@ -27,6 +27,8 @@ branch="$(git-current-branch)"
 
 [ -n "$FORCE_PUSH" ] && args="--force"
 
-git push --quiet $args $remote "$branch":"$remote_branch" || \
-	printerr "Failed to push '$branch' to '$remote/$remote_branch'" && \
-	printok "Pushed '$branch' to '$remote/$remote_branch'"
+pushurl="$(git config --local remote.$remote.pushurl || git config --local remote.$remote.url)"
+
+git push --quiet $args $remote "$branch":"$remote_branch" >/dev/null || \
+	printerr "Failed to push '$branch' into '$remote/$remote_branch' from '$pushurl'" && \
+	printok "Pushed '$branch' into '$remote/$remote_branch' from '$pushurl'"
