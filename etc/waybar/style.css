@@ -35,7 +35,8 @@ window#waybar {
     border-bottom: 3px solid rgba(255, 255, 255, 0.8);
 }
 
-#clock,
+#clock.br,
+#clock.de,
 #battery,
 #pulseaudio,
 #temperature,
@@ -45,7 +46,11 @@ window#waybar {
     margin: 0 0px;
 }
 
-#clock {
+#clock.de {
+	background-color: rgba(0, 255, 255, 0.5);
+}
+
+#clock.br {
 	background-color: rgba(31, 58, 147, 1);
 }
 
