@@ -4,7 +4,7 @@
     // Choose the order of the modules
     "modules-left": ["sway/workspaces"],
     "modules-center": ["sway/window"],
-    "modules-right": ["cpu", "temperature", "pulseaudio", "battery", "clock"],
+    "modules-right": ["cpu", "temperature", "pulseaudio", "battery", "clock#de", "clock#br"],
     // Modules configuration
     "sway/workspaces": {
         "disable-scroll": false,
@@ -31,7 +31,15 @@
     	"format": "{}",
 		"max-length": 50
     },
-    "clock": {
+    "clock#br": {
+		"timezone": "Brazil/East",
+		"tooltip": false,
+        "format": "{:%H:%M:%S}",
+        "interval": 60,
+        "format-alt": "{:%Y-%m-%d}"
+    },
+    "clock#de": {
+		"timezone": "Europe/Berlin",
 		"tooltip": false,
         "format": "{:%H:%M:%S}",
         "interval": 60,
