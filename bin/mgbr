@@ -3,6 +3,13 @@
 # mgbr BRANCH-NAME ... - mgbr merge branches
 [ $# -lt 1 ] && set -- $(git current-branch)
 
+for branch in "$@"; do
+	if ! git show-ref --quiet refs/heads/"$branch"; then
+		printerr "Branch '$branch' doesn't exist"
+		exit 1
+	fi
+done
+
 merge_branch() {
 	# Assume that the first branch given to us has the
 	# prefix that we are pushing to on alpine, if we are
