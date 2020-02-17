@@ -1,0 +1,2 @@
+#!/bin/sh
+git push -f -u origin $(git current-branch) "$@"
