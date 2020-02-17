@@ -25,11 +25,11 @@ while [ $# -gt 0 ]; do
 		if [ -n "$_RELBASE" ]; then
 			git switch --quiet --force-create "$1" $remote/"$_RELBASE"-stable || \
 				printerr "Failed to switch to '$1'" && \
-				printok "Switched to '$1'"
+				printok "Switched to newly created '$1'"
 		else
 			git switch --quiet --force-create "$1" $remote/master || \
 				printerr "Failed to switch to '$1'" && \
-				printok "Switched to '$1'"
+				printok "Switched to newly created '$1'"
 		fi
 	fi
 	shift
