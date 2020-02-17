@@ -19,8 +19,6 @@ e : edit APKBUILD
 t : build the package and install
 x : get checksum of package
 n : navigate directory
-s : push to remote git
-a : amend commit
 m : move package to a given repo
 c : generate diff of package contents
 d : generate diff of package depends
@@ -351,8 +349,6 @@ case "$cmd" in
 	n) f "$branch";;
 	N) run sh -l ;;
 	x) run abuild checksum;;
-	s) git push -uf origin "$(git rev-parse --abbrev-ref HEAD)" "$@";;
-	a) git commit --amend -v "$@";;
 	m) move_repo "$@" "$branch";;
 	r) rename_repo "$@" "$branch";;
 	w) mkgit "$@" "$branch";;
