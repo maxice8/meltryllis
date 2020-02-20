@@ -75,11 +75,11 @@ for i in $pkgname $subpackages; do
 		case "$attr" in
 			files)
 				[ -z "$apkfile" ] || \
-				tar -zt "$apkfile" 2>/dev/null \
+				tar -zt --file="$apkfile" 2>/dev/null \
 					| grep -E -v '(^\.SIGN\.|^\.PKGINFO)' \
 					| sort > "$tmpdir"/difflist-"$_pkgname"-old-"$attr"
 
-				tar -ztf "$filepath" \
+				tar -zt --file="$filepath" \
 					| grep -E -v '(^\.SIGN\.|^\.PKGINFO)' \
 					| sort > "$tmpdir"/difflist-"$_pkgname"-new-"$attr"
 				;;
