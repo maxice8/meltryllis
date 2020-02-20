@@ -353,10 +353,7 @@ case "$cmd" in
 	r) rename_repo "$@" "$branch";;
 	w) mkgit "$@" "$branch";;
 	g) getvar "$@";;
-	d) run apkg-diff depend ;;
-	p) run apkg-diff provides ;;
-	c) run apkg-diff files ;;
-	s) run apkg-diff size ;;
+	c) run apkg-diff size depend provides files ;;
 	mr)
 		git add "$branch" || return 1
 		gc || return 1
