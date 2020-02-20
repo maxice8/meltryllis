@@ -1,4 +1,5 @@
 #!/bin/sh
+ax s "$@"
 ax d "$@"
 ax p "$@"
 ax c "$@"
