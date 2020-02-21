@@ -20,23 +20,31 @@ function readFile(file)
 			-- Table that holds lots of important values
 			local y = {}
 
+			---
 			-- The yaml key will hold the yaml to be loaded and processed by the
 			-- verify function
+			---
 			y["yaml"] = ""
 
+			---
 			-- The str table will hold the keys that are the linenumber of a string
 			-- in relation to the general apkbuild and the value are the contents
 			-- of the string
+			---
 			y["str"] = {}
 
 			linenum = linenum + 1
 
+			---
 			-- Check if the secfixes: table header is missing a colon at the end
 			-- to represent a table
+			---
 			if line:match("^# secfixes$") then
 				violation("missing colon on '"..line.."'", linenum)
+				---
 				-- Rewrite the string to be valid yaml after warning the user
 				-- with an error
+				---
 				line = "# secfixes:"
 			end
 
@@ -45,13 +53,25 @@ function readFile(file)
 				if l == nil then
 					break
 				end
-				-- Check if the PKGVER-PKGREL: table header is missing a color at
+				---
+				-- Check if the PKGVER-PKGREL: table header is missing a colon at
 				-- the end, match anything since we check later if this key is
 				-- actually writen with a valid pkgver and pkgrel
+				---
 				if l:match("^%s%s%S*[^:]$") then
 					violation("missing colon on '"..l:gsub("%s%s", "").."'", linenum)
 					-- Add the colon at the end to represent a string
 					l = l..":"
+				end
+				---
+				-- Check if the CVE Identifier has a prefixed hyphen to indicate it
+				-- is a value inside the table
+				---
+				if l:match("^%s%s%s%s") then
+					if not l:match("^%s%s%s%s%- ") then
+						violation("missing hyphen on '"..l:gsub("^%s+", "").."'", linenum)
+						l = l:gsub("^    ", "    - ")
+					end
 				end
 				y["yaml"] = y["yaml"]..l.."\n"
 				y["str"][linenum] = l
@@ -68,11 +88,11 @@ end
 
 -- Check a release key of secfixes, e.g. 1.0.0-r0
 function checkRel(str, line)
-	--- Check if the pkgrel value is made up of only digits
+	-- Check if the pkgrel value is made up of only digits
 	if not str:match("%-r[%d]+:$") then
 		violation("invalid pkgrel", line)
 	end
-	--- CHeck if the pkgver value is made up only of valid charachters
+	-- Check if the pkgver value is made up only of valid charachters
 	if not str:match("^[%d%.%-%_a-zA-Z]*%-r") then
 		violation("invalid pkgver", line)
 	end
@@ -93,15 +113,17 @@ function checkCVE(str, line)
 	if not str:match("^CVE%-%d%d%d%d%-*") then
 		violation("CVE identifiers have 4 digit year between the first and second hyphens", line)
 	end
-	--- The last value of a CVE identifier is a collection of AT LEAST 4 digits
+	-- The last value of a CVE identifier is a collection of AT LEAST 4 digits
 	if not str:match("^CVE%-.*%-%d%d%d%d+$") then
 		violation("CVE IDs are at least 4 digits", line)
 	end
 end
 
 function verify(str)
+	---
 	-- We do this because we expect that we are run from apkbuild-lint
 	-- which sources the apkbuild
+	---
 	local pkgname = os.getenv("pkgname")
 	if pkgname == nil then
 		return 1
@@ -124,8 +146,12 @@ local table = readFile(apkbuild)
 verify(table.yaml)
 
 for k, v in pairs(table.str) do
-	-- Uncommented this once we have a use of checking the secfixes header
+	---
+	-- Uncomment this once we have a use of checking the secfixes header
 	-- if v:match("^%S") then
+	--     checkHeader(v, k)
+	-- end
+	---
 	if v:match("^%s%s%S") then
 		checkRel(v:gsub("^%s+", ""), k)
 	elseif v:match("^%s%s%s%s%S") then
