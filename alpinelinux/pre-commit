@@ -114,6 +114,7 @@ lint() {
 
 	aports-lint "$path" || return 1
 	apkbuild-lint "$path" || return 1
+	secfixes-check "$path" || return 1
 }
 
 isupdate() {
