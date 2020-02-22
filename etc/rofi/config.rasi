@@ -6,6 +6,9 @@ configuration {
   disable-history:    false;
   modi:               "drun";
   display-drun:       "apps";
+  me-select-entry:    "";
+  me-accept-entry:	  "MousePrimary";
+  kb-cancel:          "Escape,MouseSecondary";
   columns: 2;
 }
 
