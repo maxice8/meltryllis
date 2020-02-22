@@ -366,6 +366,7 @@ case "$cmd" in
 	l)
 		apkbuild-lint "$branch"/APKBUILD
 		aports-lint "$branch"/APKBUILD
+		secfixes-check "$branch"/APKBUILD
 		;;
 	h) help;;
 	*) usage;;
