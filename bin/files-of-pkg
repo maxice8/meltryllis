@@ -1,0 +1,94 @@
+#!/bin/sh
+#
+# Show diff of the contents of a package (files) or the
+# changes in providers and dependencies.
+#
+# Must be called from where the APKBUILD is located
+#
+
+NORMAL="\033[1;0m"
+RED="\033[1;31m"
+GREEN="\033[1;32m"
+
+msg() {
+	local _prompt="$GREEN>>>${NORMAL}"
+	printf "$_prompt %s\n" "$1"
+}
+
+die() {
+	local _prompt="${RED}>>> ERROR:${NORMAL}"
+	printf "$_prompt %s\n" "$1"
+	exit 1
+}
+
+pkg="$1"
+[ -z "$1" ] && pkg="$(git current-branch)"
+pkg="$(find_repo $pkg)"
+
+# shellcheck disable=SC1091
+. $pkg/APKBUILD || die "failed to source repo for package"
+
+tmpdir=$(mktemp -d -t checkpkg-script.XXXXXX)
+# shellcheck disable=2064
+trap "rm -rf '$tmpdir'" INT EXIT
+cd "$tmpdir" || die "failed to create temp dir"
+
+# generate a temp repositories file with only the http(s) repos
+grep -E -v "^https?:" /etc/apk/repositories > "$tmpdir"/local-repositories
+
+_carch="$(abuild -A)"
+
+# We need ncurses for this, lets clean up the terminal
+reset 
+
+# Fetch all the APKs before doing the operations
+for i in $pkgname $subpackages; do
+
+	(
+	# Strip the separators and their contents from declaration of subpackages
+	# so: foo-doc:doc:noarch becomes foo-doc
+	_pkgname="${i%%:*}"
+
+	# shellcheck disable=SC2154
+	pkg="${_pkgname}-$pkgver-r$pkgrel"
+	pkgfile=${pkg}.apk
+
+	# We need to declare this here so the changes inside the loop change it
+	filepath=
+
+	# Check if our package and oldpkg matches
+	oldpkg="$(apk fetch --repositories-file "$tmpdir"/remote-repositories --simulate "$_pkgname" 2>/dev/null | grep Downloading | sed 's/^Downloading //')"
+	if [ "${oldpkg}" = "${pkg}" ]; then
+		die "the built package ($pkg) is the same as in-repo"
+	fi
+
+	for repo in $(cat "$tmpdir"/local-repositories); do
+		if [ -f "$repo"/"$_carch"/"$pkgfile" ]; then
+			filepath="$repo"/"$_carch"/"$pkgfile"
+			break
+		fi
+	done
+	[ -f "$filepath" ] || die "can't find $pkgfile, maybe package wasn't built"
+
+	echo "$filepath" > "$tmpdir"/"$_pkgname"
+	) &
+done
+wait
+
+# We need ncurses for this
+reset
+
+for i in $pkgname $subpackages; do
+	# Strip the separators and their contents from declaration of subpackages
+	# so: foo-doc:doc:noarch becomes foo-doc
+	_pkgname="${i%%:*}"
+
+	apk="$(cat "$tmpdir"/"$_pkgname")"
+
+	{
+		msg "pkg=$_pkgname"
+		tar -z --list --file="$apk" 2>/dev/null \
+			| grep -E -v '(^\.SIGN\.|^\.PKGINFO)' \
+			| sort ;
+	} | less -r
+done
