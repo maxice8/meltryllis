@@ -16,7 +16,7 @@ test -z "${1-}" && usage
 while test -n "${1-}"; do
   if [ -f "$1" ]; then
     case "$1" in
-    *.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar|*.xbps)
+    *.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar|*.xbps|*.apk)
       tar xfv "$1"              ;;
     *.lzma) unlzma -cd "$1"     ;;
     *.bz2) bunzip2 -cd "$1"     ;;
