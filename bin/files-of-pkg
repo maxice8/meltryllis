@@ -18,7 +18,6 @@ msg() {
 die() {
 	local _prompt="${RED}>>> ERROR:${NORMAL}"
 	printf "$_prompt %s\n" "$1"
-	exit 1
 }
 
 pkg="$1"
@@ -41,10 +40,9 @@ _carch="$(abuild -A)"
 # We need ncurses for this, lets clean up the terminal
 reset 
 
+ret=0
 # Fetch all the APKs before doing the operations
 for i in $pkgname $subpackages; do
-
-	(
 	# Strip the separators and their contents from declaration of subpackages
 	# so: foo-doc:doc:noarch becomes foo-doc
 	_pkgname="${i%%:*}"
@@ -60,6 +58,7 @@ for i in $pkgname $subpackages; do
 	oldpkg="$(apk fetch --repositories-file "$tmpdir"/remote-repositories --simulate "$_pkgname" 2>/dev/null | grep Downloading | sed 's/^Downloading //')"
 	if [ "${oldpkg}" = "${pkg}" ]; then
 		die "the built package ($pkg) is the same as in-repo"
+		ret=1
 	fi
 
 	for repo in $(cat "$tmpdir"/local-repositories); do
@@ -68,12 +67,14 @@ for i in $pkgname $subpackages; do
 			break
 		fi
 	done
-	[ -f "$filepath" ] || die "can't find $pkgfile, maybe package wasn't built"
+	if ! [ -f "$filepath" ]; then
+		die "can't find $pkgfile, maybe package wasn't built"
+		ret=1
+	fi
 
-	echo "$filepath" > "$tmpdir"/"$_pkgname"
-	) &
+	echo "$filepath" > "$tmpdir"/"$_pkgname" ;
 done
-wait
+[ $ret -eq 0 ] || exit 1
 
 # We need ncurses for this
 reset
