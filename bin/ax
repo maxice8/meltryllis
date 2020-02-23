@@ -334,9 +334,9 @@ case "$cmd" in
 	t)
 		if [ "$AX_LOG" ]; then
 			_mktemp="$(mktemp)"
-			run $AX_ABUILD -r | tee $_mktemp
+			run $AX_ABUILD -r $AX_ABUILD_ARGS | tee $_mktemp
 		else
-			run $AX_ABUILD -r
+			run $AX_ABUILD -r $AX_ABUILD_ARGS
 		fi
 		;;
 	tf) if [ "$AX_LOG" ]; then
