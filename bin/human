@@ -9,7 +9,7 @@ for i = 1, #arg do
 	io.input(file)
 	
 	-- Store the size we were given
-	size = filesize(tonumber(io.read()))
+	size = filesize(tonumber(io.read()), {base = 10})
 	
 	io.close(file)
 	
