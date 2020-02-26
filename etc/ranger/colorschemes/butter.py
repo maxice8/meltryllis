@@ -35,11 +35,12 @@ class Default(ColorScheme):
 						context.fifo, context.socket)):
 				attr |= bold
 				fg = red
-			if context.socket:
-				fg = black
-			if context.fifo or context.device:
+			if context.device:
+				fg = yellow
+				attr |= bold
+			if context.fifo or context.socket:
 				fg = blue
-				if context.device:
+				if context.socket:
 					attr |= bold
 			if context.link:
 				fg = context.good and white or red
