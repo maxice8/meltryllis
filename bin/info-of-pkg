@@ -42,7 +42,6 @@ _carch="$(abuild -A)"
 # We need ncurses for this, lets clean up the terminal
 reset 
 
-# Fetch all the APKs before doing the operations
 for i in $pkgname $subpackages; do
 	(
 	# Strip the separators and their contents from declaration of subpackages
@@ -105,8 +104,6 @@ for i in $pkgname $subpackages; do
 
 	{
 		msg "pkg=$_pkgname"
-		tar -z --list --file="$apk" 2>/dev/null \
-			| grep -E -v '(^\.SIGN\.|^\.PKGINFO)' \
-			| sort ;
+		tar -z --extract --to-stdout --file="$apk" '.PKGINFO' 2>/dev/null
 	} | less -r
 done
