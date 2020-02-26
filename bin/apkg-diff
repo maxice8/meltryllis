@@ -72,19 +72,22 @@ for i in $pkgname $subpackages; do
 	done
 	[ -f "$newapkpath" ] || die "can't find $pkgfile, maybe package wasn't built"
 
-	if [ -f /var/cache/apk/"$oldpkg".apk ]; then
-		oldapkpath=/var/cache/apk/"$oldpkg".apk
+	for candidate in /var/cache/apk/"$oldpkg".*.apk; do
+		if ! [ -f "$candidate" ]; then
+			continue
+		fi
 		printok "Found cached $oldpkg"
-	else
-		# Fetch the package for all runs
-		apk fetch \
-			--repositories-file "$tmpdir"/remote-repositories \
-			--output "$tmpdir" \
-			"$_pkgname" \
-			>/dev/null 2>&1 &&
-		printok "Fetched $oldpkg"
-		oldapkpath="$PWD"/"$oldpkg".apk
-	fi
+		oldapkpath="$candidate"
+	done
+
+	# Fetch the package for all runs
+	apk fetch \
+		--repositories-file "$tmpdir"/remote-repositories \
+		--output "$tmpdir" \
+		"$_pkgname" \
+		>/dev/null 2>&1 &&
+	printok "Fetched $oldpkg"
+	oldapkpath="$PWD"/"$oldpkg".apk
 
 	echo "$oldapkpath" > "$tmpdir"/old-"$_pkgname"
 	echo "$newapkpath" > "$tmpdir"/new-"$_pkgname"

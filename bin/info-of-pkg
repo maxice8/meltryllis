@@ -68,19 +68,23 @@ for i in $pkgname $subpackages; do
 	# the package from our cache and as a last resort fetch it
 	oldpkg="$(apk fetch --repositories-file "$tmpdir"/remote-repositories --simulate "$_pkgname" 2>/dev/null | grep Downloading | sed 's/^Downloading //')"
 
-	if [ -f /var/cache/apk/"$oldpkg".apk ]; then
-		echo /var/cache/apk/"$oldpkg".apk > "$tmpdir"/"$_pkgname"
+	for candidate in /var/cache/apk/"$oldpkg"*.apk; do
+		if ! [ -f "$candidate" ]; then
+			continue
+		fi
+		printok "Found cached $oldpkg"
+		echo "$candidate" > "$tmpdir"/"$_pkgname"
 		return 0
-	else
-		# Fetch the package for all runs
-		apk fetch \
-			--repositories-file "$tmpdir"/remote-repositories \
-			--output "$tmpdir" \
-			"$_pkgname" \
-			>/dev/null 2>&1 &&
-		printok "Fetched $oldpkg"
-		echo "$PWD"/"$oldpkg".apk > "$tmpdir"/"$_pkgname"
-	fi
+	done
+
+	# Fetch the package for all runs
+	apk fetch \
+		--repositories-file "$tmpdir"/remote-repositories \
+		--output "$tmpdir" \
+		"$_pkgname" \
+		>/dev/null 2>&1 &&
+	printok "Fetched $oldpkg"
+	echo "$PWD"/"$oldpkg".apk > "$tmpdir"/"$_pkgname"
 	) &
 done
 wait
