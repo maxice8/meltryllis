@@ -56,7 +56,7 @@ for i in $pkgname $subpackages; do
 	pkgfile=${pkg}.apk
 
 	# We need to declare this here so the changes inside the loop change it
-	filepath=
+	oldapkpath='' newapkpath=''
 
 	# Check if our package and oldpkg matches
 	oldpkg="$(apk fetch --repositories-file "$tmpdir"/remote-repositories --simulate "$_pkgname" 2>/dev/null | grep Downloading | sed 's/^Downloading //')"
@@ -66,22 +66,28 @@ for i in $pkgname $subpackages; do
 
 	for repo in $(cat "$tmpdir"/local-repositories); do
 		if [ -f "$repo"/"$_carch"/"$pkgfile" ]; then
-			filepath="$repo"/"$_carch"/"$pkgfile"
+			newapkpath="$repo"/"$_carch"/"$pkgfile"
 			break
 		fi
 	done
-	[ -f "$filepath" ] || die "can't find $pkgfile, maybe package wasn't built"
+	[ -f "$newapkpath" ] || die "can't find $pkgfile, maybe package wasn't built"
 
-	# Fetch the package for all runs
-	apk fetch \
-		--repositories-file "$tmpdir"/remote-repositories \
-		--output "$tmpdir" \
-		"$_pkgname" \
-		>/dev/null 2>&1 &&
-	printok "Fetched $oldpkg"
+	if [ -f /var/cache/apk/"$oldpkg".apk ]; then
+		oldapkpath=/var/cache/apk/"$oldpkg".apk
+		printok "Found cached $oldpkg"
+	else
+		# Fetch the package for all runs
+		apk fetch \
+			--repositories-file "$tmpdir"/remote-repositories \
+			--output "$tmpdir" \
+			"$_pkgname" \
+			>/dev/null 2>&1 &&
+		printok "Fetched $oldpkg"
+		oldapkpath="$PWD"/"$oldpkg".apk
+	fi
 
-	echo "$PWD"/"$oldpkg".apk > "$tmpdir"/old-"$_pkgname"
-	echo "$filepath" > "$tmpdir"/new-"$_pkgname"
+	echo "$oldapkpath" > "$tmpdir"/old-"$_pkgname"
+	echo "$newapkpath" > "$tmpdir"/new-"$_pkgname"
 	) &
 done
 wait
