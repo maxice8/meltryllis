@@ -2,24 +2,22 @@
     border: none;
     border-radius: 0;
 	font-family: "BlexMono Nerd Font";
-	font-weight: bold;
+	font-weight: 500;
     font-size: 13px;
     min-height: 0px;
 }
 
 window#waybar {
 	background: #1d2021;
-	color: #ffffff;
 }
 
 #workspaces button {
-    padding: 0 4px;
+    padding: 0px 4px;
 	background: transparent;
-	color: #ffffff;
 }
 
 #workspaces button:hover {
-	padding: 0 5px;
+	padding: 0px 4px;
 	box-shadow: inherit;
 	text-shadow: inherit;
 	background: rgba(255, 255, 255, 0.1);
@@ -29,44 +27,15 @@ window#waybar {
 	background: #181818;
 }
 
-#mode {
-    background: rgba(0, 0, 0, 0.3);
-    font-style: italic;
-    border-bottom: 3px solid rgba(255, 255, 255, 0.8);
-}
-
 #clock.br,
 #clock.de,
 #battery,
 #pulseaudio,
 #temperature,
-#cpu,
 #custom-powermenu,
 #mode {
     padding: 0 11px;
     margin: 0 0px;
-}
-
-#clock.de {
-	background-color: rgba(0, 255, 255, 0.5);
-}
-
-#clock.br {
-	background-color: rgba(31, 58, 147, 1);
-}
-
-#battery {
-	background: rgba(144, 238, 144, 0.6);
-}
-
-#battery.charging {
-    color: #ffffff;
-    background-color: rgba(38, 166, 91, 0.6);
-}
-
-#battery.warning {
-    background: rgba(241, 196, 15, 0.6);
-    color: #000000;
 }
 
 @keyframes blink {
@@ -77,8 +46,6 @@ window#waybar {
 }
 
 #battery.critical:not(.charging) {
-    background: rgba(245, 60, 60, 0.6);
-    color: #ffffff;
     animation-name: blink;
     animation-duration: 0.5s;
     animation-timing-function: linear;
@@ -86,26 +53,6 @@ window#waybar {
     animation-direction: alternate;
 }
 
-#pulseaudio {
-	background: rgba(155, 89, 182, 0.6);
-}
-
-#pulseaudio.muted {
-    background-color: rgba(128, 128, 128, 0.6);
-}
-
-#temperature {
-    background-color: rgba(30, 139, 195, 1);
-}
-
 #temperature.critical {
-    background-color: rgba(240, 52, 52, 1);
-}
-
-#cpu {
-    background-color: rgba(255, 215, 64, 0.6);
-}
-
-#custom-powermenu {
-	background-color: rgba(169, 169, 169, 0.8);
+	color: rgba(240, 52, 52, 1);
 }
