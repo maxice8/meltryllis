@@ -4,7 +4,7 @@
     // Choose the order of the modules
     "modules-left": ["sway/workspaces"],
     "modules-center": ["sway/window"],
-    "modules-right": ["temperature", "pulseaudio", "battery", "clock#de", "clock#br", "custom/powermenu"],
+    "modules-right": ["idle_inhibitor", "temperature", "pulseaudio", "battery", "clock#de", "clock#br", "custom/powermenu"],
     // Modules configuration
     "sway/workspaces": {
         "disable-scroll": true,
@@ -88,5 +88,12 @@
 		"interval": "once",
 		"on-click": "~/bin/powermenu",
 		"tooltip": false
-	}
+	},
+	"idle_inhibitor": {
+		"format": "{icon}",
+		"format-icons": {
+			"activated": "",
+            "deactivated": ""
+        }
+    }
 }

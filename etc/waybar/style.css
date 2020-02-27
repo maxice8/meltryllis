@@ -33,6 +33,7 @@ window#waybar {
 #pulseaudio,
 #temperature,
 #custom-powermenu,
+#idle_inhibitor,
 #mode {
     padding: 0 11px;
     margin: 0 0px;
