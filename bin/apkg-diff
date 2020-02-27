@@ -80,14 +80,16 @@ for i in $pkgname $subpackages; do
 		oldapkpath="$candidate"
 	done
 
-	# Fetch the package for all runs
-	apk fetch \
-		--repositories-file "$tmpdir"/remote-repositories \
-		--output "$tmpdir" \
-		"$_pkgname" \
-		>/dev/null 2>&1 &&
-	printok "Fetched $oldpkg"
-	oldapkpath="$PWD"/"$oldpkg".apk
+	if ! [ -f "$oldapkpath" ]; then
+		# Fetch the package for all runs
+		apk fetch \
+			--repositories-file "$tmpdir"/remote-repositories \
+			--output "$tmpdir" \
+			"$_pkgname" \
+			>/dev/null 2>&1 &&
+		printok "Fetched $oldpkg"
+		oldapkpath="$PWD"/"$oldpkg".apk
+	fi
 
 	echo "$oldapkpath" > "$tmpdir"/old-"$_pkgname"
 	echo "$newapkpath" > "$tmpdir"/new-"$_pkgname"
