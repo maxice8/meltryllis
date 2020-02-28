@@ -170,6 +170,8 @@ autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\|TEST\)')
 set guicursor=
 set guifont=
 
+set mouse=a
+
 set t_Co=256
 set background=dark
 
