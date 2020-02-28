@@ -1,2 +1,2 @@
 #!/bin/sh
-glow -s dark "$1" | less -r
+glow --style dark "$1" | less -r
