@@ -33,7 +33,6 @@ window#waybar {
 #pulseaudio,
 #temperature,
 #custom-powermenu,
-#idle_inhibitor,
 #mode {
     padding: 0 11px;
     margin: 0 0px;
@@ -47,11 +46,20 @@ window#waybar {
 }
 
 #battery.critical:not(.charging) {
+	color: #e06c75;
     animation-name: blink;
     animation-duration: 0.5s;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
-    animation-direction: alternate;
+	animation-direction: alternate;
+}
+
+#battery.critical {
+    color: #e06c75;
+}
+
+#battery.charging {
+    color: #5288e2;
 }
 
 #temperature.critical {
