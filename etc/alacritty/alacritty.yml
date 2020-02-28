@@ -19,7 +19,7 @@ window:
   # Specified in number of columns/lines, not pixels.
   # If both are `0`, this setting is ignored.
   dimensions:
-    columns: 122
+    columns: 118
     lines: 33
 
   # Window padding (changes require restart)
@@ -27,7 +27,7 @@ window:
   # Blank space added around the window in pixels. This padding is scaled
   # by DPI and the specified value is always added at both opposing sides.
   padding:
-    x: 16
+    x: 24
     y: 16
 
   # Spread additional padding evenly around the terminal content.
