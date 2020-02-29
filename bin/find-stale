@@ -1,6 +1,11 @@
 #!/bin/sh
 for apk in "$@"; do
 	path="$apk"
+
+	if ! [ -f "$path"/APKBUILD ]; then
+		continue
+	fi
+
 	. "$path"/APKBUILD
 	
 	(
