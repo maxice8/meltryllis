@@ -13,4 +13,4 @@ ix() {
     curl -sF f:1='<-' "$*" ix.io
 }
 
-ix "$*" | tee /dev/tty | wl-copy -p
+ix "$*" | tee /dev/tty | wl-copy
