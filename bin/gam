@@ -1,2 +1,2 @@
 #!/bin/sh
-git commit --amend -v
+git commit --amend -v --no-edit "$@"
