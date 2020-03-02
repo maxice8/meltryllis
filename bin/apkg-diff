@@ -110,6 +110,7 @@ for i in $pkgname $subpackages; do
 	newapk="$(cat "$tmpdir"/new-"$_pkgname")"
 
 	[ -e "$oldapk" ] || oldapk=""
+	[ -f "$newapk" ] || continue
 
 	for attr in "$@"; do
 		case "$attr" in
