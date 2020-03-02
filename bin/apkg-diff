@@ -138,8 +138,13 @@ for i in $pkgname $subpackages; do
 
 				# When the user asks for size, we want to give them a human-readable size
 				if [ "$attr" = size ]; then
-					[ -z "$oldapk" ] || \
-					human "$tmpdir"/difflist-"$_pkgname"-old-"$attr"
+					if [ -n "$oldapk" ]; then
+						filesize="$(cat "$tmpdir"/difflist-"$_pkgname"-old-"$attr")"
+						# Most common size of the key
+						filesize=$((filesize - 4096))
+						echo "$filesize" > "$tmpdir"/difflist-"$_pkgname"-old-"$attr"
+						human "$tmpdir"/difflist-"$_pkgname"-old-"$attr"
+					fi
 					if [ -s "$tmpdir"/difflist-"$_pkgname"-new-"$attr" ]; then
 						human "$tmpdir"/difflist-"$_pkgname"-new-"$attr"
 					fi
