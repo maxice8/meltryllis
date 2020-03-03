@@ -10,6 +10,10 @@ import logging
 
 SOCKET = path.join(environ['SESSION_DIR'], 'alt-tab-daemon')
 
+if environ['ALT_TAB_DAEMON_DEBUG']:
+    print("Logging everything to stdout")
+    logging.basicConfig(level=logging.DEBUG)
+
 
 def get_ids(container: Con) -> List[int]:
     """
@@ -35,10 +39,10 @@ def find_in_list(list: List[int], num) -> int:
     try:
         return list.index(num)
     except ValueError:
-        logging.warn(f'Number {num} not found in List {list}')
+        logging.warning(f'Number {num} not found in List {list}')
         return None
     else:
-        logging.warn("Unexpected error:", sys.exc_info()[0])
+        logging.warning("Unexpected error:", sys.exc_info()[0])
         return None
 
 
@@ -90,9 +94,10 @@ def main():
         container = container.find_focused()
         ids = get_ids(container)
         ids.sort()
-        index = find_in_list(ids, container.id)
-        logging.info(ids)
-        logging.info(index)
+        if len(ids) > 0:
+            index = find_in_list(ids, container.id)
+            logging.info("ids in container: %s" % ids)
+            logging.info("index in container: %s" % index)
 
     refresh(connection)
 
@@ -102,18 +107,42 @@ def main():
         container = container.find_focused()
         ids = get_ids(container)
         ids.sort()
-        index = find_in_list(ids, container.id)
-        logging.info(ids)
-        logging.info(index)
+        if len(ids) > 0:
+            index = find_in_list(ids, container.id)
+            logging.info("ids in container: %s" % ids)
+            logging.info("index in container: %s" % index)
 
     async def event_loop():
-        connection = await AsyncConnection(None, True).connect()
+        try:
+            connection = await AsyncConnection(socket_path=None, auto_reconnect=True).connect()
+        except:
+            logging.error("Failed to connect to sway socket on event_loop()", sys.exc_info()[0])
+            return 1
 
         await connection.subscribe([Event.WINDOW])
+        """
+        These connections are not required as new windows and closed windows
+        always take focus, thus triggering a WINDOW_FOCUS event.
+
+        If this situation change in the future just uncomment the 2 lines
+        below.
+
         connection.on(Event.WINDOW_NEW, refresh_async)
         connection.on(Event.WINDOW_CLOSE, refresh_async)
+        """
         connection.on(Event.WINDOW_FOCUS, refresh_async)
 
+        """
+        This also causes a double trigger of refresh_async, but not in all
+        cases.
+
+        This double refresh_async() only happens when you switch to a workspace
+        that already has a window. The window will be focused triggering a
+        WINDOW_FOCUS event and it will also trigger a WORKSPACE_FOCUS event.
+
+        But if the workspace you focus to is empty it won't trigger a WINDOW_FOCUS
+        event and consequently it doesn't refresh the index
+        """
         await connection.subscribe([Event.WORKSPACE])
         connection.on(Event.WORKSPACE_FOCUS, refresh_async)
 
@@ -121,34 +150,58 @@ def main():
 
     async def read_socket(reader, writer):
         nonlocal ids, index
-        connection = await AsyncConnection(None, True).connect()
+        """
+        If we have only 1 id or even none then there is no reason to continue
+        as we cannot switch focus between windows.
+        """
+        if len(ids) < 2:
+            logging.info("Asked for focus change on empty or single window workspace")
+            None
 
+        """
+        Read the data given to use via the socket we have and decode it
+        """
         data = await reader.read(100)
         message = data.decode()
 
+        """
+        If we were given an empty message then just leave with an warning message
+        """
         if not message:
+            logging.warning("Given empty message on socket")
             None
-        if len(ids) < 2:
-            None
+
+        """
+        Check if we were given a valid string, we only accept next and prev as strings
+        """
         if message == 'next':
-            await connection.command('[con_id=%s] focus' % next_prev(ids,
-                                                                     index,
-                                                                     True))
+            message = True
         elif message == 'prev':
-            await connection.command('[con_id=%s] focus' % next_prev(ids,
-                                                                     index,
-                                                                     False))
+            message = False
+        else:
+            logging.warning("Given invalid string, use 'prev' or 'next'")
+            None
+
+        try:
+            connection = await AsyncConnection(socket_path=None, auto_reconnect=False).connect()
+        except:
+            logging.error("Failed to connect to sway socket on read_socket()", sys.exc_info()[0])
+            return 1
+
+        await connection.command('[con_id=%s] focus' % next_prev(ids,
+                                                                 index,
+                                                                 message))
 
         """
         Reload the information after running the command
         await refresh_async(connection, None)
-        """
+
         writer.write(data)
-        """
         await writer.drain()
         """
 
         writer.close()
+        await writer.wait_closed()
 
     loop = asyncio.get_event_loop()
 
