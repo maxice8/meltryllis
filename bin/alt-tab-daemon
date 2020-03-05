@@ -10,7 +10,7 @@ import logging
 
 SOCKET = path.join(environ['SESSION_DIR'], 'alt-tab-daemon')
 
-if environ['ALT_TAB_DAEMON_DEBUG']:
+if 'ALT_TAB_DAEMON_DEBUG' in environ:
     print("Logging everything to stdout")
     logging.basicConfig(level=logging.DEBUG)
 
@@ -161,7 +161,7 @@ def main():
         """
         Read the data given to use via the socket we have and decode it
         """
-        data = await reader.read(100)
+        data = await reader.read(4)
         message = data.decode()
 
         """
