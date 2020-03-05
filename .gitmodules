@@ -1,6 +1,3 @@
-[submodule "ps_mem"]
-	path = ps_mem
-	url = https://github.com/pixelb/ps_mem
 [submodule "pomfclip"]
 	path = pomfclip
 	url = https://github.com/ScoreUnder/pomfclip
