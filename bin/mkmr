@@ -119,7 +119,11 @@ mr() {
 		fi
 	fi
 
-	git rebase $remote/"$TARGET_BRANCH" >/dev/null 2>&1
+	if ! git rebase $remote/"$TARGET_BRANCH" >/dev/null 2>&1; then
+		echo "Dropping into shell, fix rebase against $TARGET_BRANCH and then exit"
+		sh -l
+	fi
+
 	git push -uf origin "$1" >/dev/null 2>&1
 
 	# If the user didn't define the title for us then check if we have
