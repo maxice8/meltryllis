@@ -22,7 +22,9 @@ merge_branch() {
 	PRINTOK_QUIET=yes gbr "$prefix"
 
 	# Merge all the changes we have done
-	git merge --quiet "$@" --no-edit --ff || {
+	git merge --quiet "$@" --no-edit --ff && {
+		printok "Merged '$*' into '$prefix'"
+	} || {
 		printerr "Dropping to shell, please fix"
 		sh -l
 	}
