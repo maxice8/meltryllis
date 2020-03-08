@@ -19,36 +19,25 @@ merge_branch() {
 	prefix="$(alpine-stable-prefix "$1" || echo master)"
 	[ "$prefix" = master ] || prefix="$prefix"-stable
 
-	# If we have more than one branch given to us then create a temporary branch that
-	# holds all the commits and push it all at once
-	if [ "$#" -gt 1 ]; then
-		branch="$prefix"-"$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
-		PRINTOK_QUIET=yes gbr "$branch"
+	PRINTOK_QUIET=yes gbr "$prefix"
 
-		git merge --quiet "$@" --no-edit --ff
-
-		kill="$@ $branch"
-	else
-		PRINTOK_QUIET=yes gbr "$@"
-		kill="$@"
-	fi
+	# Merge all the changes we have done
+	git merge --quiet "$@" --no-edit --ff || {
+		printerr "Dropping to shell, please fix"
+		sh -l
+	}
 
 	# Pull changes from where we are going to push
-	PRINTOK_QUIET=yes PRINTERR_QUIET=yes pullp || {
-		DLBR_LOCAL=yes dlbr "$branch"
-		exit 1
-	}
-	# Push our local changes to the upstream repo, we don't
-	# provide any info to pushp because it can detect whether
-	# we are using 'gitstream' as our remote, and in the future
-	# we will use 'upstream' as the remote.
-	pushp || {
-		DLBR_LOCAL=yes dlbr "$branch"
-		exit 1
+	PRINTOK_QUIET=yes pullp || {
+		printerr "Dropping to shell, please fix"
+		sh -l
 	}
 
-	dlbr $kill
+	pushes="$pushes $prefix $prefix"
 }
+
+pushes=""
+branches="$@"
 
 # Parse every branch given to us and separate them if they are meant for
 # different branches of alpine, like 3.10-stable.
@@ -87,5 +76,16 @@ done
 [ -n "${stable39}" ] && merge_branch ${stable39}
 [ -n "${stable38}" ] && merge_branch ${stable38}
 [ -n "${stable37}" ] && merge_branch ${stable37}
+
+# Push our local changes to the upstream repo, we don't
+# provide any info to pushp because it can detect whether
+# we are using 'gitstream' as our remote, and in the future
+# we will use 'upstream' as the remote.
+if pushp $pushes; then
+	dlbr $branches
+else
+	printerr "Failed to make the following pushes: $pushes"
+	exit 1
+fi
 
 exit 0
