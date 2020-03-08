@@ -43,7 +43,7 @@ while true; do
 	fi
 done
 
-pushes="$(echo "$pushes" | sed 's|  \+| |g')"
+pushes="$(echo "$pushes" | sed -e 's|  \+| |g' -e 's|^ ||g')"
 pushurl="$(git config --local remote.$remote.pushurl || git config --local remote.$remote.url)"
 
 git push --atomic --quiet $args $remote $pushes >/dev/null || \
