@@ -4,7 +4,7 @@
 if [ "$1" ]; then
 	branch="$1"
 else
-	branch="$(git rev-parse --abbrev-ref HEAD)"
+	branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
 fi
 
 # Only work on supported alpine releases.
