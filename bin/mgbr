@@ -11,6 +11,9 @@ for branch in "$@"; do
 done
 
 merge_branch() {
+	# For when you need to leave before pushing
+	earlyleave=""
+
 	# Assume that the first branch given to us has the
 	# prefix that we are pushing to on alpine, if we are
 	# not pushing to alpine then this just noop to the master
@@ -19,27 +22,37 @@ merge_branch() {
 	prefix="$(alpine-stable-prefix "$1" || echo master)"
 	[ "$prefix" = master ] || prefix="$prefix"-stable
 
-	PRINTOK_QUIET=yes gbr "$prefix"
+	gbr "$prefix" || return 1
 
 	# Merge all the changes we have done
 	git merge --quiet "$@" --no-edit --ff && {
 		printok "Merged '$*' into '$prefix'"
 	} || {
-		printerr "Dropping to shell, please fix"
-		sh -l
+		printerr "Dropping to shell, please fix or exit 1"
+		sh -l || {
+			earlyleave=1
+		}
 	}
 
 	# Pull changes from where we are going to push
 	PRINTOK_QUIET=yes pullp || {
-		printerr "Dropping to shell, please fix"
-		sh -l
+		printerr "Dropping to shell, please fix or exit 1"
+		sh -l || {
+			earlyleave=1
+		}
 	}
+
+	if [ "$earlyleave" -eq 1 ]; then
+		printerr "Failed to merge '$*' into '$prefix', resetting '$prefix'"
+		git reset --hard "$prefix"
+		return 1
+	fi
 
 	pushes="$pushes $prefix $prefix"
 }
 
 pushes=""
-branches="$@"
+branches="$*"
 
 # Parse every branch given to us and separate them if they are meant for
 # different branches of alpine, like 3.10-stable.
