@@ -1,20 +1,7 @@
 #!/bin/sh
-if [ "$2" ]; then
-	remote_branch="$2"
-else
-	_REALBASE="$(alpine-stable-prefix)"
-	if [ -n "$_REALBASE" ]; then
-		remote_branch="$_REALBASE-stable"
-	else
-		remote_branch=master
-	fi
-fi
-
-# gitstream is the git remote that i push via SSH
-# to alpine, in the future this will be joined into
-# upstream which will hold gitlab
-if [ "$1" ]; then
-	remote="$1"
+if echo "$1" | grep -q '^remote:'; then
+	remote="${1##remote:}"
+	shift
 elif git config remote.gitstream.url >/dev/null; then
 	remote=gitstream
 elif git config remote.upstream.url >/dev/null; then
@@ -23,12 +10,41 @@ else
 	remote=origin
 fi
 
-branch="$(git-current-branch)"
-
 [ -n "$FORCE_PUSH" ] && args="--force"
+
+pushes=""
+
+while true; do
+	if [ "$1" ]; then
+		local_branch="$1"
+		shift
+	else
+		local_branch="$(git-current-branch)"
+	fi
+
+	# Check for our remote branch, this should make it easier
+	if [ "$1" ]; then
+		remote_branch="$1"
+		shift
+	else
+		_REALBASE="$(alpine-stable-prefix "$local_branch")"
+		if [ -n "$_REALBASE" ]; then
+			remote_branch="$_REALBASE-stable"
+		else
+			remote_branch=master
+		fi
+	fi
+
+	pushes="$pushes $local_branch:$remote_branch"
+	
+	# Break once we reach under 1 arg
+	if [ $# -lt 1 ]; then
+		break
+	fi
+done
 
 pushurl="$(git config --local remote.$remote.pushurl || git config --local remote.$remote.url)"
 
-git push --quiet $args $remote "$branch":"$remote_branch" >/dev/null || \
-	printerr "Failed to push '$branch' into '$remote/$remote_branch' from '$pushurl'" && \
-	printok "Pushed '$branch' into '$remote/$remote_branch' from '$pushurl'"
+git push --atomic --quiet $args $remote $pushes >/dev/null || \
+	printerr "Failed push of '$pushes' to '$pushurl'" && \
+	printok "Pushed '$pushes' to '$pushurl'"
