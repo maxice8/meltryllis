@@ -39,7 +39,11 @@ if [ "$#" -gt 1 ]; then
 	PRINTOK_QUIET=yes gbr "$branch"
 
 	for mr in "$@"; do
-		mr "$mr" || die "Failed to checkout mr !$mr"
+		mr "$mr" || {
+			printerr "Failed to checkout mr !$mr"
+			printerr "Dropping to shell"
+			sh -l
+		}
 
 		while true; do
 			reset
