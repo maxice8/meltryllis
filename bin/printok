@@ -1,3 +1,4 @@
 #!/bin/sh
 [ -n "$PRINTOK_QUIET" ] && exit 0
-printf -- "[  \\033[1;32mOK\\033[0m  ] $1\n"
+# printf -- "[  \\033[1;32mOK\\033[0m  ] $1\n"
+printf -- "\\033[1;32m>>>\\033[0m $1\n"
