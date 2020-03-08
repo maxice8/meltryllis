@@ -9,5 +9,8 @@ else
 fi
 
 git switch --force-create "$branch" "${TARGET_BRANCH:-master}"
-mr "$1"
+mr "$1" || {
+	printerr "Failed to apply '$1'. Dropping to shell"
+	sh -l
+}
 pullp
