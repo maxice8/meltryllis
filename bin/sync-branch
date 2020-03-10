@@ -3,5 +3,5 @@
 for branch in "$@"; do
 	PRINTOK_QUIET=yes PRINTERR_QUIET=yes gbr "$branch" || continue
 	pullp
-	FORCE_PUSH=yes pushp remote:origin "$branch" "$branch"
+	FORCE_PUSH=1 pushp remote:origin "$branch":"$branch"
 done
