@@ -47,15 +47,8 @@ done
 
 [ -z "$args" ] && args="$(git rev-parse --abbrev-ref HEAD)"
 
-# gitstream is the git remote that i push via SSH
-# to alpine, in the future this will be joined into
-# upstream which will hold gitlab
-if git config remote.gitstream.url >/dev/null; then
-	remote=gitstream
-elif git config remote.upstream.url >/dev/null; then
-	remote=upstream
-else
-	remote=origin
+if ! remote="$(guess-remote)"; then
+	exit 1
 fi
 
 _get_project_id() {
@@ -79,7 +72,7 @@ _get_project_id() {
 }
 
 selectcommit() {
-	git log $remote/${TARGET_BRANCH}.."$1" --pretty='%h %s' | fzy | cut -d ' ' -f1
+	gcp | fzy | cut -d ' ' -f1
 }
 
 title() {
@@ -119,12 +112,28 @@ mr() {
 		fi
 	fi
 
-	if ! git rebase $remote/"$TARGET_BRANCH" >/dev/null 2>&1; then
-		echo "Dropping into shell, fix rebase against $TARGET_BRANCH and then exit"
-		sh -l
-	fi
+	early=0
 
-	git push -uf origin "$1" >/dev/null 2>&1
+	PRINTOK_QUIET=yes PRINTERR_QUIET=yes gbr "$1" || return 1
+
+	PRINTOK_QUIET=yes pullp || {
+		printerr "Dropping to shell, please fix or exit 1"
+		sh -l || {
+			early=1
+		}
+	}
+
+	PRINTOK_QUIET=yes pushp remote:origin "$1":"$1" || {
+		printerr "Dropping to shell,  please fix or exit 1"
+		sh -l || {
+			early=1
+		}
+	}
+
+	if [ $early -eq 1 ]; then
+		printerr "Couldn't make mr for '$1', exiting"
+		return 1
+	fi
 
 	# If the user didn't define the title for us then check if we have
 	# more than 1 commit then ask the user to pick a commit for the
