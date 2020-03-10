@@ -255,7 +255,7 @@ getvar() {
 tmpsh() {
 	[ -z "$1" ] && return 1
 	cd "$1" || return $?
-	sh -l
+	${SHELL:-sh} -l
 }
 
 mkgit() {
@@ -347,7 +347,7 @@ case "$cmd" in
 		fi
 		;;
 	n) f "$branch";;
-	N) run sh -l ;;
+	N) run ${SHELL:-sh} -l ;;
 	x) run abuild checksum;;
 	m) move_repo "$@" "$branch";;
 	r) rename_repo "$@" "$branch";;

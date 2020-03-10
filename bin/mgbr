@@ -29,7 +29,7 @@ merge_branch() {
 		printok "Merged '$*' into '$prefix'"
 	} || {
 		printerr "Dropping to shell, please fix or exit 1"
-		sh -l || {
+		${SHELL:-sh} -l || {
 			earlyleave=1
 		}
 	}
@@ -37,7 +37,7 @@ merge_branch() {
 	# Pull changes from where we are going to push
 	PRINTOK_QUIET=yes pullp || {
 		printerr "Dropping to shell, please fix or exit 1"
-		sh -l || {
+		${SHELL:-sh} -l || {
 			earlyleave=1
 		}
 	}

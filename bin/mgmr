@@ -42,7 +42,7 @@ if [ "$#" -gt 1 ]; then
 		mr "$mr" || {
 			printerr "Failed to checkout mr !$mr"
 			printerr "Dropping to shell"
-			sh -l
+			${SHELL:-sh} -l
 		}
 
 		while true; do
@@ -55,7 +55,7 @@ if [ "$#" -gt 1 ]; then
 					dlbr $(git current-branch)
 					exit 0
 					;;
-				2) sh -l ;;
+				2) ${SHELL:-sh} -l ;;
 				3) prch ;;
 				* ) exit $? ;;
 			esac
@@ -103,7 +103,7 @@ else
 				dlbr $(git current-branch)
 				exit 0
 				;;
-			2) sh -l ;;
+			2) ${SHELL:-sh} -l ;;
 			3) prch ;;
 			* ) exit $? ;;
 		esac

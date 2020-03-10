@@ -118,14 +118,14 @@ mr() {
 
 	PRINTOK_QUIET=yes pullp || {
 		printerr "Dropping to shell, please fix or exit 1"
-		sh -l || {
+		${SHELL:-sh} -l || {
 			early=1
 		}
 	}
 
 	PRINTOK_QUIET=yes pushp remote:origin "$1":"$1" || {
 		printerr "Dropping to shell,  please fix or exit 1"
-		sh -l || {
+		${SHELL:-sh} -l || {
 			early=1
 		}
 	}
