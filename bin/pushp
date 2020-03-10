@@ -24,11 +24,11 @@ for arg; do
 
 	_REALBASE="$(alpine-stable-prefix "$arg")"
 	if [ -n "$_REALBASE" ]; then
-		remote_branch="$_REALBASE-stable"
+		remote_branch="$_REALBASE"-stable
 	else
 		remote_branch=master
 	fi
-	
+
 	pushes="$pushes $arg:$remote_branch"
 done
 
