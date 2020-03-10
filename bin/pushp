@@ -2,45 +2,34 @@
 if echo "$1" | grep -q '^remote:'; then
 	remote="${1##remote:}"
 	shift
-elif git config remote.gitstream.url >/dev/null; then
-	remote=gitstream
-elif git config remote.upstream.url >/dev/null; then
-	remote=upstream
 else
-	remote=origin
+	if ! remote="$(guess-remote)"; then
+		exit 1
+	fi
 fi
 
 [ -n "$FORCE_PUSH" ] && args="--force"
 
 pushes=""
 
-while true; do
-	if [ "$1" ]; then
-		local_branch="$1"
-		shift
-	else
-		local_branch="$(git-current-branch)"
+[ $# -lt 1 ] && set -- "$(git current-branch)"
+
+for arg; do
+	remote_branch=""
+
+	if echo "$arg" | grep -F -q ':'; then
+		pushes="$pushes $arg"
+		continue
 	fi
 
-	# Check for our remote branch, this should make it easier
-	if [ "$1" ]; then
-		remote_branch="$1"
-		shift
+	_REALBASE="$(alpine-stable-prefix "$arg")"
+	if [ -n "$_REALBASE" ]; then
+		remote_branch="$_REALBASE-stable"
 	else
-		_REALBASE="$(alpine-stable-prefix "$local_branch")"
-		if [ -n "$_REALBASE" ]; then
-			remote_branch="$_REALBASE-stable"
-		else
-			remote_branch=master
-		fi
+		remote_branch=master
 	fi
-
-	pushes="$pushes $local_branch:$remote_branch"
 	
-	# Break once we reach under 1 arg
-	if [ $# -lt 1 ]; then
-		break
-	fi
+	pushes="$pushes $arg:$remote_branch"
 done
 
 pushes="$(echo "$pushes" | sed -e 's|  \+| |g' -e 's|^ ||g')"
