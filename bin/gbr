@@ -4,15 +4,8 @@ if [ ! -e .git ] || [ -z "$1" ]; then
 	exit 1
 fi
 
-# gitstream is the git remote that i push via SSH
-# to alpine, in the future this will be joined into
-# upstream which will hold gitlab
-if git config remote.gitstream.url >/dev/null; then
-	remote=gitstream
-elif git config remote.upstream.url >/dev/null; then
-	remote=upstream
-else
-	remote=origin
+if ! remote="$(PRINTERR_QUIET=1 guess-remote)"; then
+	exit 1
 fi
 
 while [ $# -gt 0 ]; do
