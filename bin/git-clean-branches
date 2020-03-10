@@ -1,2 +1,2 @@
 #!/bin/sh
-dlbr $(git branch --merged master | grep -v master | sed 's/^..//;s/ .*//')
+DLBR_LOCAL=y dlbr $(git branch --merged master | grep -v master | sed 's/^..//;s/ .*//')
