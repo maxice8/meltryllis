@@ -1,10 +1,9 @@
 #!/bin/sh
-if [ -z "$1" ]
-then
-	set $@ -- $(git rev-parse --abbrev-ref HEAD)
+if [ -z "$1" ]; then
+	set -- $(git rev-parse --abbrev-ref HEAD)
 fi
 
-_REALBASE="$(alpine-stable-prefix)"
+_REALBASE="$(alpine-stable-prefix "$1")"
 
 if [ -n "$_REALBASE" ]; then
 	_REALBASE="$_REALBASE-stable"
@@ -13,12 +12,8 @@ fi
 # gitstream is the git remote that i push via SSH
 # to alpine, in the future this will be joined into
 # upstream which will hold gitlab
-if git config remote.gitstream.url >/dev/null; then
-	remote=gitstream
-elif git config remote.upstream.url >/dev/null; then
-	remote=upstream
-else
-	remote=origin
+if ! remote="$(PRINTERR_QUIET=1 guess-remote)"; then
+	exit 1
 fi
 
 while [ $# -gt 0 ]
