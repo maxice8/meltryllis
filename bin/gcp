@@ -3,21 +3,17 @@ if [ -z "$1" ]; then
 	set -- $(git rev-parse --abbrev-ref HEAD)
 fi
 
-_REALBASE="$(alpine-stable-prefix "$1")"
-
-if [ -n "$_REALBASE" ]; then
-	_REALBASE="$_REALBASE-stable"
-fi
-
-# gitstream is the git remote that i push via SSH
-# to alpine, in the future this will be joined into
-# upstream which will hold gitlab
 if ! remote="$(PRINTERR_QUIET=1 guess-remote)"; then
 	exit 1
 fi
 
-while [ $# -gt 0 ]
-do
-	git log $remote/"${_REALBASE:-master}".."$1" --pretty='%C(yellow)%h %C(white)%s'
-	shift
+for arg; do
+	_REALBASE="$(alpine-stable-prefix "$arg")"
+	if [ -n "$_REALBASE" ]; then
+		_REALBASE="$_REALBASE-stable"
+	else
+		_REALBASE=master
+	fi
+
+	git log $remote/"$_REALBASE".."$arg" --pretty='%C(yellow)%h %C(white)%s'
 done
