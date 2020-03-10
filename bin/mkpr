@@ -3,6 +3,11 @@
 # mkpr [BRANCH] ... - mkpr create a pull request
 [ "$EDIT" ] && EDIT="--edit" || EDIT="--no-edit"
 
+if ! git diff --quiet; then
+	printerr "Tree is dirty, can't continue"
+	exit 1
+fi
+
 while [ $# -gt 0 ]
 do
 	if [ "$1" = "-r" ]
@@ -46,7 +51,6 @@ fi
 
 selectcommit() {
 	# If we are pushing against a non-default base then prefix it on the commit msg
-	[ -n "$_REALBASE" ] && printf "%s " "[$(alpine-stable-prefix "$_REALBASE")]"
 	git show -s --format=%B $(git log $remote/${_REALBASE:-master}.."$1" --pretty='%h %s' |
 							  fzy |
 							  cut -d ' ' -f1)
@@ -54,34 +58,31 @@ selectcommit() {
 
 lastcommit() {
 	# If we are pushing against a non-default base then prefix it on the commit msg
-	[ -n "$_REALBASE" ] && printf "%s " "[$(alpine-stable-prefix "$_REALBASE")]"
 	git show -s --format=%B
 }
 
-upgradecommit() {
-	# Check if we have an upgrade commit
-	git show -s --format=%B | grep -q ': upgrade to [0-9]'
-}
-
 pr() {
-	if [ -z "$BASE" ] && [ -n "$(alpine-stable-prefix "$1")" ]; then
-		_REALBASE="$(alpine-stable-prefix "$1")"-stable
-		BASE="--base $_REALBASE"
-	fi
-	git rebase $remote/"${_REALBASE:-master}" >/dev/null 2>&1
-	git push -uf origin "$1" >/dev/null 2>&1
+	early=0
+	PRINTOK_QUIET=yes pullp || {
+		printerr "Dropping to shell, please fix or exit 1"
+		${SHELL:-sh} -l || {
+			early=1
+		}
+	}
 
-	# Add a-upgrade label if we are on alpine and upgrading a package
-	if upgradecommit && [ "$(get-repo-config repo-owner)" = alpinelinux ]; then
-		if [ -z "$LABEL" ]; then
-			LABEL="-l A-upgrade"
-		else
-			LABEL="$LABEL",A-upgrade
-		fi
+	PRINTOK_QUIET=yes pushp remote:origin "$1":"$1" || {
+		printerr "Dropping to shell,  please fix or exit 1"
+		${SHELL:-sh} -l || {
+			early=1
+		}
+	}
+
+	if [ $early -eq 1 ]; then
+		printerr "Couldn't make mr for '$1', exiting"
+		return 1
 	fi
 
-	if [ "$(git rev-list --count $remote/"${_REALBASE:-master}"..$1)" -gt 1 ]
-	then
+	if [ "$(git rev-list --count $remote/"${_REALBASE:-master}"..$1)" -gt 1 ]; then
 		[ "$MSG" ] || MSG="$(selectcommit "$1")"
 		hub pull-request -h "$1" $EDIT $ASSIGN $REVIEW $LABEL $BASE $DRAFT -m "$MSG"
 	else
