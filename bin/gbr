@@ -8,22 +8,21 @@ if ! remote="$(PRINTERR_QUIET=1 guess-remote)"; then
 	exit 1
 fi
 
-while [ $# -gt 0 ]; do
-	if git rev-parse --quiet --verify "$1" >/dev/null 2>&1; then
-		git switch --quiet "$1" || \
-			printerr "Failed to switch to '$1'" && \
-			printok "Switched to '$1'"
+for arg; do
+	if git rev-parse --quiet --verify "$arg" >/dev/null 2>&1; then
+		git switch --quiet "$arg" || \
+			printerr "Failed to switch to '$arg'" && \
+			printok "Switched to '$arg'"
 	else
-		_REALBASE="$(alpine-stable-prefix "$1")"
+		_REALBASE="$(alpine-stable-prefix "$arg")"
 		if [ -n "$_REALBASE" ]; then
-			git switch --quiet --force-create "$1" $remote/"$_REALBASE"-stable || \
-				printerr "Failed to switch to '$1'" && \
-				printok "Switched to newly created '$1'"
+			git switch --quiet --force-create "$arg" $remote/"$_REALBASE"-stable || \
+				printerr "Failed to switch to '$arg'" && \
+				printok "Switched to newly created '$arg'"
 		else
-			git switch --quiet --force-create "$1" $remote/master || \
-				printerr "Failed to switch to '$1'" && \
-				printok "Switched to newly created '$1'"
+			git switch --quiet --force-create "$arg" $remote/master || \
+				printerr "Failed to switch to '$arg'" && \
+				printok "Switched to newly created '$arg'"
 		fi
 	fi
-	shift
 done
