@@ -10,6 +10,11 @@ for branch in "$@"; do
 	fi
 done
 
+if ! git diff --quiet; then
+	printerr "Tree is dirty, can't continue"
+	exit 1
+fi
+
 merge_branch() {
 	# For when you need to leave before pushing
 	earlyleave=0
