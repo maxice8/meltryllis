@@ -13,9 +13,6 @@ TARGET_BRANCH="${BINARY#mgmr-*}"
 [ "$TARGET_BRANCH" = mgmr ] && TARGET_BRANCH=master
 export TARGET_BRANCH
 
-NORMAL="\033[1;0m"
-RED="\033[1;31m"
-
 # https://www.etalabs.net/sh_tricks.html
 is_empty() (
 	cd "$1" || return 1
