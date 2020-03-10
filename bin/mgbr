@@ -12,7 +12,7 @@ done
 
 merge_branch() {
 	# For when you need to leave before pushing
-	earlyleave=""
+	earlyleave=0
 
 	# Assume that the first branch given to us has the
 	# prefix that we are pushing to on alpine, if we are
@@ -48,7 +48,7 @@ merge_branch() {
 		return 1
 	fi
 
-	pushes="$pushes $prefix $prefix"
+	pushes="$pushes $prefix:$prefix"
 }
 
 pushes=""
