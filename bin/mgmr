@@ -27,6 +27,11 @@ die() {
 	exit 1
 }
 
+if ! git diff --quiet; then
+	printerr "Tree is dirty, can't continue"
+	exit 1
+fi
+
 if [ "$#" -gt 1 ]; then
 	tmpdir=$(mktemp -d -t mgmr.XXXXXX)
 	# shellcheck disable=2064
