@@ -4,21 +4,47 @@
 " Start pathogen
 call plug#begin('~/etc/nvim/autoload')
 
+" Better visuals for line indentation
 Plug 'Yggdroot/indentLine'
+
+" Shows + - ~ signs on the left-side corner based on git differences
 Plug 'airblade/vim-gitgutter'
+
+" Statusbar on the bottom that shows important information like:
+" - vim mode
+" - file path
+" - file encoding
+" - file type
 Plug 'itchyny/lightline.vim'
+
+" Async Lint engine, allows us to run linters
 Plug 'dense-analysis/ale'
-Plug 'godlygeek/tabular'
-Plug 'plasticboy/vim-markdown'
-Plug 'igankevich/mesonic'
+
+" Colorscheme
 Plug 'sonph/onehalf',{'rtp':'vim'}
+
+" Semantic highlighting for python
 Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
+
+" Neovim Completion Manager, provides lots of useful completions 
 Plug 'ncm2/ncm2'
+
+" Remote Plugin Manager
 Plug 'roxma/nvim-yarp'
+
+" Provides completion based on words on buffer
 Plug 'ncm2/ncm2-bufword'
+
+" Provides completion based on path
 Plug 'ncm2/ncm2-path'
+
+" Provides completion for python3 using the jedi library
 Plug 'ncm2/ncm2-jedi'
+
+" Support for using the uncompromising formatter for python3
 Plug 'psf/black', { 'tag': '19.10b0' }
+
+" Syntax files for TOML format
 Plug 'cespare/vim-toml'
 
 " Add Plugins
@@ -76,9 +102,6 @@ endfunction
 let g:gitgutter_realtime = 1
 let g:gitgutter_override_sign_column_highlight = 0
 
-" Remove folding
-let g:vim_markdown_folding_disabled = 1
-
 set clipboard=unnamed,unnamedplus
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -118,8 +141,6 @@ set ruler
 " Configure backspace so it acts as it should act
 set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
-
-au BufReadPre,BufNewFile *.sh let g:is_bash = 1
 
 " Ignore case when searching
 set ignorecase
@@ -162,13 +183,13 @@ nmap <leader>q :wq<cr>
 syntax enable
 syntax on
 
+" Languages with spell
+set spelllang=en
+
 " Set spellchecker on Markdown files and git commits
 autocmd BufRead,BufNewFile *.md setlocal spell
 autocmd BufRead,BufNewFile *.7 setlocal spell
 autocmd FileType gitcommit setlocal spell
-
-" Get free word completion
-" set complete+=kspell
 
 " Highlight TODO, FIXME, NOTE, etc.
 autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\)')
@@ -334,9 +355,9 @@ augroup NCM2
   autocmd BufEnter * call ncm2#enable_for_buffer()
   " :help Ncm2PopupOpen for more information
   set completeopt=noinsert,menuone,noselect
-  " When the <Enter> key is pressed while the popup menu is visible, it only
-  " hides the menu. Use this mapping to close the menu and also start a new line.
-  inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
+  " Use <TAB> to select the popup menu:
+  inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+  inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
   " uncomment this block if you use vimtex for LaTex
   " autocmd Filetype tex call ncm2#register_source({
   "           \ 'name': 'vimtex',
@@ -350,7 +371,3 @@ augroup NCM2
 augroup END
 
 autocmd BufWritePre *.py execute ':Black'
-
-" Use <TAB> to select the popup menu:
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
