@@ -1,11 +1,9 @@
 #!/bin/sh
-if git config remote.gitstream.url >/dev/null; then
-	echo gitstream
-elif git config remote.upstream.url >/dev/null; then
+if git config remote.upstream.url >/dev/null; then
 	echo upstream
 elif git config remote.origin.url >/dev/null; then
 	echo origin
 else
-	[ -n "$PRINTERR_QUIET" ] || printerr "Failed to guess remote, tried 'gitstream', 'upstream', and 'origin'"
+	[ -n "$PRINTERR_QUIET" ] || printerr "Failed to guess remote, tried 'upstream', and 'origin'"
 	exit 1
 fi
