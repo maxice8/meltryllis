@@ -21,10 +21,10 @@ Plug 'itchyny/lightline.vim'
 Plug 'dense-analysis/ale'
 
 " Colorscheme
-Plug 'sonph/onehalf',{'rtp':'vim'}
+Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
 " Semantic highlighting for python
-Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
+Plug 'numirias/semshi', { 'do': ':UpdateRemotePlugins', 'for': 'python' }
 
 " Neovim Completion Manager, provides lots of useful completions 
 Plug 'ncm2/ncm2'
@@ -33,19 +33,23 @@ Plug 'ncm2/ncm2'
 Plug 'roxma/nvim-yarp'
 
 " Provides completion based on words on buffer
-Plug 'ncm2/ncm2-bufword'
+Plug 'ncm2/ncm2-bufword', { 'on': 'ncm2' }
 
 " Provides completion based on path
-Plug 'ncm2/ncm2-path'
+Plug 'ncm2/ncm2-path', { 'on': 'ncm2' }
 
 " Provides completion for python3 using the jedi library
-Plug 'ncm2/ncm2-jedi'
+Plug 'ncm2/ncm2-jedi', { 'for': 'python' }
 
 " Support for using the uncompromising formatter for python3
-Plug 'psf/black', { 'tag': '19.10b0' }
+Plug 'psf/black', { 'for': 'python' }
 
 " Syntax files for TOML format
-Plug 'cespare/vim-toml'
+Plug 'cespare/vim-toml', { 'for': 'toml' }
+
+" Ultimate snippets
+Plug 'ncm2/ncm2-ultisnips'
+Plug 'SirVer/ultisnips'
 
 " Add Plugins
 "
@@ -87,19 +91,20 @@ function! LightlineFilename()
 endfunction
 
 function! LightlineFiletype()
-  return winwidth(0) > 70 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
+  return &filetype !=# '' ? &filetype : 'no ft'
 endfunction
 
 function! LightlineFileencoding()
-  return winwidth(0) > 70 ? (&fenc !=# '' ? &fenc : &enc) : ''
+  return &fenc !=# '' ? &fenc : &enc
 endfunction
 
 function! LightlineMode()
-  return winwidth(0) > 60 ? lightline#mode() : ''
+  return lightline#mode()
 endfunction
 
 " Signify
-let g:gitgutter_realtime = 1
+let g:gitgutter_realtime = 0
+let g:gitgutter_eager = 0
 let g:gitgutter_override_sign_column_highlight = 0
 
 set clipboard=unnamed,unnamedplus
@@ -107,15 +112,12 @@ set clipboard=unnamed,unnamedplus
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Truecolor support
-if exists('+termguicolors')
-  let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
-  set termguicolors
-endif
+let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
+set termguicolors
 
 " Sets how many lines of history VIM has to remember
-set history=500
+set history=20
 
 " Enable filetype plugins
 filetype plugin on
@@ -162,6 +164,7 @@ set magic
 
 " Show matching brackets when text indicator is over them
 set showmatch
+
 " How many tenths of a second to blink when matching brackets
 set mat=2
 
@@ -195,11 +198,7 @@ autocmd FileType gitcommit setlocal spell
 autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\)')
 autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\|TEST\)')
 
-" Required to keep sane cursor
 set guicursor=
-set guifont=
-
-set mouse=a
 
 set t_Co=256
 set background=dark
@@ -238,7 +237,7 @@ set softtabstop=4
 " Linebreak on 50 characters
 set formatoptions+=t
 set lbr
-set tw=500
+set tw=80
 
 set ai "Auto indent
 set si "Smart indent
@@ -256,15 +255,6 @@ map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
-" Close the current buffer
-map <leader>bd :Bclose<cr>:tabclose<cr>gT
-
-" Close all the buffers
-map <leader>ba :bufdo bd<cr>
-
-map <leader>l :bnext<cr>
-map <leader>h :bprevious<cr>
-
 " Useful mappings for managing tabs
 map <leader>tn :tabnew<cr>
 map <leader>to :tabonly<cr>
@@ -278,13 +268,6 @@ map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
-
-" Specify the behavior when switching between buffers
-try
-  set switchbuf=useopen,usetab,newtab
-  set stal=2
-catch
-endtry
 
 " Return to last edit position when opening files (You want this!)
 augroup reopen
@@ -314,35 +297,6 @@ noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Helper functions
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Don't close window, when deleting a buffer
-command! Bclose call <SID>BufcloseCloseIt()
-function! <SID>BufcloseCloseIt()
-   let l:currentBufNum = bufnr('%')
-   let l:alternateBufNum = bufnr('#')
-
-   if buflisted(l:alternateBufNum)
-     buffer #
-   else
-     bnext
-   endif
-
-   if bufnr('%') == l:currentBufNum
-     new
-   endif
-
-   if buflisted(l:currentBufNum)
-     execute('bdelete! '.l:currentBufNum)
-   endif
-endfunction
-
-"
-" User funtions
-"
-set pastetoggle=<F2>
-
 " Use ripgrep as grep if possible
 if executable('rg')
   set grepprg=rg\ --vimgrep\ --no-heading
@@ -358,16 +312,6 @@ augroup NCM2
   " Use <TAB> to select the popup menu:
   inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
   inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-  " uncomment this block if you use vimtex for LaTex
-  " autocmd Filetype tex call ncm2#register_source({
-  "           \ 'name': 'vimtex',
-  "           \ 'priority': 8,
-  "           \ 'scope': ['tex'],
-  "           \ 'mark': 'tex',
-  "           \ 'word_pattern': '\w+',
-  "           \ 'complete_pattern': g:vimtex#re#ncm2,
-  "           \ 'on_complete': ['ncm2#on_complete#omni', 'vimtex#complete#omnifunc'],
-  "           \ })
 augroup END
 
 autocmd BufWritePre *.py execute ':Black'
