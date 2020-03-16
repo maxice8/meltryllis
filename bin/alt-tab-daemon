@@ -8,9 +8,9 @@ import sys
 import asyncio
 import logging
 
-SOCKET = path.join(environ['SESSION_DIR'], 'alt-tab-daemon')
+SOCKET = path.join(environ["SESSION_DIR"], "alt-tab-daemon")
 
-if 'ALT_TAB_DAEMON_DEBUG' in environ:
+if "ALT_TAB_DAEMON_DEBUG" in environ:
     print("Logging everything to stdout")
     logging.basicConfig(level=logging.DEBUG)
 
@@ -39,7 +39,7 @@ def find_in_list(list: List[int], num) -> int:
     try:
         return list.index(num)
     except ValueError:
-        logging.warning(f'Number {num} not found in List {list}')
+        logging.warning(f"Number {num} not found in List {list}")
         return None
     else:
         logging.warning("Unexpected error:", sys.exc_info()[0])
@@ -59,23 +59,23 @@ def next_prev(list: List[int], index: int, goto: bool) -> int:
     of a list, if we are then we just return the first index of the list,
     otherwise we return the index + 1
     """
-    logging.debug('List of ids: %s' % list)
-    logging.debug('Current index: %s' % index)
-    logging.debug('Length of List: %s' % len(list))
-    logging.debug('goto value: %s' % goto)
+    logging.debug("List of ids: %s" % list)
+    logging.debug("Current index: %s" % index)
+    logging.debug("Length of List: %s" % len(list))
+    logging.debug("goto value: %s" % goto)
     if not goto:
         if index == 0:
-            logging.info('Switching to id: %s' % list[len(list) - 1])
+            logging.info("Switching to id: %s" % list[len(list) - 1])
             return list[len(list) - 1]
         else:
-            logging.info('Switching to id: %s' % list[index - 1])
+            logging.info("Switching to id: %s" % list[index - 1])
             return list[index - 1]
     else:
         if index == len(list) - 1:
-            logging.info('Switching to id: %s' % list[0])
+            logging.info("Switching to id: %s" % list[0])
             return list[0]
         else:
-            logging.info('Switching to id: %s' % list[index + 1])
+            logging.info("Switching to id: %s" % list[index + 1])
             return list[index + 1]
 
 
@@ -114,9 +114,13 @@ def main():
 
     async def event_loop():
         try:
-            connection = await AsyncConnection(socket_path=None, auto_reconnect=True).connect()
+            connection = await AsyncConnection(
+                socket_path=None, auto_reconnect=True
+            ).connect()
         except:
-            logging.error("Failed to connect to sway socket on event_loop()", sys.exc_info()[0])
+            logging.error(
+                "Failed to connect to sway socket on event_loop()", sys.exc_info()[0]
+            )
             return 1
 
         await connection.subscribe([Event.WINDOW])
@@ -174,23 +178,25 @@ def main():
         """
         Check if we were given a valid string, we only accept next and prev as strings
         """
-        if message == 'next':
+        if message == "next":
             message = True
-        elif message == 'prev':
+        elif message == "prev":
             message = False
         else:
             logging.warning("Given invalid string, use 'prev' or 'next'")
             return None
 
         try:
-            connection = await AsyncConnection(socket_path=None, auto_reconnect=False).connect()
+            connection = await AsyncConnection(
+                socket_path=None, auto_reconnect=False
+            ).connect()
         except:
-            logging.error("Failed to connect to sway socket on read_socket()", sys.exc_info()[0])
+            logging.error(
+                "Failed to connect to sway socket on read_socket()", sys.exc_info()[0]
+            )
             return 1
 
-        await connection.command('[con_id=%s] focus' % next_prev(ids,
-                                                                 index,
-                                                                 message))
+        await connection.command("[con_id=%s] focus" % next_prev(ids, index, message))
 
         """
         Reload the information after running the command
@@ -206,14 +212,12 @@ def main():
     loop = asyncio.get_event_loop()
 
     asyncio.ensure_future(event_loop())
-    asyncio.ensure_future(asyncio.start_unix_server(read_socket,
-                                                    SOCKET,
-                                                    loop=loop))
+    asyncio.ensure_future(asyncio.start_unix_server(read_socket, SOCKET, loop=loop))
 
     loop.run_forever()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if path.exists(SOCKET):
         """
         Remove the SOCKET path
