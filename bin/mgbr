@@ -98,9 +98,8 @@ done
 [ -n "${stable37}" ] && merge_branch ${stable37}
 
 # Push our local changes to the upstream repo, we don't
-# provide any info to pushp because it can detect whether
-# we are using 'gitstream' as our remote, and in the future
-# we will use 'upstream' as the remote.
+# provide any info to pushp because it can detect that we
+# are using 'upstream'
 if pushp $pushes; then
 	dlbr $branches
 else
