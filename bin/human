@@ -3,19 +3,19 @@ local filesize = require 'filesize'
 
 for i = 1, #arg do
 	-- Open the file we were given to read
-	file = io.open(arg[i], r)
-	
+	local file = io.open(arg[i], "r")
+
 	-- Set
 	io.input(file)
-	
+
 	-- Store the size we were given
-	size = filesize(tonumber(io.read()))
-	
+	local size = filesize(tonumber(io.read()))
+
 	io.close(file)
-	
+
 	-- Open the file we were given to write from scratch
 	file = io.open(arg[i], "w+")
-	
+
 	-- Sets the default output file
 	io.output(file)
 	io.write(size.."\n")
