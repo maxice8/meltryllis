@@ -9,3 +9,5 @@ input "1739:30149:DELL07DE:00_06CB:75C5_Touchpad" {
 	tap disabled
 	natural_scroll disabled
 }
+
+seat * hide_cursor 1
