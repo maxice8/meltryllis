@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 
-from i3ipc import Con, Connection, Event
-from i3ipc.aio import Connection as AsyncConnection
-from typing import List
-from os import environ, path, remove
-import sys
 import asyncio
 import logging
+import sys
+from os import environ, path, remove
+from typing import List
+
+from i3ipc import Con, Connection, Event
+from i3ipc.aio import Connection as AsyncConnection
 
 SOCKET = path.join(environ["SESSION_DIR"], "alt-tab-daemon")
 
