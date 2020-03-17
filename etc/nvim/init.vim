@@ -42,7 +42,7 @@ Plug 'ncm2/ncm2-path', { 'on': 'ncm2' }
 Plug 'ncm2/ncm2-jedi', { 'for': 'python' }
 
 " Support for using the uncompromising formatter for python3
-Plug 'psf/black', { 'for': 'python' }
+Plug 'psf/black', { 'tag': '19.10b0', 'for': 'python' }
 
 " Syntax files for TOML format
 Plug 'cespare/vim-toml', { 'for': 'toml' }
