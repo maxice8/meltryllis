@@ -1,10 +1,10 @@
 #!/usr/bin/lua5.3
-socket = require 'socket'
+local socket = require 'socket'
 socket.unix = require 'socket.unix'
 
-sock = assert(socket.unix())
-path = arg[1] or os.exit(1)
-msg = arg[2] or os.exit(1)
+local sock = assert(socket.unix())
+local path = arg[1] or os.exit(1)
+local msg = arg[2] or os.exit(1)
 
 for i = 3,#arg do
 	msg = msg..arg[i]
