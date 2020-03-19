@@ -4,7 +4,7 @@ import asyncio
 import logging
 import sys
 from os import environ, path, remove
-from typing import List
+from typing import List, Optional
 
 from i3ipc import Con, Connection, Event
 from i3ipc.aio import Connection as AsyncConnection
@@ -32,7 +32,7 @@ def get_ids(container: Con) -> List[int]:
     return list
 
 
-def find_in_list(list: List[int], num) -> int:
+def find_in_list(list: List[int], num) -> Optional[int]:
     """
     Takes a list of integers and an integer it wants to find and
     returns the first occurrence of the value on the index.
