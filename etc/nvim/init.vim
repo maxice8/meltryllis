@@ -20,6 +20,14 @@ Plug 'itchyny/lightline.vim'
 " Async Lint engine, allows us to run linters
 Plug 'dense-analysis/ale'
 
+let g:ale_fix_on_save = 1
+let g:ale_fixers = {
+			\	'python': ['isort', 'black']
+			\	}
+let g:ale_linters = {
+			\	'python': ['vulture', 'flake8']
+			\	}
+
 " Colorscheme
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
@@ -189,15 +197,6 @@ syntax on
 " Languages with spell
 set spelllang=en
 
-" Set spellchecker on Markdown files and git commits
-autocmd BufRead,BufNewFile *.md setlocal spell
-autocmd BufRead,BufNewFile *.7 setlocal spell
-autocmd FileType gitcommit setlocal spell
-
-" Highlight TODO, FIXME, NOTE, etc.
-autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\)')
-autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\|TEST\)')
-
 set guicursor=
 
 set t_Co=256
@@ -237,7 +236,7 @@ set softtabstop=4
 " Linebreak on 50 characters
 set formatoptions+=t
 set lbr
-set tw=80
+set tw=100
 
 set ai "Auto indent
 set si "Smart indent
@@ -313,5 +312,3 @@ augroup NCM2
   inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
   inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 augroup END
-
-autocmd BufWritePre *.py execute ':Black'
