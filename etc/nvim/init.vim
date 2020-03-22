@@ -31,33 +31,19 @@ let g:ale_linters = {
 " Colorscheme
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
-" Semantic highlighting for python
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+
+let g:deoplete#enable_at_startup = 1
+
+Plug 'deoplete-plugins/deoplete-jedi', { 'for': 'python' }
+
+" For Semshi
+let g:deoplete#auto_complete_delay = 100 
+
 Plug 'numirias/semshi', { 'do': ':UpdateRemotePlugins', 'for': 'python' }
-
-" Neovim Completion Manager, provides lots of useful completions 
-Plug 'ncm2/ncm2'
-
-" Remote Plugin Manager
-Plug 'roxma/nvim-yarp'
-
-" Provides completion based on words on buffer
-Plug 'ncm2/ncm2-bufword', { 'on': 'ncm2' }
-
-" Provides completion based on path
-Plug 'ncm2/ncm2-path', { 'on': 'ncm2' }
-
-" Provides completion for python3 using the jedi library
-Plug 'ncm2/ncm2-jedi', { 'for': 'python' }
 
 " Support for using the uncompromising formatter for python3
 Plug 'psf/black', { 'tag': '19.10b0', 'for': 'python' }
-
-" Syntax files for TOML format
-Plug 'cespare/vim-toml', { 'for': 'toml' }
-
-" Ultimate snippets
-Plug 'ncm2/ncm2-ultisnips'
-Plug 'SirVer/ultisnips'
 
 " Add Plugins
 "
@@ -301,14 +287,3 @@ if executable('rg')
   set grepprg=rg\ --vimgrep\ --no-heading
   set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
-
-augroup NCM2
-  autocmd!  
-  " enable ncm2 for all buffers
-  autocmd BufEnter * call ncm2#enable_for_buffer()
-  " :help Ncm2PopupOpen for more information
-  set completeopt=noinsert,menuone,noselect
-  " Use <TAB> to select the popup menu:
-  inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-  inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-augroup END
