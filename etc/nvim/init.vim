@@ -29,7 +29,9 @@ let g:ale_linters = {
 			\	}
 
 " Colorscheme
-Plug 'sonph/onehalf', { 'rtp': 'vim' }
+" Plug 'sonph/onehalf', { 'rtp': 'vim' }
+
+Plug 'danilo-augusto/vim-afterglow'
 
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
@@ -50,7 +52,7 @@ Plug 'psf/black', { 'tag': '19.10b0', 'for': 'python' }
 call plug#end()
 
 let g:lightline = {
-    \ 'colorscheme': 'onehalfdark',
+    \ 'colorscheme': 'jellybeans',
     \ 'active': {
     \   'left': [ [ 'mode', 'paste' ], [ 'filename' ] ],
     \   'right': [ [ 'lineinfo' ], ['percent'], [ 'fileencoding', 'filetype'] ]
@@ -188,7 +190,10 @@ set guicursor=
 set t_Co=256
 set background=dark
 
-colorscheme onehalfdark
+let g:afterglow_inherit_background = 1
+let g:afterglow_italic_comments = 1
+
+colorscheme afterglow
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
