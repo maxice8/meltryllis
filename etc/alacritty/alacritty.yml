@@ -20,7 +20,7 @@ window:
   # If both are `0`, this setting is ignored.
   dimensions:
     columns: 122
-    lines: 33
+    lines: 34
 
   # Window padding (changes require restart)
   #
