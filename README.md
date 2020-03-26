@@ -44,3 +44,9 @@ LICENSE
 =======
 
 GPL-3.0-or-later
+
+COLORS
+======
+
+- #E53344
+- #FFDDDD
