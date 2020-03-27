@@ -6,7 +6,7 @@ input "1:1:AT_Translated_Set_2_keyboard" {
 }
 
 input "1739:30149:DELL07DE:00_06CB:75C5_Touchpad" {
-	events disabled
+#	events disabled
 	tap disabled
 	natural_scroll disabled
 }
