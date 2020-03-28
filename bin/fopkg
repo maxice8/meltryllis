@@ -40,41 +40,45 @@ grep -E -v "^https?:" /etc/apk/repositories > "$tmpdir"/local-repositories
 _carch="$(abuild -A)"
 
 # We need ncurses for this, lets clean up the terminal
-reset 
+clear
+
+# Create a package list that holds the name of the package
+# and the name of every subpackage
+pkglist="$pkgname"
+for pkg in $subpackages; do
+	pkglist="$pkglist ${pkg%%:*}"
+done
+
+oldpkgs="$(apk fetch \
+		  --repositories-file "$tmpdir"/remote-repositories \
+		  --simulate \
+		  $pkglist 2>/dev/null \
+		  | grep Downloading | sed 's/^Downloading //')"
 
 # Fetch all the APKs before doing the operations
-for i in $pkgname $subpackages; do
+for i in $pkglist; do
 	(
-	# Strip the separators and their contents from declaration of subpackages
-	# so: foo-doc:doc:noarch becomes foo-doc
-	_pkgname="${i%%:*}"
-
 	# shellcheck disable=SC2154
-	pkg="${_pkgname}-$pkgver-r$pkgrel"
+	pkg="$i-$pkgver-r$pkgrel"
 	pkgfile=${pkg}.apk
-
-	# We need to declare this here so the changes inside the loop change it
-	filepath=
 
 	# Try to get our package from our locally built and return early so we don't
 	# waste time trying to get a remote package
 	for repo in $(cat "$tmpdir"/local-repositories); do
 		if [ -f "$repo"/"$_carch"/"$pkgfile" ]; then
-			echo "$repo"/"$_carch"/"$pkgfile" > "$tmpdir"/"$_pkgname"
+			echo "$repo"/"$_carch"/"$pkgfile" > "$tmpdir"/"$i"
 			return 0
 		fi
 	done
 
-	# We reached here if we don't have a locally built package, so let's try to get
-	# the package from our cache and as a last resort fetch it
-	oldpkg="$(apk fetch --repositories-file "$tmpdir"/remote-repositories --simulate "$_pkgname" 2>/dev/null | grep Downloading | sed 's/^Downloading //')"
+	oldpkg="$(echo "$oldpkgs" | grep -o "^$i-[0-9].*")"
 
 	for candidate in /var/cache/apk/"$oldpkg".*.apk; do
 		if ! [ -f "$candidate" ]; then
 			continue
 		fi
 		printok "Found cached $oldpkg"
-		echo "$candidate" > "$tmpdir"/"$_pkgname"
+		echo "$candidate" > "$tmpdir"/"$i"
 		return 0
 	done
 
@@ -82,33 +86,26 @@ for i in $pkgname $subpackages; do
 	apk fetch \
 		--repositories-file "$tmpdir"/remote-repositories \
 		--output "$tmpdir" \
-		"$_pkgname" \
+		"$i" \
 		>/dev/null 2>&1 &&
 	printok "Fetched $oldpkg"
-	echo "$PWD"/"$oldpkg".apk > "$tmpdir"/"$_pkgname"
+	echo "$PWD"/"$oldpkg".apk > "$tmpdir"/"$i"
 	) &
 done
 wait
 
 # We need ncurses for this
-reset
+clear
 
-for i in $pkgname $subpackages; do
-	# Strip the separators and their contents from declaration of subpackages
-	# so: foo-doc:doc:noarch becomes foo-doc
-	_pkgname="${i%%:*}"
-
-	apk="$(cat "$tmpdir"/"$_pkgname")"
-
-	# We get into this block in case we are using remote packages that do not
-	# have the remote subpackages that were added on a local APKBUILD we are
-	# reading
-	if ! [ -f "$apk" ]; then
+for i in $pkglist; do
+	if ! [ -f "$tmpdir"/"$i" ]; then
 		continue
 	fi
 
+	apk="$(cat "$tmpdir"/"$i")"
+
 	{
-		msg "pkg=$_pkgname"
+		msg "pkg=$i"
 		tar -z --list --file="$apk" 2>/dev/null \
 			| grep -E -v '(^\.SIGN\.|^\.PKGINFO)' \
 			| sort ;

@@ -41,28 +41,37 @@ grep -E -v "^https?:" /etc/apk/repositories > "$tmpdir"/local-repositories
 _carch="$(abuild -A)"
 
 # We need ncurses for this, lets clean up the terminal
-reset 
+clear
+
+# Create a package list that holds the name of the package
+# and the name of every subpackage
+pkglist="$pkgname"
+for pkg in $subpackages; do
+	pkglist="$pkglist ${pkg%%:*}"
+done
+
+oldpkgs="$(apk fetch \
+		  --repositories-file "$tmpdir"/remote-repositories \
+		  --simulate \
+		  $pkglist 2>/dev/null \
+		  | grep Downloading | sed 's/^Downloading //')"
+
+if [ "$(echo "$oldpkgs" | grep -o "^$pkgname-[0-9].*")" = "$pkgname-$pkgver-r$pkgrel" ]; then
+	die "$pkgname-$pkgver-r$pkgrel is the same as upstream"
+fi
 
 # Fetch all the APKs before doing the operations
-for i in $pkgname $subpackages; do
+for i in $pkglist; do
 
 	(
-	# Strip the separators and their contents from declaration of subpackages
-	# so: foo-doc:doc:noarch becomes foo-doc
-	_pkgname="${i%%:*}"
-
 	# shellcheck disable=SC2154
-	pkg="${_pkgname}-$pkgver-r$pkgrel"
+	pkg="$i-$pkgver-r$pkgrel"
 	pkgfile=${pkg}.apk
 
 	# We need to declare this here so the changes inside the loop change it
 	oldapkpath='' newapkpath=''
 
-	# Check if our package and oldpkg matches
-	oldpkg="$(apk fetch --repositories-file "$tmpdir"/remote-repositories --simulate "$_pkgname" 2>/dev/null | grep Downloading | sed 's/^Downloading //')"
-	if [ "${oldpkg}" = "${pkg}" ]; then
-		die "the built package ($pkg) is the same as in-repo"
-	fi
+	oldpkg="$(echo "$oldpkgs" | grep -o "^$i-[0-9].*")"
 
 	for repo in $(cat "$tmpdir"/local-repositories); do
 		if [ -f "$repo"/"$_carch"/"$pkgfile" ]; then
@@ -85,29 +94,28 @@ for i in $pkgname $subpackages; do
 		apk fetch \
 			--repositories-file "$tmpdir"/remote-repositories \
 			--output "$tmpdir" \
-			"$_pkgname" \
+			"$i" \
 			>/dev/null 2>&1 &&
 		printok "Fetched $oldpkg"
 		oldapkpath="$PWD"/"$oldpkg".apk
 	fi
 
-	echo "$oldapkpath" > "$tmpdir"/old-"$_pkgname"
-	echo "$newapkpath" > "$tmpdir"/new-"$_pkgname"
+	echo "$oldapkpath" > "$tmpdir"/old-"$i"
+	echo "$newapkpath" > "$tmpdir"/new-"$i"
 	) &
 done
 wait
 
 # We need ncurses for this
-reset
+clear
 
-for i in $pkgname $subpackages; do
+for i in $pkglist; do
+	if ! [ -f "$tmpdir"/new-"$i" ]; then
+		continue
+	fi
 
-	# Strip the separators and their contents from declaration of subpackages
-	# so: foo-doc:doc:noarch becomes foo-doc
-	_pkgname="${i%%:*}"
-
-	oldapk="$(cat "$tmpdir"/old-"$_pkgname")"
-	newapk="$(cat "$tmpdir"/new-"$_pkgname")"
+	oldapk="$(cat "$tmpdir"/old-"$i")"
+	newapk="$(cat "$tmpdir"/new-"$i")"
 
 	[ -e "$oldapk" ] || oldapk=""
 	[ -f "$newapk" ] || continue
@@ -118,42 +126,42 @@ for i in $pkgname $subpackages; do
 				[ -z "$oldapk" ] || \
 				tar -z --list --file="$oldapk" 2>/dev/null \
 					| grep -E -v '(^\.SIGN\.|^\.PKGINFO)' \
-					| sort > "$tmpdir"/difflist-"$_pkgname"-old-"$attr"
+					| sort > "$tmpdir"/difflist-"$i"-old-"$attr"
 
 				tar -z --list --file="$newapk" \
 					| grep -E -v '(^\.SIGN\.|^\.PKGINFO)' \
-					| sort > "$tmpdir"/difflist-"$_pkgname"-new-"$attr"
+					| sort > "$tmpdir"/difflist-"$i"-new-"$attr"
 				;;
 			* )
 				[ -z "$oldapk" ] || \
 				tar -z --extract --to-stdout --file="$oldapk" '.PKGINFO' 2>/dev/null \
 					| grep "^$attr =" \
 					| sed "s/^$attr = //" \
-					| sort > "$tmpdir"/difflist-"$_pkgname"-old-"$attr"
+					| sort > "$tmpdir"/difflist-"$i"-old-"$attr"
 
 				tar -z --extract --to-stdout --file="$newapk" '.PKGINFO' \
 					| grep "^$attr = " \
 					| sed "s/^$attr = //" \
-					| sort > "$tmpdir"/difflist-"$_pkgname"-new-"$attr"
+					| sort > "$tmpdir"/difflist-"$i"-new-"$attr"
 
 				# When the user asks for size, we want to give them a human-readable size
 				if [ "$attr" = size ]; then
 					if [ -n "$oldapk" ]; then
-						filesize="$(cat "$tmpdir"/difflist-"$_pkgname"-old-"$attr")"
+						filesize="$(cat "$tmpdir"/difflist-"$i"-old-"$attr")"
 						# Most common size of the key
 						filesize=$((filesize - 4096))
-						echo "$filesize" > "$tmpdir"/difflist-"$_pkgname"-old-"$attr"
-						human "$tmpdir"/difflist-"$_pkgname"-old-"$attr"
+						echo "$filesize" > "$tmpdir"/difflist-"$i"-old-"$attr"
+						human "$tmpdir"/difflist-"$i"-old-"$attr"
 					fi
-					if [ -s "$tmpdir"/difflist-"$_pkgname"-new-"$attr" ]; then
-						human "$tmpdir"/difflist-"$_pkgname"-new-"$attr"
+					if [ -s "$tmpdir"/difflist-"$i"-new-"$attr" ]; then
+						human "$tmpdir"/difflist-"$i"-new-"$attr"
 					fi
 				fi
 
 				;;
 			esac
-		if ! [ -f "$tmpdir"/difflist-"$_pkgname"-old-"$attr" ]; then
-			touch "$tmpdir"/difflist-"$_pkgname"-old-"$attr"
+		if ! [ -f "$tmpdir"/difflist-"$i"-old-"$attr" ]; then
+			touch "$tmpdir"/difflist-"$i"-old-"$attr"
 		fi
 		pkg="${newapk%.apk}"
 		pkg="${pkg##*/}"
@@ -165,7 +173,7 @@ for i in $pkgname $subpackages; do
 			--unchanged-line-format='' \
 			--old-line-format="- %L" \
 			--new-line-format="+ %L" \
-			"$tmpdir"/difflist-"$_pkgname"-old-$attr \
-			"$tmpdir"/difflist-"$_pkgname"-new-$attr | colordiff
+			"$tmpdir"/difflist-"$i"-old-$attr \
+			"$tmpdir"/difflist-"$i"-new-$attr | colordiff
 	done
-done | less -r
+done | less -r --quit-if-one-screen
