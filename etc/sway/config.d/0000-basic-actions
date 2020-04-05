@@ -36,6 +36,8 @@ bindsym alt+l exec loginctl lock-session
 # Dismiss a notification
 bindsym $mod+Space exec makoctl dismiss
 
+exec swaybg -i ~/usr/walls/scp.jpg
+
 # Upstart integration
 exec initctl set-env --global WAYLAND_DISPLAY="$WAYLAND_DISPLAY"
 exec initctl set-env --global DISPLAY="$DISPLAY" # Required for XWayland
