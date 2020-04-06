@@ -6,6 +6,7 @@ import sys
 from os import environ, path, remove
 from typing import List, Optional
 
+from gi.repository import Notify
 from i3ipc import Con, Connection, Event
 from i3ipc.aio import Connection as AsyncConnection
 
@@ -14,6 +15,11 @@ SOCKET = path.join(environ["SESSION_DIR"], "alt-tab-daemon")
 if "ALT_TAB_DAEMON_DEBUG" in environ:
     print("Logging everything to stdout")
     logging.basicConfig(level=logging.DEBUG)
+
+
+def notify(title: str, message: str):
+    notification = Notify.Notification.new(title, message, "")
+    notification.show()
 
 
 def get_ids(container: Con) -> List[int]:
@@ -153,6 +159,9 @@ def main():
 
         await connection.main()
 
+    async def switch_focus(ids, index, message):
+        connection.command("[con_id=%s] focus" % next_prev(ids, index, message))
+
     async def read_socket(reader, writer):
         nonlocal ids, index
         """
@@ -197,7 +206,12 @@ def main():
             )
             return 1
 
-        await connection.command("[con_id=%s] focus" % next_prev(ids, index, message))
+        try:
+            await asyncio.wait_for(
+                switch_focus(ids, index, message), timeout=0.1,
+            )
+        except (asyncio.TimeoutError, asyncio.CancelledError):
+            notify("Error", "Failed to switch focus in 0.1 second, please restart sway")
 
         """
         Reload the information after running the command
@@ -219,6 +233,8 @@ def main():
 
 
 if __name__ == "__main__":
+    Notify.init(path.basename(__file__))
+    notify("Initialized", "Now running")
     if path.exists(SOCKET):
         """
         Remove the SOCKET path
