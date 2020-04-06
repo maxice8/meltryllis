@@ -1,3 +1,4 @@
+#!/usr/bin/python3.8
 from os import path
 from threading import Thread
 from time import sleep
@@ -7,7 +8,6 @@ from i3ipc import Connection, Event
 
 AC_TRANS = 1  # opacity of active window
 INAC_TRANS = 0.7  # opacity of inactive windows
-FLOAT_INAC = 0.7  # opacity of inactive floating windows
 FADE_TIME = 0.2  # time taken for fade to complete
 FRAME_T = 0.01  # time between each opacity change
 
@@ -92,30 +92,19 @@ class Fader:
         if self.current_win.id == e.container.id:
             return
 
-        if self.current_win.type == "floating_con":
-            trans = FLOAT_INAC
-        else:
-            trans = INAC_TRANS
-
         if e.container.id == self.new_win:
-            change_opacity(self.current_win, trans)
+            change_opacity(self.current_win, INAC_TRANS)
             change_opacity(e.container, AC_TRANS)
         else:
-            self.add_fade(self.current_win, AC_TRANS, trans, FADE_TIME)
-            if e.container.type == "floating_con":
-                self.add_fade(e.container, FLOAT_INAC, AC_TRANS, FADE_TIME)
-            else:
-                self.add_fade(e.container, INAC_TRANS, AC_TRANS, FADE_TIME)
+            self.add_fade(self.current_win, AC_TRANS, INAC_TRANS, FADE_TIME)
+            self.add_fade(e.container, INAC_TRANS, AC_TRANS, FADE_TIME)
             self.start_fader()
 
         self.current_win = e.container
         self.new_win = None
 
     def on_window_new(self, ipc, e):
-        if e.container.type == "floating_con":
-            change_opacity(e.container, FLOAT_INAC)
-        else:
-            change_opacity(e.container, INAC_TRANS)
+        change_opacity(e.container, INAC_TRANS)
         self.new_win = e.container.id
 
     def on_window_floating(self, ipc, e):
