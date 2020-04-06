@@ -1,9 +1,13 @@
 font=BlexMono Nerd Font 10
 background-color=#282c34
 text-color=#dcdfe4
-margin=8
+layer=overlay
+width=288
+height=200
+margin=4
 padding=4
 border-size=2
 border-color=#ebdbb2
 markup=1
 default-timeout=3000
+format=<b>%s</b> (%a)\n%b
