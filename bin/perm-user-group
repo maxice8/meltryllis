@@ -1,4 +1,4 @@
 #!/bin/sh
 for file in "$@"; do
-	stat -c "%a %U %G" "$file"
+	stat -c "%n %a %U %G" "$file"
 done
