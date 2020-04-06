@@ -12,10 +12,6 @@ from i3ipc.aio import Connection as AsyncConnection
 
 SOCKET = path.join(environ["SESSION_DIR"], "alt-tab-daemon")
 
-if "ALT_TAB_DAEMON_DEBUG" in environ:
-    print("Logging everything to stdout")
-    logging.basicConfig(level=logging.DEBUG)
-
 
 def notify(title: str, message: str):
     notification = Notify.Notification.new(title, message, "")
@@ -95,18 +91,14 @@ def main():
     ids = None
     index = None
 
-    def refresh(connection):
-        nonlocal container, ids, index
-        container = connection.get_tree()
-        container = container.find_focused()
-        ids = get_ids(container)
-        ids.sort()
-        if len(ids) > 0:
-            index = find_in_list(ids, container.id)
-            logging.info("ids in container: %s" % ids)
-            logging.info("index in container: %s" % index)
-
-    refresh(connection)
+    container = connection.get_tree()
+    container = container.find_focused()
+    ids = get_ids(container)
+    ids.sort()
+    if len(ids) > 0:
+        index = find_in_list(ids, container.id)
+        logging.info("ids in container: %s" % ids)
+        logging.info("index in container: %s" % index)
 
     async def refresh_async(connection, _):
         nonlocal container, ids, index
@@ -124,10 +116,8 @@ def main():
             connection = await AsyncConnection(
                 socket_path=None, auto_reconnect=True
             ).connect()
-        except:
-            logging.error(
-                "Failed to connect to sway socket on event_loop()", sys.exc_info()[0]
-            )
+        except Exception as e:
+            logging.error("Error in event_loop(): {}".format(e))
             return 1
 
         await connection.subscribe([Event.WINDOW])
@@ -159,10 +149,13 @@ def main():
 
         await connection.main()
 
-    async def switch_focus(ids, index, message):
-        connection.command("[con_id=%s] focus" % next_prev(ids, index, message))
+    async def switch_focus(connection, ids, index, message):
+        res = connection.command("[con_id=%s] focus" % next_prev(ids, index, message))
+        for r in res:
+            if not r.success:
+                notify("Error", "Failed to switch focus: {}".format(r.error))
 
-    async def read_socket(reader, writer):
+    async def read_socket(reader, writer) -> bool:
         nonlocal ids, index
         """
         If we have only 1 id or even none then there is no reason to continue
@@ -170,7 +163,7 @@ def main():
         """
         if len(ids) < 2:
             logging.info("Asked for focus change on empty or single window workspace")
-            return None
+            return False
 
         """
         Read the data given to use via the socket we have and decode it
@@ -183,7 +176,7 @@ def main():
         """
         if not message:
             logging.warning("Given empty message on socket")
-            return None
+            return False
 
         """
         Check if we were given a valid string, we only accept next and prev as strings
@@ -194,32 +187,15 @@ def main():
             message = False
         else:
             logging.warning("Given invalid string, use 'prev' or 'next'")
-            return None
-
-        try:
-            connection = await AsyncConnection(
-                socket_path=None, auto_reconnect=False
-            ).connect()
-        except:
-            logging.error(
-                "Failed to connect to sway socket on read_socket()", sys.exc_info()[0]
-            )
-            return 1
+            return False
 
         try:
             await asyncio.wait_for(
-                switch_focus(ids, index, message), timeout=0.1,
+                switch_focus(Connection(), ids, index, message), timeout=0.1,
             )
-        except (asyncio.TimeoutError, asyncio.CancelledError):
-            notify("Error", "Failed to switch focus in 0.1 second, please restart sway")
-
-        """
-        Reload the information after running the command
-        await refresh_async(connection, None)
-
-        writer.write(data)
-        await writer.drain()
-        """
+        except asyncio.TimeoutError as e:
+            notify("Error", "Failed to switch focus in less than 0.1 second")
+            logging.error("Error on when focusing widnow: {}".format(e))
 
         writer.close()
         await writer.wait_closed()
@@ -233,6 +209,11 @@ def main():
 
 
 if __name__ == "__main__":
+    if "ALT_TAB_DAEMON_DEBUG" in environ:
+        print("Logging everything to stdout")
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.WARNING)
     Notify.init(path.basename(__file__))
     notify("Initialized", "Now running")
     if path.exists(SOCKET):
