@@ -11,4 +11,4 @@ for i = 3,#arg do
 end
 
 assert(sock:connect(path))
-assert(sock:send(msg))
+assert(sock:send(msg..'\n'))
