@@ -7,7 +7,7 @@ from gi.repository import Notify
 from i3ipc import Connection, Event
 
 AC_TRANS = 1  # opacity of active window
-INAC_TRANS = 0.7  # opacity of inactive windows
+INAC_TRANS = 0.8  # opacity of inactive windows
 FADE_TIME = 0.2  # time taken for fade to complete
 FRAME_T = 0.01  # time between each opacity change
 
