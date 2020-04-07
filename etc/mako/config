@@ -1,4 +1,4 @@
-font=BlexMono Nerd Font 10
+font=BlexMono Nerd Font 9
 background-color=#282c34
 text-color=#dcdfe4
 layer=overlay
@@ -10,5 +10,5 @@ border-size=2
 border-color=#ebdbb2
 markup=1
 default-timeout=3000
-format=<b>%s</b>\n(%a)\n\n%b
+format=<u><b>%s</b></u>\n<small>(%a)</small>\n\n%b
 max-visible=2
