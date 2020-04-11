@@ -143,7 +143,7 @@ for apkbuild in $(changed_files '**/APKBUILD'); do
 	IFS="$OLDIFS"
 	if [ -z "${NOPKGVERCHECK:-}" ] && isupdate "$apkbuild"; then
 		grep -q '^pkgrel=0$' "$apkbuild" || {
-			error "pkgrel should be 0 for %s\n" "$apkbuild" >&2
+			error "pkgrel should be 0 for $apkbuild" >&2
 			return 1
 		}
 	fi
