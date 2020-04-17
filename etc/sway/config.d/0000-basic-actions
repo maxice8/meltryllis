@@ -36,7 +36,7 @@ bindsym alt+l exec loginctl lock-session
 # Dismiss a notification
 bindsym $mod+Space exec makoctl dismiss
 
-exec swaybg -i ~/usr/walls/scp.jpg
+exec swaybg -i ~/usr/Images/stingray.png -m fill
 
 # Upstart integration
 exec initctl set-env --global WAYLAND_DISPLAY="$WAYLAND_DISPLAY"
