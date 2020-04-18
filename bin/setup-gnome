@@ -35,4 +35,5 @@ doas apk add --virtual gnome-apps \
 	dconf-editor \
 	gnome-calendar \
 	gnome-characters \
+	gnome-system-monitor \
 	eog
