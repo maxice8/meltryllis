@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# Add keybindings for certain places
+#
+for ws in 1 2 3 4 5 6; do
+	gsettings set \
+		org.gnome.desktop.wm.keybindings switch-to-workspace-$ws \
+		"['<Super>$ws']"
+	gsettings set \
+		org.gnome.desktop.wm.keybindings move-to-workspace-$ws \
+		"['<Shift><Super>$ws']"
+done
+
+#
+# Alt-tab should only switch on its own workspace
+#
+gsettings set org.gnome.shell.app-switcher current-workspace-only true
+
+#
+# Create virtual package called gnome-enty-apps that has all the apps
+# from gnome-apps that we want
+#
+doas apk add --virtual gnome-apps \
+	nautilus \
+	gpaste \
+	gnome-weather \
+	gnome-tweaks \
+	gnome-software \
+	gnome-documents \
+	gnome-disk-utility \
+	gnome-calculator \
+	gnome-photos \
+	gnome-power-manager \
+	gnome-screenshot \
+	dconf-editor \
+	gnome-calendar \
+	gnome-characters \
+	eog
