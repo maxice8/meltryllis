@@ -17,6 +17,13 @@ done
 gsettings set org.gnome.shell.app-switcher current-workspace-only true
 
 #
+# Super + R to run commands, i use it a lot it is better than the default
+# of Alt + F2
+#
+gsettings set org.gnome.desktop.wm.keybindings panel-run-dialog \
+	"['<Super>r']"
+
+#
 # Create virtual package called gnome-enty-apps that has all the apps
 # from gnome-apps that we want
 #
