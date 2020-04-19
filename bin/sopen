@@ -1,7 +1,0 @@
-#!/bin/sh
-
-cmd="$1"
-shift
-arg="$@"
-
-exec initctl emit cmd "cmd=${cmd}" "arg=${arg}" "id=$(uuidgen)"
