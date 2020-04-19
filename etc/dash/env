@@ -1,16 +1,3 @@
-#
-# Get some environment variables from 'startup'
-#
-if [ -n "$(initctl get-env SSH_AUTH_SOCK 2>/dev/null)" ]; then
-	SSH_AUTH_SOCK="$(initctl get-env SSH_AUTH_SOCK 2>/dev/null)"
-	export SSH_AUTH_SOCK
-fi
-
-if [ -n "$(initctl get-env SSH_AGENT_PID 2>/dev/null)" ]; then
-	SSH_AGENT_PID="$(initctl get-env SSH_AGENT_PID 2>/dev/null)"
-	export SSH_AGENT_PID
-fi
-
 case $- in
   *i* )
     test -n "$NOFISH" && return

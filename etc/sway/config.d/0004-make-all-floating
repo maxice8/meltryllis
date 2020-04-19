@@ -1,4 +1,0 @@
-# Make so all windows are floating with no borders and have the
-# focus.
-for_window [class="[.]*"] floating enable, focus, border none;
-for_window [app_id="[.]*"] floating enable, focus, border none;
