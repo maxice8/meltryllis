@@ -3,9 +3,11 @@
 # Add keybindings for certain places
 #
 for ws in 1 2 3 4 5 6; do
+	msg Setting switch to workspace $ws to Super + $ws
 	gsettings set \
 		org.gnome.desktop.wm.keybindings switch-to-workspace-$ws \
 		"['<Super>$ws']"
+	msg Setting move window to workspace $ws to Shift + Super + $ws
 	gsettings set \
 		org.gnome.desktop.wm.keybindings move-to-workspace-$ws \
 		"['<Shift><Super>$ws']"
@@ -14,12 +16,14 @@ done
 #
 # Alt-tab should only switch on its own workspace
 #
+msg Making Alt-Tab work only on windows of the same workspace
 gsettings set org.gnome.shell.app-switcher current-workspace-only true
 
 #
 # Super + R to run commands, i use it a lot it is better than the default
 # of Alt + F2
 #
+msg Making command run dialog be activated via Super + r
 gsettings set org.gnome.desktop.wm.keybindings panel-run-dialog \
 	"['<Super>r']"
 
@@ -27,6 +31,7 @@ gsettings set org.gnome.desktop.wm.keybindings panel-run-dialog \
 # Create virtual package called gnome-enty-apps that has all the apps
 # from gnome-apps that we want
 #
+msg Installing virtual version of gnome-apps with only apps we want
 doas apk add --virtual gnome-apps \
 	nautilus \
 	gpaste \
@@ -43,4 +48,5 @@ doas apk add --virtual gnome-apps \
 	gnome-calendar \
 	gnome-characters \
 	gnome-system-monitor \
+	evince \
 	eog
