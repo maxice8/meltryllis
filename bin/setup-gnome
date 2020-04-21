@@ -38,7 +38,6 @@ doas apk add --virtual gnome-apps \
 	gnome-weather \
 	gnome-tweaks \
 	gnome-software \
-	gnome-documents \
 	gnome-disk-utility \
 	gnome-calculator \
 	gnome-photos \
@@ -48,5 +47,4 @@ doas apk add --virtual gnome-apps \
 	gnome-calendar \
 	gnome-characters \
 	gnome-system-monitor \
-	evince \
-	eog
+	gnome-documents
