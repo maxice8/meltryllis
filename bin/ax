@@ -357,7 +357,6 @@ case "$cmd" in
 	mr)
 		git add "$branch" || return 1
 		gc || return 1
-		gp || return 1
 		mkmr -y
 		;;
 	f)
