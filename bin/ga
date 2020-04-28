@@ -1,2 +1,3 @@
-#!/bin/sh
-git add "$@"
+#!/usr/bin/ion
+exec git add @args[1..]
+
