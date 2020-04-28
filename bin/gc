@@ -1,4 +1,2 @@
-#!/bin/sh
-# let it run the hooks
-git commit --no-edit "$@"
-
+#!/usr/bin/ion
+exec git commit --no-edit @args[1..]
