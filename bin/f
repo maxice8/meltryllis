@@ -2,5 +2,5 @@
 if test $len(@args) -eq 1
 	exec ranger
 else
-	exec ranger "$@"
+	exec ranger @args[1..]
 end
