@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/usr/bin/ion
 #
 # Add keybindings for certain places
 #
-for ws in 1 2 3 4 5 6; do
+for ws in 1 2 3 4 5 6
 	msg Setting switch to workspace $ws to Super + $ws
 	gsettings set \
 		org.gnome.desktop.wm.keybindings switch-to-workspace-$ws \
@@ -11,7 +11,7 @@ for ws in 1 2 3 4 5 6; do
 	gsettings set \
 		org.gnome.desktop.wm.keybindings move-to-workspace-$ws \
 		"['<Shift><Super>$ws']"
-done
+end
 
 #
 # Alt-tab should only switch on its own workspace
