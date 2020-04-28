@@ -1,6 +1,3 @@
-#!/bin/sh
-format="$1"
-url="$2"
-shift
-shift
-youtube-dl -i --audio-format best --extract-audio --audio-format "$format" "$url"
+#!/usr/bin/ion
+test $len(@args) -lt 3 && exit 1
+exec youtube-dl -i --audio-format best --extract-audio --audio-format @args[1] @args[2]
