@@ -1,2 +1,6 @@
-#!/bin/sh
-exec "${EDITOR:-'vi'}" "$@"
+#!/usr/bin/ion
+if test -n $EDITOR
+	exec $EDITOR @args[1..]
+else
+	exec vi @args[1..]
+end
