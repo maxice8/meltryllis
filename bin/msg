@@ -1,0 +1,2 @@
+#!/usr/bin/ion
+echo ${color::cyan}'>>>' ${color::reset}@args[1..]
