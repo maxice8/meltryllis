@@ -1,6 +1,6 @@
 #!/usr/bin/ion
 if test $len(@args) -eq 1
-	let args = [ @args $(git current-branch) ]
+	let args ++= $(git current-branch)
 end
 
 let remote = $(guess-remote)
