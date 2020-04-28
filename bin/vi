@@ -1,2 +1,2 @@
-#!/bin/sh
-exec nvim "$@"
+#!/usr/bin/ion
+exec nvim @args[1..]
