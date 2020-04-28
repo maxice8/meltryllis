@@ -4,6 +4,8 @@
 " Start pathogen
 call plug#begin('~/etc/nvim/autoload')
 
+Plug 'vmchale/ion-vim', { 'for': 'ion' }
+
 " Better visuals for line indentation
 Plug 'Yggdroot/indentLine'
 
