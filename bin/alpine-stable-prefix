@@ -1,17 +1,12 @@
-#!/bin/sh
-[ -d .git ] || exit 1
+#!/usr/bin/ion
+exists -d .git || exit
 
-if [ "$1" ]; then
-	branch="$1"
-else
-	branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
-fi
+if test $len(@args) -eq 1
+	let args ++= $(git current-branch)
+end
 
-# Only work on supported alpine releases.
-case "$branch" in
-	3.11-*) echo 3.11 ;;
-	3.10-*) echo 3.10 ;;
-	3.9-*) echo 3.9 ;;
-	3.8-*) echo 3.8 ;;
-	*) exit 1 ;;
-esac
+for branch in @args[1..]
+	for ver in 3.11 3.10 3.9 3.8
+		starts-with $branch $ver && echo $ver
+	end
+end
