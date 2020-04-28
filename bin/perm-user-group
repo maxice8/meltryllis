@@ -1,4 +1,6 @@
-#!/bin/sh
-for file in "$@"; do
+#!/usr/bin/ion
+test $len(@args) -eq 1 && exit 1
+for file in @args[1..]
+	test -f $file || continue
 	stat -c "%n %a %U %G" "$file"
-done
+end
