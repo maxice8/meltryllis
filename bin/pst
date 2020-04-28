@@ -1,4 +1,0 @@
-#!/bin/sh
-# Seattle date
-# convert from Brazil to Seattle
-TZ=America/Los_Angeles date -d "TZ=\"Brazil/East\" $*"
