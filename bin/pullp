@@ -1,22 +1,19 @@
-#!/bin/sh
-_REALBASE="$(alpine-stable-prefix)"
-if [ -n "$_REALBASE" ]; then
-	_REALBASE="$_REALBASE-stable"
+#!/usr/bin/ion
+let _REALBASE = $(alpine-stable-prefix)
+if exists -s _REALBASE
+	let _REALBASE ++= -stable
 else
-	_REALBASE=master
-fi
+	let _REALBASE = master
+end
 
-# gitstream is the git remote that i push via SSH
-# to alpine, in the future this will be joined into
-# upstream which will hold gitlab
-if ! remote="$(guess-remote)"; then
+let remote = $(guess-remote)
+if not exists -s remote
 	exit 1
-fi
+end
 
-branch="$(git-current-branch)"
+let branch = $(git-current-branch)
+let url = $(git config --local remote.$remote.url)
 
-url="$(git config --local remote.$remote.url)"
-
-git pull --quiet $remote --rebase "$_REALBASE" && \
+git pull --quiet $remote --rebase $_REALBASE && \
 	printok "Rebased '$branch' on '$remote/$_REALBASE' from '$url'" || \
 	printerr "Failed to rebase '$branch' on '$remote/$_REALBASE' from '$url'"
