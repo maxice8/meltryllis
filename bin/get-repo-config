@@ -1,53 +1,60 @@
-#!/bin/sh
+#!/usr/bin/ion
+test $len(@args) -eq 1 && exit 1
 
-username() {
+fn username
 	git config --get user.name
-}
+end
 
-remote_url() {
-	if git config --get remote.upstream.url >/dev/null; then
+fn remote_url
+	if git config --get remote.upstream.url >/dev/null
 		git config --get remote.upstream.url
 		return 0
-	fi
+	end
 
-	if git config --get remote.origin.url >/dev/null; then
+	if git config --get remote.origin.url >/dev/null
 		git config --get remote.origin.url
 		return 0
-	fi
-}
+	end
+end
 
-repo_name() {
-	basename "$(remote_url)" | sed 's|.git$||g'
-}
+fn repo_name
+	echo $basename($regex_replace($(remote_url) '.git$' ' '))
+end
 
-repo_owner() {
-	basename "$(dirname "$(remote_url)")"
-}
+fn repo_owner
+	echo $basename($parent($(remote_url)))
+end
 
-origin_remote_url() {
+fn origin_remote_url
 	git config --get remote.origin.url >/dev/null || return $?
 
 	git config --get remote.origin.url
-}
+end
 
-origin_repo_name() {
-	basename "$(origin_remote_url)" | sed 's|.git$||g'
-}
+fn origin_repo_name
+	echo $basename($regex_replace($(origin_remote_url) '.git$' ' '))
+end
 
-origin_repo_owner() {
-	origin_remote_url="$(origin_remote_url)"
-	if echo "$origin_remote_url" | grep -q '^git@'; then
-		dirname "$(echo "$origin_remote_url" | rev | cut -d : -f1 | rev)"
+fn origin_repo_owner
+	let origin_remote_url = $(origin_remote_url)
+	if starts-with $origin_remote_url 'git@'
+		echo $parent(@split($origin_remote_url :))
 	else
-		basename "$(dirname "$origin_remote_url")"
-	fi
-}
+		echo $basename($parent($origin_remote_url))
+	end
+end
 
-case "$1" in
-	username) username ;;
-	repo-name) repo_name ;;
-	repo-owner) repo_owner ;;
-	origin-repo-name) origin_repo_name ;;
-	origin-repo-owner) origin_repo_owner ;;
-	*) exit 1 ;;
-esac
+for opt in @args[1..]
+	match $opt
+		case username
+			username
+		case repo-name
+			repo_name
+		case repo-owner
+			repo_owner
+		case origin-repo-name
+			origin_repo_name
+		case origin-repo-owner
+			origin_repo_owner
+	end
+end
