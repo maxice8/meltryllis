@@ -5,9 +5,7 @@ if test $len(@args) -lt 3
 	let args ++= @args[1]-$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)
 end
 
-exists -s TARGET_BRANCH || let TARGET_BRANCH = master
-
-git switch --force-create @args[2] $TARGET_BRANCH
+git switch --force-create @args[2] $or($TARGET_BRANCH, "master")
 if not mr @args[1]
 	printerr "Failed to apply '@args[1]'. Dropping to shell"
 	${env::SHELL} -l
