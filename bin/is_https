@@ -1,8 +1,8 @@
 #!/usr/bin/ion
 if test $len(@args) -eq 1
-	read input
-	if not starts-with $input https://
-		starts-with $input http://
+	read url
+	if not starts-with $url https://
+		starts-with $url http://
 		exit
 	else
 		exit 0
