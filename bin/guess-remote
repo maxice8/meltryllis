@@ -1,9 +1,10 @@
 #!/usr/bin/ion
 if git config remote.upstream.url >/dev/null
 	echo upstream
+	exit
 else if git config remote.origin.url >/dev/null
 	echo origin
+	exit
 else
-	printerr "Failed to guess remote, tried 'upstream', and 'origin'"
 	exit 1
 end
