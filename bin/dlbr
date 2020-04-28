@@ -1,38 +1,37 @@
-#!/bin/sh
+#!/usr/bin/ion
 # SPDX-License-Identifier: GPL-3.0-only
 # dlbr BRANCH... - Delete local and remote branches matching name
-delete_remote_branch() {
-	git push --quiet origin --delete "$1" 2>/dev/null || \
-		{
-			[ $? = 1 ] ||
-				printerr "Failed to delete remote '$1'" ;
-				return 0
-		 } && \
-		 printok "Deleted remote '$1'"
-}
+fn delete_remote_branch branch:str
+	if not git push --quiet origin --delete $branch 2>/dev/null
+		if $? -ne 1
+			printerr "Failed to delete remote '$branch'"
+			return 0
+		end
+	else
+		printok "Deleted remote '$branch'"
+	end
+end
 
-delete_local_branch() {
-	if ! git rev-parse --verify "$1" >/dev/null 2>&1
-	then
+fn delete_local_branch branch:str
+	if not git rev-parse --verify "$branch" &>/dev/null
 		return 0
-	fi
+	end
 
-	if [ "$(git-current-branch)" = "$1" ]
-	then
-		PRINTOK_QUIET=yes gbr master
-	fi
+	if test $(git-current-branch) = $branch
+		export PRINTOK_QUIET=yes
+		gbr master
+	end
 
-	git branch -D "$1" >/dev/null 2>&1 ||
-		{ printerr "Failed to delete local '$1'"; return 0 ; } &&
-		printok "Deleted local '$1'"
-}
+	if not git branch -D "$branch" &>/dev/null
+		printerr "Failed to delete local '$branch'"
+		return 1
+	else
+		printok "Deleted local '$branch'"
+	end
+end
 
-while [ $# -gt 0 ]
-do
-	[ -n "$DLBR_LOCAL" ] || delete_remote_branch "$1" &
-	delete_local_branch "$1" &
-	shift
-done
-
-wait
-
+test $len(@args) -eq 1 && exit 1
+for branch in @args[1..]
+	not exists -s DLBR_LOCAL && delete_remote_branch $branch
+	delete_local_branch $branch
+end
