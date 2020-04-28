@@ -1,0 +1,10 @@
+#!/usr/bin/ion
+let bindir = "$HOME"/bin
+
+for binary in @args[1..]
+	$EDITOR $bindir/$binary
+
+	if test -f $bindir/$binary
+		chmod +x $bindir/$binary
+	end
+end
