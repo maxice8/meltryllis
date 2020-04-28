@@ -13,3 +13,4 @@ if not starts-with @args[1] https://
 	starts-with @args[1] http://
 	exit
 end
+exit 0
