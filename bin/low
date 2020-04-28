@@ -1,5 +1,6 @@
 #!/usr/bin/ion
 test $len(@args) -eq 1 && exit 1
 for document in @args[1..]
+	exists -f $document || continue
 	glow --style dark $document | less -r
 end
