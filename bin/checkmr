@@ -1,16 +1,15 @@
-#!/bin/sh
-set -e
+#!/usr/bin/ion
+test $len(@args) -eq 1 && exit 1
 
-# If no branch name is given to us then create a random one
-if [ -z "$2" ]; then
-	branch="$1"-"$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)"
-else
-	branch="$2"
-fi
+if test $len(@args) -lt 3
+	let args = [ @args @args[1]-$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null) ]
+end
 
-git switch --force-create "$branch" "${TARGET_BRANCH:-master}"
-mr "$1" || {
-	printerr "Failed to apply '$1'. Dropping to shell"
-	${SHELL:-sh} -l
-}
+exists -s TARGET_BRANCH || let TARGET_BRANCH = master
+
+git switch --force-create @args[2] $TARGET_BRANCH
+if not mr @args[1]
+	printerr "Failed to apply '@args[1]'. Dropping to shell"
+	${env::SHELL} -l
+end
 pullp
