@@ -47,4 +47,5 @@ doas apk add --virtual gnome-apps \
 	gnome-calendar \
 	gnome-characters \
 	gnome-system-monitor \
-	gnome-documents
+	gnome-documents \
+	gnome-clocks
