@@ -2,7 +2,7 @@
 test $len(@args) -eq 1 && exit 1
 
 if test $len(@args) -lt 3
-	let args ++= @args[1]-$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 2>/dev/null)
+	let args ++= @args[1]-$(</dev/urandom tr -dc A-Za-z0-9-_ | dd bs=22 count=1 ^>/dev/null)
 end
 
 git switch --force-create @args[2] $or($TARGET_BRANCH, "master")
