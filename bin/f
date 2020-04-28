@@ -1,2 +1,6 @@
-#!/bin/sh
-exec ranger "$@"
+#!/usr/bin/ion
+if test $len(@args) -eq 1
+	exec ranger
+else
+	exec ranger "$@"
+end
