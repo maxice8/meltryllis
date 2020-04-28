@@ -1,2 +1,8 @@
-#!/bin/sh
-printf "%s\\n" "$1" | grep -q '^git@'
+#!/usr/bin/ion
+if test $len(@args) -eq 1
+	read input
+	starts-with $input 'git@'
+	exit
+end
+
+starts-with @args[1] 'git@'
