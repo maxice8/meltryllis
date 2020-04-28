@@ -1,2 +1,3 @@
-#!/bin/sh
-git push -f -u origin $(git current-branch) "$@"
+#!/usr/bin/ion
+test $len(@args) -eq 1 && exec git push -f -u $(git current-branch)
+exec git push -f -u origin $(git current-branch) @args[1..]
