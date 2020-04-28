@@ -1,2 +1,15 @@
-#!/bin/sh
-printf "%s\\n" "$1" | grep -q '://'
+#!/usr/bin/ion
+if test $len(@args) -eq 1
+	read input
+	if not starts-with $input https://
+		starts-with $input http://
+		exit
+	else
+		exit 0
+	end
+end
+
+if not starts-with @args[1] https://
+	starts-with @args[1] http://
+	exit
+end
