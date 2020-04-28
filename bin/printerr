@@ -1,4 +1,4 @@
 #!/usr/bin/ion
 exists -s PRINTERR_QUIET && exit
-test $len(@args) -eq 1 && exit
+test $len(@args) -eq 1 && exit 1
 echo ${color::red}'>>>' ERROR:${color::reset} @args[1..]
