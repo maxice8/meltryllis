@@ -1,28 +1,27 @@
-#!/bin/sh
+#!/usr/bin/ion
 # Show git branches and switch to them
-if [ ! -e .git ] || [ -z "$1" ]; then
-	exit 1
-fi
+exists -d .git || exit
+test $len(@args) -eq 1 && exit 1
 
-if ! remote="$(PRINTERR_QUIET=1 guess-remote)"; then
-	exit 1
-fi
+let remote = $(guess-remote)
 
-for arg; do
-	if git rev-parse --quiet --verify "$arg" >/dev/null 2>&1; then
-		git switch --quiet "$arg" || \
-			printerr "Failed to switch to '$arg'" && \
-			printok "Switched to '$arg'"
+exists -s remote || exit
+
+for branch in @args[1..]
+	if git rev-parse --quiet --verify $branch &>/dev/null
+		git switch --quiet $branch || \
+			printerr "Failed to switch to '$branch'" && \
+			printok "Switched to '$branch'"
 	else
-		_REALBASE="$(alpine-stable-prefix "$arg")"
-		if [ -n "$_REALBASE" ]; then
-			git switch --quiet --force-create "$arg" $remote/"$_REALBASE"-stable || \
-				printerr "Failed to switch to '$arg'" && \
-				printok "Switched to newly created '$arg'"
+		let _REALBASE = $(alpine-stable-prefix $branch)
+		if exists -s _REALBASE
+			git switch --quiet --force-create $branch $remote/$_REALBASE-stable || \
+				printerr "Failed to switch to '$branch'" && \
+				printok "Switched to newly created '$branch'"
 		else
-			git switch --quiet --force-create "$arg" $remote/master || \
-				printerr "Failed to switch to '$arg'" && \
-				printok "Switched to newly created '$arg'"
-		fi
-	fi
-done
+			git switch --quiet --force-create $branch $remote/master || \
+				printerr "Failed to switch to '$branch'" && \
+				printok "Switched to newly created '$branch'"
+		end
+	end
+end
