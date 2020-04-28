@@ -1,21 +1,25 @@
-#!/bin/sh
-set -eu
+#!/usr/bin/ion
 
-bindir=$HOME/bin
-gitdir=$HOME/.ionwall
+let bindir = $HOME/bin
+let gitdir = $HOME/.ionwall
 
 cd "$HOME"/.ionwall
 
-while [ $# -gt 0 ] ; do
-	if [ ! -e "${bindir}"/"$1" ]; then
-		printerr "[$1] not found"
+for binary in @args[1..]
+	if not test -e $bindir/$binary
+		printerr "[$binary] not found"
 	else
-		if [ -L "${bindir}"/"$1" ]; then
+		if test -L $bindir/$binary
 			return 1
 		else
-			(mv -- "${bindir}"/"$1" bin/"$1" || (printerr "[$1] failed to move"; return 1 ) )
-			(ln -sf -- "$gitdir"/bin/"$1" "$bindir" || (printerr "[$1] failed to make symlink"; return 1 ) )
-		fi
-	fi
-	shift
-done
+			if not mv -- $bindir/$binary bin/$binary
+				printerr "[$binary] failed to move"
+				return 1
+			end
+			if not ln -sf -- $gitdir/bin/$binary $bindir
+				printerr "[$binary] failed to make symlink"
+				return 1
+			end
+		end
+	end
+end

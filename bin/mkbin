@@ -1,13 +1,10 @@
-#!/bin/sh
-set -eu
+#!/usr/bin/ion
+let bindir = "$HOME"/bin
 
-bindir="$HOME"/bin
+for binary in @args[1..]
+	$EDITOR $bindir/$binary
 
-while [ $# -gt 0 ]; do
-	e "${bindir}"/"$1"
-
-	if [ -f "${bindir}"/"$1" ]; then
-		chmod +x "${bindir}"/"$1"
-	fi
-	shift
-done
+	if test -f $bindir/$binary
+		chmod +x $bindir/$binary
+	end
+end
