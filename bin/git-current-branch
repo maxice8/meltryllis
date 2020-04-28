@@ -1,2 +1,2 @@
-#!/bin/sh
-git rev-parse --abbrev-ref HEAD
+#!/usr/bin/ion
+exec git rev-parse --abbrev-ref HEAD
