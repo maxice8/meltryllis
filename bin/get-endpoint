@@ -1,16 +1,17 @@
-#!/bin/sh
-if [ "$1" ]; then
-	ENDPOINT="$(git config remote."$1".url | cut -d / -f -5)"
-fi
-if [ -z "$ENDPOINT" ]; then
-	ENDPOINT="$(git config remote.upstream.url | cut -d / -f -5)"
-fi
-if [ -z "$ENDPOINT" ]; then
-	ENDPOINT="$(git config remote.origin.url | cut -d / -f -5)"
-fi
+#!/usr/bin/ion
+let endpoint = ''
+if test $len(@args) -gt 1
+	let endpoint = $(git config remote.@args[1].url | cut -d / -f -5)
+end
+if test -z $endpoint
+	let endpoint = $(git config remote.upstream.url | cut -d / -f -5)
+end
+if test -z $endpoint
+	let endpoint = $(git config remote.origin.url | cut -d / -f -5)
+end
 
-if is_ssh "$ENDPOINT"; then
-	ssh_to_https "$ENDPOINT"
-elif is_https "$ENDPOINT"; then
-	printf "%s\\n" "$ENDPOINT" | sed -e 's|.git$||g'
-fi
+if is_ssh $endpoint
+	ssh_to_https $endpoint
+else if is_https $endpoint
+	echo $endpoint | sed 's|.git$||'
+end
