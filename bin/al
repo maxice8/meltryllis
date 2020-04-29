@@ -82,14 +82,6 @@ end
 cd $APORTSDIR
 
 #
-# No package name given, append the branch name (which we assume to be the package)
-# in the args
-#
-if test $len(@args) -eq 2
-	let args ++= $(git-current-branch)
-end
-
-#
 # Define path here outside the scope of the next match because we will need to use
 # it later, if we don't it define outside the scope it will be lost
 #
