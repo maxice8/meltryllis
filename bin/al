@@ -357,74 +357,6 @@ end
 
 exit 0
 
-# rename_repo() {
-# 	local src="${2:-$branch}" dst="$1" pkgname='' repo=''
-# 
-# 	if [ -z "$src" ]; then
-# 		printf "rename operation failed: no package to be moved given\n" >&2
-# 		return 1
-# 	fi
-# 
-# 	# Get repo from the branch
-# 	pkgname="$(echo "$src" | cut -d / -f2)"
-# 	repo="$(echo "$src" | cut -d / -f1)"
-# 
-# 	# If they are the same then the package was given to us
-# 	# without a repository, so try to guess it
-# 	if [ "$pkgname" = "$repo" ]; then
-# 		if [ -d main/"$src" ]; then
-# 			repo=main
-# 		elif [ -d community/"$src" ]; then
-# 			repo=community
-# 		elif [ -d testing/"$src" ]; then
-# 			repo=testing
-# 		elif [ -d unmaintained/"$src" ]; then
-# 			repo=unmaintained
-# 		else
-# 			printf "rename operation failed: package '%s' doesn't exist\n" "$dst"
-# 			print_vars from "$src" to "$dst"
-# 			return 1
-# 		fi
-# 
-# 		from="$repo"/"$pkgname"
-# 	else
-# 		from="$src"
-# 	fi
-# 
-# 	# Check if the package doesn't exist and error out
-# 	if [ ! -d "$from" ]; then
-# 		printf "rename operation failed: package '%s' doesn't exist\n" "$src"
-# 		print_vars from "$from" dst "$dst"
-# 		return 1
-# 	fi
-# 
-# 	# Check if the package name is already taken in any repo
-# 	# realrepo is set if the name is taken and the function
-# 	# errors out later
-# 	if [ -d main/"$dst" ]; then
-# 		realrepo=main
-# 	elif [ -d community/"$dst" ]; then
-# 		realrepo=community
-# 	elif [ -d testing/"$dst" ]; then
-# 		realrepo=testing
-# 	elif [ -d unmaintained/"$dst" ]; then
-# 		realrepo=unmaintained
-# 	fi
-# 
-# 	if [ "$realrepo" ]; then
-# 		printf "rename operation failed: package '%s' exists in '%s'\n" "$dst" "$realrepo"
-# 		print_vars from "$from" dst "$dst"
-# 		return 1
-# 	fi
-# 
-# 	git mv -f "$from" "$repo"/"$dst"
-# 
-# 	# Check if there is nothing cached and try to commit it
-# 	if isclean; then
-# 		NOAPKBUILD_LINT=1 NOAPORTS_LINT=1 NOPKGVERCHECK=1 git commit -m "${repo}/${dst}: rename from $pkgname"
-# 	fi
-# }
-# 
 # source_apkbuild() {
 # 	local apkbuild='' srcdir=''
 # 
@@ -502,7 +434,6 @@ exit 0
 # 			run $AX_ASUM unpack || return $?
 # 		fi
 # 		tmpsh "$builddir" ;;
-# 	r) rename_repo "$@" "$branch";;
 # 	w) mkgit "$@" "$branch";;
 # esac
 
