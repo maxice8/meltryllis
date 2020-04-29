@@ -78,12 +78,6 @@ source_apkbuild() {
 	export builddir
 }
 
-tmpsh() {
-	[ -z "$1" ] && return 1
-	cd "$1" || return $?
-	${SHELL:-sh} -l
-}
-
 mkgit() {
 	local builddir=''
 
@@ -106,8 +100,6 @@ mkgit() {
 	git init . 1>/dev/null && git add . && git commit -m "This Time" 1>/dev/null && {
 		printf "Started repo succesfully on %s\n" "$builddir"
 	}
-
-	tmpsh "$builddir"
 }
 
 cd "$APORTSDIR" || {
@@ -155,7 +147,7 @@ case "$cmd" in
 		if [ ! -d "$builddir" ]; then
 			run $AX_ASUM unpack || return $?
 		fi
-		tmpsh "$builddir" ;;
+		cd "$builddir" ;;
 	w) mkgit "$@" "$branch";;
 	h) help;;
 	*) usage;;
