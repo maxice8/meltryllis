@@ -2,16 +2,20 @@
 exists -s XDG_SESSION_TYPE || exit
 
 let clipboard:[str] = [""]
-if test $XDG_SESSION_TYPE = "x11"
+if test $XDG_SESSION_TYPE = x11
 	let clipboard = [xsel -bi]
 else if test $XDG_SESSION_TYPE = wayland
 	let clipboard = [wl-copy]
 end
 
 if test $len(@args) -gt 1
-	@clipboard <<< @args[1..]
+	@clipboard <<< "@args[1..]"
 	exit
 end
 
-read input
-@clipboard <<< $input
+#
+# If we use 'read input' then it won't read multiline strings
+# use /dev/stdin instead which gives us actual multiline strings
+# and handles it just like the read function
+#
+@clipboard < /dev/stdin
