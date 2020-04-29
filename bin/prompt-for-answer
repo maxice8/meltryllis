@@ -1,14 +1,14 @@
-#!/bin/sh
-message="$1"
+#!/usr/bin/ion
+test $len(@args) -eq 1 && exit 1
 
-printf "%s" "$message ? "
-while true; do
-	read -r yn
-	case $yn in
-		''|[Yy]* ) exit 0 ;;
-		[Nn]* ) exit 1 ;;
-		[Ww]* ) exit 2 ;;
-		[Dd]* ) exit 3 ;;
-		* ) printf "%s" "$message ? " ;;
-	esac
-done
+echo "@args[1..] ? "
+while true
+	read answer
+	match $answer
+		case ['' Y.* y.*]
+			exit 0
+		case [N.* n.*]
+			exit 1
+		case _; echo "@args[1..] ? "
+	end
+end
