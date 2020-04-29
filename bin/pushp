@@ -66,10 +66,7 @@ for arg in @args[2..]
 	# a branch name. we also continue to the next object of the
 	# loop as there is no need to run the rest of the code
 	#
-	# TODO(Leo): add a better check rather than just :, maybe we
-	#  can split it with : and check if the length is 2
-	#
-	if matches $arg :
+	if eq $len([@split($arg :)]) 2
 		let pushes ++= $arg
 		continue
 	end
