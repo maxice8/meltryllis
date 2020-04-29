@@ -217,16 +217,6 @@ source_apkbuild() {
 	export builddir
 }
 
-getvar() {
-	[ -z "$1" ] && return 1
-
-	source_apkbuild
-	for arg; do
-		# Get value referenced by the value referenced by the value given to us
-		eval echo "\$$arg"
-	done
-}
-
 tmpsh() {
 	[ -z "$1" ] && return 1
 	cd "$1" || return $?
@@ -327,7 +317,6 @@ case "$cmd" in
 	m) move_repo "$@" "$branch";;
 	r) rename_repo "$@" "$branch";;
 	w) mkgit "$@" "$branch";;
-	g) getvar "$@";;
 	c) run apkg-diff size depend provides files ;;
 	mr)
 		git add "$branch" || return 1
