@@ -1,13 +1,18 @@
-#!/bin/sh
+#!/usr/bin/ion
 # print the command and it's output and also copy to clipboard
 # useful to show to people
-if [ "$(id -u)" = "0" ]; then
-	prompt="#"
-else
-	prompt="\$"
-fi
-(
-	printf "%s\\n" "$prompt $*"
-	"$@" 2>&1
-) | (if [ -t 1 ] ; then cat ; else tee /dev/tty ; fi)
+test $len(@args) -eq 1 && exit 1
 
+let prompt = ''
+if test $(id -u) -eq 0
+	let prompt = '#'
+else
+	let prompt = '$'
+end
+
+fn run prompt:str command:str
+	echo $prompt @split($command)
+	@split($command)
+end
+
+run $prompt @args[1..]
