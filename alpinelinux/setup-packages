@@ -5,6 +5,7 @@
 # .dev-depends-mkmr
 # .depends-atools
 # .dev-depends-atools
+# .depends-unpk
 #
 doas apk add \
 	py3-gitlab \
@@ -32,3 +33,9 @@ doas apk add \
 	bats \
 	scdoc \
 	--virtual .dev-depends-atools
+
+doas apk add \
+	unrar \
+	tar \
+	zstd \
+	--virtual .depends-unpk
