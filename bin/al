@@ -16,7 +16,7 @@ let APORTSDIR = $or(APORTSDIR $PWD)
 # the wrong manner or when they call help
 #
 fn usage
-	echo "$basename(@args[0]): <<h|e|b|n|c|mr|d|l|f>|<m> <repository>|<r> <package>> [package]"
+	echo "$basename(@args[0]): <<h|e|b|n|c|mr|d|l|f|u>|<m> <repository>|<r> <package>> [package]"
 end
 
 #
@@ -35,7 +35,8 @@ fn show_help
  l|lint			  : run linting tools from atools on the package
  f|fix			  : run tools to automatically fix linting errors in the package
  m|move			  : move a package to another repo
- r|rename		  : rename a package"
+ r|rename		  : rename a package
+ u|unpack		  : unpack sources of the package and open the file manager in it"
 end
 
 #
@@ -93,7 +94,7 @@ let path = ""
 # package in itself exists
 #
 match @args[1]
-	case [e edit b build n navigate c checksum d diff mr merge-request l lint f fix]
+	case [e edit b build n navigate c checksum d diff mr merge-request l lint f fix u unpack]
 		#
 		# No package name given to us, rely on the branch name instead
 		#
@@ -268,6 +269,36 @@ match @args[1]
 		# Run all linting tools from atools in the APKBUILD
 		#
 		run $path [apkbuild-fixer APKBUILD]
+	case [u unpack]
+		#
+		# Use $AX_ASUM (the version of abuild that does not run a docker container)
+		# to unpack the sources for us
+		#
+		if not run $path [$AX_ASUM unpack]
+			printerr Failed to unpack sources for "'@args[2]'"
+			exit 1
+		end
+
+		#
+		# APKBUILDs are shellscripts and as such we can't source them until source-sh
+		# is sorted out (see: https://gitlab.redox-os.org/redox-os/ion/issues/963), until
+		# then we can only do the next best thing and try to guess the builddir we should
+		# move into
+		#
+		# Run over all inodes inside the src directory of the package, ignore all ones that
+		# are not directory and open the file manager in the first one and then break.
+		#
+		# This is not as good as having the capability of sourcing the shell to get the
+		# builddir= variable, but it is also not complex like writing our own mini parser
+		# for dealing with the most common usecases of the builddir= variable.
+		#
+		# TODO(Leo): revisit this once the above is sorted out
+		#
+		for inode in $path/src/*
+			exists -d $inode || continue
+			f $inode
+			break
+		end
 	case [m move]
 		#
 		# If the directory already exists then move all contents from inside
