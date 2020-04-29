@@ -11,8 +11,8 @@ else
 end
 
 fn run prompt:str command:str
-	echo $prompt @split($command)
-	@split($command)
+	echo $prompt @command
+	@command
 end
 
-run $prompt @args[1..]
+run $prompt [@split(@args[1..])]
