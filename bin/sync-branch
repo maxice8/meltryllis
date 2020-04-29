@@ -1,7 +1,8 @@
-#!/bin/sh
-[ -z "$1" ] && set -- master
-for branch; do
-	PRINTERR_QUIET=yes PRINTOK_QUIET=yes gbr "$branch" || continue
+#!/usr/bin/ion
+let branches = $or(@args[1..] master)
+
+for branch in @split($branches)
+	env PRINTERR_QUIET=yes PRINTOK_QUIET=yes gbr $branch
 	pullp
-	FORCE_PUSH=1 pushp remote:origin "$branch":"$branch"
-done
+	env FORCE_PUSH=1 pushp remote:origin "$branch":"$branch"
+end
