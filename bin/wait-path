@@ -1,8 +1,7 @@
-#!/bin/sh
-set -eu
-usage() {
-	cat <<EOF
-wait-path [type] <path>
+#!/usr/bin/ion
+
+fn usage
+	echo "wait-path [type] <path>
 
 types:
 	- p|namedpipe   : named pipes
@@ -10,27 +9,38 @@ types:
 	- f|file	: regular files
 	- d|directory   : directories
 	- l|symlink	: symbolic links
-	- e|executable  : executable files
-EOF
+	- e|executable  : executable files"
 exit 1
-}
+end
 
-[ "$#" -lt 1 ] && usage
+test $len(@args) -eq 1 && usage
 
-if [ "$#" = "1" ]; then
-	type="-e"
-else
-	case "$1" in
-		p|namedpipe) type="-p" ;;
-		s|socket) type="-S" ;;
-		f|file) type="-f" ;;
-		d|directory) type="-d" ;;
-		l|symlink) type="-l" ;;
-		e|executable) type="-x" ;;
-	esac
-	shift
-fi
+if test $len(@args) -eq 2
+	let args = [@args[0] -e @args[1]]
+end
 
-while ! test "$type" "$1" ; do
-	inotifywait -qq -e create -e moved_to "$(dirname "$1")"
-done
+let type = ""
+match @args[1]
+	case [p namedpipe]
+		let type = -p
+	case [s socket]
+		let type = -S
+	case [f file]
+		let type = -f
+	case [d directory]
+		let type = -d
+	case [l symlink]
+		let type = -l
+	case [e executable]
+		let type = -x
+	case -e
+		let type = -e
+	case _; exit 1
+end
+
+while true
+	if test $type @args[2]
+		exit
+	end
+	inotifywait -qq -e create -e moved_to -e modify -e attrib $parent(@args[2])
+end
