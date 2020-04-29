@@ -1,5 +1,4 @@
 #!/usr/bin/ion
 # prch - show all commits that will be merged into master
 # check changes
-export GIT_PAGER = cat
-git show --color=always -"$(gcp | wc -l)" | expand -t 4 | less -r -x1,5
+env GIT_PAGER=cat git show --color=always -"$(gcp | wc -l)" | expand -t 4 | less -r -x1,5

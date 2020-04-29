@@ -16,8 +16,7 @@ fn delete_local_branch branch:str
 	end
 
 	if test $(git-current-branch) = $branch
-		export PRINTOK_QUIET=yes
-		gbr master
+		env PRINTOK_QUIET=yes gbr master
 	end
 
 	if not git branch -D "$branch" &>/dev/null
