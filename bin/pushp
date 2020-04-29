@@ -140,8 +140,11 @@ if exists -s PUSHP_DRY_RUN
 	echo Remote: $remote
 	echo Pushes: @pushes
 	echo PushURL: $pushurl
+	echo FinalCommand: git push --atomic --quiet @arguments @pushes
 	exit 0
 end
+
+let arguments ++= $remote
 
 #
 # This is the most important part, this is where we actually do the operation we
@@ -151,7 +154,7 @@ end
 # We start with the 'arguments' array and then pass the remote and finally we pass
 # all the push operations we want to be done
 #
-if git push --atomic --quiet @arguments $remote @pushes >/dev/null
+if git push --atomic --quiet @arguments @pushes >/dev/null
 	printok "Pushed '@pushes' to '$pushurl'"
 else
 	printerr "Failed push of '@pushes' to '$pushurl'"
