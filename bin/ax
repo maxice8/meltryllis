@@ -30,10 +30,6 @@ run() {
 	cd - >/dev/null
 }
 
-isclean() {
-	git diff --quiet --exit-code
-}
-
 print_vars() {
 	while [ $# -gt 0 ]; do
 		printf "%s=%s\n" "$1" "$2"
@@ -134,13 +130,6 @@ fi
 shift
 
 case "$cmd" in
-	u)
-		source_apkbuild || return $?
-		# If the sources aren't present then unpack them
-		if [ ! -d "$builddir" ]; then
-			run $AX_ASUM unpack || return $?
-		fi
-		f "$builddir" ;;
 	U)
 		source_apkbuild || return $?
 		# If the sources aren't present then unpack them
