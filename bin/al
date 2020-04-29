@@ -16,7 +16,7 @@ let APORTSDIR = $or(APORTSDIR $PWD)
 # the wrong manner or when they call help
 #
 fn usage
-	echo "$basename(@args[0]): <h|e|b|n|c|mr|d|l|f> [package]"
+	echo "$basename(@args[0]): <<h|e|b|n|c|mr|d|l|f>|<m> <repository>> [package]"
 end
 
 #
@@ -33,7 +33,8 @@ fn show_help
  mr|merge-request : create merge request for the package
  d|diff			  : diff various attributes of the package
  l|lint			  : run linting tools from atools on the package
- f|fix			  : run tools to automatically fix linting errors in the package"
+ f|fix			  : run tools to automatically fix linting errors in the package
+ m|move			  : move a package to another repo"
 end
 
 #
@@ -122,6 +123,51 @@ match @args[1]
 			printerr no package named "'@args[2]'"
 			exit 1
 		end
+	case [m move]
+		#
+		# Check if we were given a repository as our 2nd argument
+		#
+		if test $len(@args) -eq 2
+			printerr Please pass a repository to move the package to
+			exit 1
+		end
+
+		#
+		# No package name given to us, rely on the branch name instead
+		#
+		if test $len(@args) -eq 3
+			let args ++= $(git-current-branch)
+		end
+
+		#
+		# The usage of find_repo is extremely convenient as it is
+		# fast efficient, has good ordering (if there are 2 packages
+		# of the same name, the only in the more important repo comes
+		# first) and will return nothing if there is no packages instead
+		# of needlessly polluting stderr
+		#
+		# Note that there is also no need to check if APKBUILD itself exists
+		# as that is what find_repo does
+		#
+		let path = $(find_repo @args[3])
+		if not exists -s path
+			printerr no package named "'@args[3]'"
+			exit 1
+		end
+
+		#
+		# Check if the repo we were given exists and if there already exists
+		# a package there with the same name
+		#
+		if not exists -d @args[2]
+			printerr no repository named "'@args[2]'"
+			exit 1
+		end
+
+		if exists -f @args[2]/@args[3]/APKBUILD
+			printerr There is already a package called "'@args[3]'" in repository "'@args[2]'"
+			exit 1
+		end
 end
 
 #
@@ -194,6 +240,32 @@ match @args[1]
 		# Run all linting tools from atools in the APKBUILD
 		#
 		run $path [apkbuild-fixer APKBUILD]
+	case [m move]
+		#
+		# If the directory already exists then move all contents from inside
+		# the directory we're moving from to it, otherwise move the directory
+		# itself to the new location
+		#
+		if exists -d @args[2]/@args[3]
+			git mv -- $path/* @args[2]/@args[3]
+		else
+			git mv -- $path @args[2]
+		end
+
+		#
+		# Use the isclean function to check if we operating in a dirty git tree
+		# and if not then we can just push ahead and make a nice commit for the
+		# user
+		#
+		# In this case use the $basename of the $parent of $path, $path is the
+		# old path of the package at this point
+		#
+		if isclean
+			env NOAPKBUILD_LINT=1 \
+				NOAPORTS_LINT=1 \
+				NOPKGVERCHECK=1 \
+				git commit -m "@args[2]/@args[3]: move from $basename($parent($path))"
+		end
 	case _
 		usage
 		show_help
@@ -202,61 +274,6 @@ end
 
 exit 0
 
-# print_vars() {
-# 	while [ $# -gt 0 ]; do
-# 		printf "%s=%s\n" "$1" "$2"
-# 		shift
-# 		shift
-# 	done
-# }
-# 
-# move_repo() {
-# 	local from="${2:-$branch}" to="$1" pkgname='' repo=''
-# 
-# 	if [ -z "$from" ]; then
-# 		printf "move operation failed: no package to be moved given\n" >&2
-# 		return 1
-# 	fi
-# 
-# 	pkgname="$(echo "$from" | cut -d / -f 2)"
-# 	repo="$(echo "$from" | cut -d / -f 1)"
-# 
-# 	if [ "$repo" = "$pkgname" ]; then
-# 		if [ -d main/"$from" ]; then
-# 			repo=main
-# 		elif [ -d community/"$from" ]; then
-# 			repo=community
-# 		elif [ -d testing/"$from" ]; then
-# 			repo=testing
-# 		elif [ -d unmaintained/"$from" ]; then
-# 			repo=unmaintained
-# 		else
-# 			printf "move operation failed: package '%s' doesn't exist\n" "$from"
-# 			print_vars from "$from" to "$to"
-# 			return 1
-# 		fi
-# 		from="$repo"/"$pkgname"
-# 	fi
-# 
-# 	# Check if the package doesn't exist and error out
-# 	if [ ! -d "$from" ]; then
-# 		printf "move operation failed: package '%s' doesn't exist\n" "$from"
-# 		print_vars from "$from" to "$to"
-# 		return 1
-# 	fi
-# 
-# 	# mv if any of the repos given to us is one of the ones we accept
-# 	# exit otherwise with an error message
-# 	case "$to" in
-# 		main|community|testing|unmaintained) git mv -f "$from" "$to" ;;
-# 		*) printf "repo '%s' does not exist\n" "$to" ; return 1 ;;
-# 	esac
-# 
-# 	if isclean; then
-# 		NOAPKBUILD_LINT=1 NOAPORTS_LINT=1 NOPKGVERCHECK=1 git commit -m "${to}/${pkgname}: move from $repo"
-# 	fi
-# }
-# 
 # rename_repo() {
 # 	local src="${2:-$branch}" dst="$1" pkgname='' repo=''
 # 
@@ -361,12 +378,6 @@ exit 0
 # 	export builddir
 # }
 # 
-# tmpsh() {
-# 	[ -z "$1" ] && return 1
-# 	cd "$1" || return $?
-# 	${SHELL:-sh} -l
-# }
-# 
 # mkgit() {
 # 	local builddir=''
 # 
@@ -393,37 +404,6 @@ exit 0
 # 	tmpsh "$builddir"
 # }
 # 
-# cd "$APORTSDIR" || {
-# 	printf "APORTSDIR=%s given but couldn't cd to it" "$APORTSDIR" >&2 
-# 	exit 1
-# }
-# 
-# cmd="$1"
-# _branch="$(git rev-parse --abbrev-ref HEAD)"
-# 
-# # Deal with branches with alpine stable prefixes
-# if [ -n "$(alpine-stable-prefix "$_branch")" ]; then
-# 	_branch="$(echo "$_branch" | cut -d - -f2-)"
-# fi
-# 
-# if [ -z "$2" ]; then
-# 	branch="$(find_repo "$_branch")"
-# else
-# 	# Check if the variable provided to us is just the name of
-# 	# a repository. Otherwise try to find the repo given to use
-# 	case "$2" in
-# 		main|community|testing|unmaintained)
-# 			branch="$(find_repo "$_branch")";;
-# 		*)
-# 			# Deal with branches with alpine stable prefixes
-# 			if [ -n "$(alpine-stable-prefix "$2")" ]; then
-# 				branch="$(echo "$2" | cut -d - -f2-)"
-# 			fi
-# 			branch="$(find_repo "${branch:-$2}" && shift || find_repo "$_branch")" ;;
-# 	esac
-# fi
-# shift
-# 
 # case "$cmd" in
 # 	u)
 # 		source_apkbuild || return $?
@@ -439,7 +419,6 @@ exit 0
 # 			run $AX_ASUM unpack || return $?
 # 		fi
 # 		tmpsh "$builddir" ;;
-# 	m) move_repo "$@" "$branch";;
 # 	r) rename_repo "$@" "$branch";;
 # 	w) mkgit "$@" "$branch";;
 # esac
