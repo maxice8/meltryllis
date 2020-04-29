@@ -16,7 +16,7 @@ end
 test $len(@args) -eq 1 && usage
 
 if test $len(@args) -eq 2
-	let args = [@args[0] -e @args[1]]
+	let args = [@args[0] -e @args[1..]]
 end
 
 let type = ""
@@ -38,9 +38,14 @@ match @args[1]
 	case _; exit 1
 end
 
-while true
-	if test $type @args[2]
-		exit
+# 0th is binary name
+# 1st is path, encoded in type
+# 2nd and later are paths we should look after
+for path in @args[2..]
+	while true
+		if test $type $path
+			break
+		end
+		inotifywait -qq -e create -e moved_to -e modify -e attrib $parent($path)
 	end
-	inotifywait -qq -e create -e moved_to -e modify -e attrib $parent(@args[2])
 end
