@@ -144,6 +144,13 @@ if exists -s PUSHP_DRY_RUN
 	exit 0
 end
 
+#
+# Instead of passing 'remote' and 'arguments' separately we just append 'remote'
+# to 'arguments' and pass just 'arguments' to the final command.
+#
+# If we pass 'arguments' by itself and it has nothing then it will still be taken
+# as an argument and cause it to fail
+#
 let arguments ++= $remote
 
 #
