@@ -88,6 +88,43 @@ end
 cd $APORTSDIR
 
 #
+# Define path here outside the scope of the next match because we will need to use
+# it later, if we don't it define outside the scope it will be lost
+#
+let path = ""
+
+#
+# This is a super-match that will match classes of actions that require the same
+# setup actions, like automatically adding a missing argument and checking if the
+# package in itself exists
+#
+match @args[1]
+	case [e edit b build n navigate c checksum d diff mr merge-request l lint f fix]
+		#
+		# No package name given to us, rely on the branch name instead
+		#
+		if test $len(@args) -eq 2
+			let args ++= $(git-current-branch)
+		end
+		
+		#
+		# The usage of find_repo is extremely convenient as it is
+		# fast efficient, has good ordering (if there are 2 packages
+		# of the same name, the only in the more important repo comes
+		# first) and will return nothing if there is no packages instead
+		# of needlessly polluting stderr
+		#
+		# Note that there is also no need to check if APKBUILD itself exists
+		# as that is what find_repo does
+		#
+		let path = $(find_repo @args[2])
+		if not exists -s path
+			printerr no package named "'@args[2]'"
+			exit 1
+		end
+end
+
+#
 # Match the action, each action requires diferent argument parsing as they have
 # different requirements, 'e' (edit an APKBUILD) requires nothing more than a
 # package name while stuff like 'm' (move an APKBUILD to another REPOSITORY)
@@ -96,64 +133,10 @@ cd $APORTSDIR
 match @args[1]
 	case [e edit]
 		#
-		# No package name given to us, rely on the branch name instead
+		# Open the APKBUILD in your favourite text editor
 		#
-		if test $len(@args) -eq 2
-			let args ++= $(git-current-branch)
-		end
-		
-		#
-		# The usage of find_repo is extremely convenient as it is
-		# fast efficient, has good ordering (if there are 2 packages
-		# of the same name, the only in the more important repo comes
-		# first) and will return nothing if there is no packages instead
-		# of needlessly polluting stderr
-		#
-		let path = $(find_repo @args[2])
-		if not exists -s path
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-
-		#
-		# Check for the existence of the APKBUILD itself as well
-		#
-		if not exists -f $path/APKBUILD
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-		
 		e $path/APKBUILD
-
 	case [b build]
-		#
-		# No package name given to us, rely on the branch name instead
-		#
-		if test $len(@args) -eq 2
-			let args ++= $(git-current-branch)
-		end
-
-		#
-		# The usage of find_repo is extremely convenient as it is
-		# fast efficient, has good ordering (if there are 2 packages
-		# of the same name, the only in the more important repo comes
-		# first) and will return nothing if there is no packages instead
-		# of needlessly polluting stderr
-		#
-		let path = $(find_repo @args[2])
-		if not exists -s path
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-
-		#
-		# Check for the existence of the APKBUILD itself as well
-		#
-		if not exists -f $path/APKBUILD
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-
 		#
 		# Construct an array with all the flags to be passed to abuild
 		# this can be manipulated by the user by passing AX_BUILD_ARGS
@@ -175,84 +158,16 @@ match @args[1]
 		end
 	case [n navigate]
 		#
-		# No package name given to us, rely on the branch name instead
-		#
-		if test $len(@args) -eq 2
-			let args ++= $(git-current-branch)
-		end
-
-		#
-		# The usage of find_repo is extremely convenient as it is
-		# fast efficient, has good ordering (if there are 2 packages
-		# of the same name, the only in the more important repo comes
-		# first) and will return nothing if there is no packages instead
-		# of needlessly polluting stderr
-		#
-		let path = $(find_repo @args[2])
-		if not exists -s path
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-
-		#
 		# Open the file manager in the directory of the package
 		#
 		f $path
 	case [c checksum]
-		#
-		# No package name given to us, rely on the branch name instead
-		#
-		if test $len(@args) -eq 2
-			let args ++= $(git-current-branch)
-		end
-
-		#
-		# The usage of find_repo is extremely convenient as it is
-		# fast efficient, has good ordering (if there are 2 packages
-		# of the same name, the only in the more important repo comes
-		# first) and will return nothing if there is no packages instead
-		# of needlessly polluting stderr
-		#
-		let path = $(find_repo @args[2])
-		if not exists -s path
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-
-		#
-		# Check for the existence of the APKBUILD itself as well
-		#
-		if not exists -f $path/APKBUILD
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-
 		#
 		# run the binary pointed by 'AX_ASUM' and ask it to regenerate the
 		# checksum for the package
 		#
 		run $path [$AX_ASUM checksum]
 	case [mr merge-request]
-		#
-		# No package name given to us, rely on the branch name instead
-		#
-		if test $len(@args) -eq 2
-			let args ++= $(git-current-branch)
-		end
-
-		#
-		# The usage of find_repo is extremely convenient as it is
-		# fast efficient, has good ordering (if there are 2 packages
-		# of the same name, the only in the more important repo comes
-		# first) and will return nothing if there is no packages instead
-		# of needlessly polluting stderr
-		#
-		let path = $(find_repo @args[2])
-		if not exists -s path
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-
 		#
 		# Add the files of the package into the git staging and then commit them
 		# rely on .githooks to produce a suitable commit message, then use mkmr
@@ -263,67 +178,11 @@ match @args[1]
  		mkmr -y
 	case [d diff]
 		#
-		# No package name given to us, rely on the branch name instead
-		#
-		if test $len(@args) -eq 2
-			let args ++= $(git-current-branch)
-		end
-
-		#
-		# The usage of find_repo is extremely convenient as it is
-		# fast efficient, has good ordering (if there are 2 packages
-		# of the same name, the only in the more important repo comes
-		# first) and will return nothing if there is no packages instead
-		# of needlessly polluting stderr
-		#
-		let path = $(find_repo @args[2])
-		if not exists -s path
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-		
-		#
-		# Check for the existence of the APKBUILD itself as well
-		#
-		if not exists -f $path/APKBUILD
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-		
-		#
 		# run apkg-diff which will fetch the old packages and diff them
 		# againast the new ones
 		#
 		run $path [apkg-diff size depend provides files] ;;
 	case [l lint]
-		#
-		# No package name given to us, rely on the branch name instead
-		#
-		if test $len(@args) -eq 2
-			let args ++= $(git-current-branch)
-		end
-
-		#
-		# The usage of find_repo is extremely convenient as it is
-		# fast efficient, has good ordering (if there are 2 packages
-		# of the same name, the only in the more important repo comes
-		# first) and will return nothing if there is no packages instead
-		# of needlessly polluting stderr
-		#
-		let path = $(find_repo @args[2])
-		if not exists -s path
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-
-		#
-		# Check for the existence of the APKBUILD itself as well
-		#
-		if not exists -f $path/APKBUILD
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-
 		#
 		# Run all linting tools from atools in the APKBUILD
 		#
@@ -331,34 +190,6 @@ match @args[1]
  		run $path [aports-lint APKBUILD]
  		run $path [secfixes-check APKBUILD]
 	case [f fix]
-		#
-		# No package name given to us, rely on the branch name instead
-		#
-		if test $len(@args) -eq 2
-			let args ++= $(git-current-branch)
-		end
-
-		#
-		# The usage of find_repo is extremely convenient as it is
-		# fast efficient, has good ordering (if there are 2 packages
-		# of the same name, the only in the more important repo comes
-		# first) and will return nothing if there is no packages instead
-		# of needlessly polluting stderr
-		#
-		let path = $(find_repo @args[2])
-		if not exists -s path
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-
-		#
-		# Check for the existence of the APKBUILD itself as well
-		#
-		if not exists -f $path/APKBUILD
-			printerr no package named "'@args[2]'"
-			exit 1
-		end
-
 		#
 		# Run all linting tools from atools in the APKBUILD
 		#
