@@ -15,17 +15,10 @@ usage
 
 keys:
 u : unpack
-e : edit APKBUILD
-t : build the package and install
-x : get checksum of package
-n : navigate directory
-m : move package to a given repo
 c : generate diff of package contents
 d : generate diff of package depends
 p : generate diff of package providers
-r : rename a package
 w : init a git repo on the unpacked source code
-g : get value of variables
 f : fix APKBUILD
 h : show this message
 EOF
@@ -47,138 +40,6 @@ print_vars() {
 		shift
 		shift
 	done
-}
-
-edit_apkbuild() {
-	# Check if the path given to us by $branch results in something
-	# This will work in case we are in a branch like 'openrc' or
-	# 'main/openrc'
-	if [ -n "$1" ] && [ -f "$1"/APKBUILD ]; then
-		e "$1"/APKBUILD
-		return 0
-	# This fallback allows us to edit the APKBUILD if it is in the
-	# current directory of a package
-	elif [ -f APKBUILD ]; then
-		e APKBUILD
-		return 0
-	fi
-	printf "Couldn't find APKBUILD for '%s' to edit\n" "$1"
-	return 1
-}
-
-move_repo() {
-	local from="${2:-$branch}" to="$1" pkgname='' repo=''
-
-	if [ -z "$from" ]; then
-		printf "move operation failed: no package to be moved given\n" >&2
-		return 1
-	fi
-
-	pkgname="$(echo "$from" | cut -d / -f 2)"
-	repo="$(echo "$from" | cut -d / -f 1)"
-
-	if [ "$repo" = "$pkgname" ]; then
-		if [ -d main/"$from" ]; then
-			repo=main
-		elif [ -d community/"$from" ]; then
-			repo=community
-		elif [ -d testing/"$from" ]; then
-			repo=testing
-		elif [ -d unmaintained/"$from" ]; then
-			repo=unmaintained
-		else
-			printf "move operation failed: package '%s' doesn't exist\n" "$from"
-			print_vars from "$from" to "$to"
-			return 1
-		fi
-		from="$repo"/"$pkgname"
-	fi
-
-	# Check if the package doesn't exist and error out
-	if [ ! -d "$from" ]; then
-		printf "move operation failed: package '%s' doesn't exist\n" "$from"
-		print_vars from "$from" to "$to"
-		return 1
-	fi
-
-	# mv if any of the repos given to us is one of the ones we accept
-	# exit otherwise with an error message
-	case "$to" in
-		main|community|testing|unmaintained) git mv -f "$from" "$to" ;;
-		*) printf "repo '%s' does not exist\n" "$to" ; return 1 ;;
-	esac
-
-	if isclean; then
-		NOAPKBUILD_LINT=1 NOAPORTS_LINT=1 NOPKGVERCHECK=1 git commit -m "${to}/${pkgname}: move from $repo"
-	fi
-}
-
-rename_repo() {
-	local src="${2:-$branch}" dst="$1" pkgname='' repo=''
-
-	if [ -z "$src" ]; then
-		printf "rename operation failed: no package to be moved given\n" >&2
-		return 1
-	fi
-
-	# Get repo from the branch
-	pkgname="$(echo "$src" | cut -d / -f2)"
-	repo="$(echo "$src" | cut -d / -f1)"
-
-	# If they are the same then the package was given to us
-	# without a repository, so try to guess it
-	if [ "$pkgname" = "$repo" ]; then
-		if [ -d main/"$src" ]; then
-			repo=main
-		elif [ -d community/"$src" ]; then
-			repo=community
-		elif [ -d testing/"$src" ]; then
-			repo=testing
-		elif [ -d unmaintained/"$src" ]; then
-			repo=unmaintained
-		else
-			printf "rename operation failed: package '%s' doesn't exist\n" "$dst"
-			print_vars from "$src" to "$dst"
-			return 1
-		fi
-
-		from="$repo"/"$pkgname"
-	else
-		from="$src"
-	fi
-
-	# Check if the package doesn't exist and error out
-	if [ ! -d "$from" ]; then
-		printf "rename operation failed: package '%s' doesn't exist\n" "$src"
-		print_vars from "$from" dst "$dst"
-		return 1
-	fi
-
-	# Check if the package name is already taken in any repo
-	# realrepo is set if the name is taken and the function
-	# errors out later
-	if [ -d main/"$dst" ]; then
-		realrepo=main
-	elif [ -d community/"$dst" ]; then
-		realrepo=community
-	elif [ -d testing/"$dst" ]; then
-		realrepo=testing
-	elif [ -d unmaintained/"$dst" ]; then
-		realrepo=unmaintained
-	fi
-
-	if [ "$realrepo" ]; then
-		printf "rename operation failed: package '%s' exists in '%s'\n" "$dst" "$realrepo"
-		print_vars from "$from" dst "$dst"
-		return 1
-	fi
-
-	git mv -f "$from" "$repo"/"$dst"
-
-	# Check if there is nothing cached and try to commit it
-	if isclean; then
-		NOAPKBUILD_LINT=1 NOAPORTS_LINT=1 NOPKGVERCHECK=1 git commit -m "${repo}/${dst}: rename from $pkgname"
-	fi
 }
 
 source_apkbuild() {
@@ -295,42 +156,7 @@ case "$cmd" in
 			run $AX_ASUM unpack || return $?
 		fi
 		tmpsh "$builddir" ;;
-	e) edit_apkbuild "$branch";;
-	t)
-		if [ "$AX_LOG" ]; then
-			_mktemp="$(mktemp)"
-			run $AX_ABUILD -r $AX_ABUILD_ARGS | tee $_mktemp
-		else
-			run $AX_ABUILD -r $AX_ABUILD_ARGS
-		fi
-		;;
-	tf) if [ "$AX_LOG" ]; then
-			_mktemp="$(mktemp)"
-			run $AX_ABUILD -f -r | tee $_mktemp
-		else
-			run "$AX_ABUILD" -f -r
-		fi
-		;;
-	n) f "$branch";;
-	N) run ${SHELL:-sh} -l ;;
-	x) run abuild checksum;;
-	m) move_repo "$@" "$branch";;
-	r) rename_repo "$@" "$branch";;
 	w) mkgit "$@" "$branch";;
-	c) run apkg-diff size depend provides files ;;
-	mr)
-		git add "$branch" || return 1
-		gc || return 1
-		mkmr -y
-		;;
-	f)
-		apkbuild-fixer "$branch"/APKBUILD
-		;;
-	l)
-		apkbuild-lint "$branch"/APKBUILD
-		aports-lint "$branch"/APKBUILD
-		secfixes-check "$branch"/APKBUILD
-		;;
 	h) help;;
 	*) usage;;
 esac
