@@ -1,9 +1,17 @@
-#!/bin/sh
-set -eu
+#!/usr/bin/ion
+exists -s XDG_SESSION_TYPE || exit
 
-if test -n "${1-}"; then
-	printf "%s" "$*" | wl-copy
-	exit $?
-fi
+let clipboard:[str] = [""]
+if test $XDG_SESSION_TYPE = "x11"
+	let clipboard = [xsel -bi]
+else if test $XDG_SESSION_TYPE = wayland
+	let clipboard = [wl-copy]
+end
 
-printf "%s" "$(cat)" | wl-copy
+if test $len(@args) -gt 1
+	@clipboard <<< @args[1..]
+	exit
+end
+
+read input
+@clipboard <<< $input
