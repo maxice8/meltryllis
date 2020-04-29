@@ -75,19 +75,19 @@ if test $len(@args) -eq 1
 end
 
 #
+# Change our directory to APORTSDIR, we want to do all operations relative to
+# it, some tools specifically assume we are in it and it is just good to cd into
+# it ourselves so people can call this script from anywhere else
+#
+cd $APORTSDIR
+
+#
 # No package name given, append the branch name (which we assume to be the package)
 # in the args
 #
 if test $len(@args) -eq 2
 	let args ++= $(git-current-branch)
 end
-
-#
-# Change our directory to APORTSDIR, we want to do all operations relative to
-# it, some tools specifically assume we are in it and it is just good to cd into
-# it ourselves so people can call this script from anywhere else
-#
-cd $APORTSDIR
 
 #
 # Define path here outside the scope of the next match because we will need to use
