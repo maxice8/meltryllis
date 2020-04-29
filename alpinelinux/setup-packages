@@ -1,0 +1,34 @@
+#!/usr/bin/ion
+#
+# This adds the following packages:
+# .depends-mkmr
+# .dev-depends-mkmr
+# .depends-atools
+# .dev-depends-atools
+#
+doas apk add \
+	py3-gitlab \
+	py3-gitpython \
+	py3-giturlparse \
+	py3-inquirer \
+	--virtual .depends-mkmr
+
+doas apk add \
+	flit \
+	black \
+	py3-pip \
+	py3-isort \
+	py3-flake8 \
+	py3-jedi \
+	--virtual .dev-depends-mkmr
+
+doas apk add \
+	lua5.3 \
+	lua5.3-lyaml \
+	--virtual .depends-atools
+
+doas apk add \
+	redo \
+	bats \
+	scdoc \
+	--virtual .dev-depends-atools
