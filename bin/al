@@ -16,7 +16,7 @@ let APORTSDIR = $or(APORTSDIR $PWD)
 # the wrong manner or when they call help
 #
 fn usage
-	echo "$basename(@args[0]): <<h|e|b|n|c|mr|d|l|f>|<m> <repository>> [package]"
+	echo "$basename(@args[0]): <<h|e|b|n|c|mr|d|l|f>|<m> <repository>|<r> <package>> [package]"
 end
 
 #
@@ -34,7 +34,8 @@ fn show_help
  d|diff			  : diff various attributes of the package
  l|lint			  : run linting tools from atools on the package
  f|fix			  : run tools to automatically fix linting errors in the package
- m|move			  : move a package to another repo"
+ m|move			  : move a package to another repo
+ r|rename		  : rename a package"
 end
 
 #
@@ -168,6 +169,41 @@ match @args[1]
 			printerr There is already a package called "'@args[3]'" in repository "'@args[2]'"
 			exit 1
 		end
+	case [r rename]
+		#
+		# Check if we were given a package name as our first argument
+		# this package name is the name of the package we will rename
+		# the package to
+		#
+		if test $len(@args) -eq 2
+			printerr Please pass a new name for the package
+			exit 1
+		end
+
+		#
+		# No package name given to us, rely on the branch name instead
+		# this package name is different from the one above, this one
+		# is the name of the package that will be renamed
+		#
+		if test $len(@args) -eq 3
+			let args ++= $(git-current-branch)
+		end
+
+		#
+		# The usage of find_repo is extremely convenient as it is
+		# fast efficient, has good ordering (if there are 2 packages
+		# of the same name, the only in the more important repo comes
+		# first) and will return nothing if there is no packages instead
+		# of needlessly polluting stderr
+		#
+		# Note that there is also no need to check if APKBUILD itself exists
+		# as that is what find_repo does
+		#
+		let path = $(find_repo @args[2])
+		if exists -s path
+			printerr there is already a package named "'@args[2]'"
+			exit 1
+		end
 end
 
 #
@@ -265,6 +301,61 @@ match @args[1]
 				NOAPORTS_LINT=1 \
 				NOPKGVERCHECK=1 \
 				git commit -m "@args[2]/@args[3]: move from $basename($parent($path))"
+		end
+	case [r rename]
+		#
+		# The usage of find_repo is extremely convenient as it is
+		# fast efficient, has good ordering (if there are 2 packages
+		# of the same name, the only in the more important repo comes
+		# first) and will return nothing if there is no packages instead
+		# of needlessly polluting stderr
+		#
+		# Note that there is also no need to check if APKBUILD itself exists
+		# as that is what find_repo does
+		#
+		let old_path = $(find_repo @args[3])
+		if not exists -s old_path
+			printerr no package named "'@args[3]'"
+			exit 1
+		end
+
+		#
+		# Get the basename of the parent of the old path, this will give us the
+		# repository, path is something like 'main/poppler', so getting the
+		# basename of the parent means we get 'main'.
+		#
+		let repo = $basename($parent($old_path))
+
+		#
+		# If the directory already exists then move all contents from inside
+		# the directory we're moving from to it, otherwise move the directory
+		# itself to the new location
+		#
+		if exists -d $repo/@args[2]
+			git mv -- $old_path/* $repo/@args[2]
+		else
+			git mv -- $old_path $repo/@args[2]
+		end
+
+		#
+		# Try being nice to the user and automatically apply sed to change the
+		# pkgname= variable from the old name to the new name. But do not mind
+		# if it fails for any reason, the user can fix it later and amend the
+		# commit
+		#
+		sed -e "s|^pkgname=.*|pkgname=@args[2]|g" -i $path/APKBUILD
+
+		#
+		# Use the isclean function to check if we operating in a dirty git tree
+		# and if not then we can just push ahead and make a nice commit for the
+		# user
+		#
+		#
+		if isclean
+			env NOAPKBUILD_LINT=1 \
+				NOAPORTS_LINT=1 \
+				NOPKGVERCHECK=1 \
+				git commit -m "$repo/@args[2]: rename from @args[3]"
 		end
 	case _
 		usage
