@@ -1,40 +1,159 @@
-#!/bin/sh
-if echo "$1" | grep -q '^remote:'; then
-	remote="${1##remote:}"
-	shift
+#!/usr/bin/ion
+
+#
+# If we have only one argument that means that nothing was passed
+# add a 'remote:$(guess-remote)' to our arguments to be parsed later
+#
+if test $len(@args) -eq 1
+	let args ++= remote:$(guess-remote)
+end
+
+#
+# Assign remote outside of the scope of the control flow, otherwise
+# they will be lost, this is not POSIX
+#
+let remote = ''
+
+#
+# Check if the first argument we are given starts with remote: this
+# mean the user is telling us which remote we should push to, in this
+# case strip the 'remote:' and store the rest in the 'remote' variable
+#
+# We also check if we have less than 3 arguments, that means we were
+# not given a branch to push to, so default to 'master' which is the
+# most common branch
+#
+if starts-with @args[1] remote:
+	let remote = $regex_replace(@args[1] "^remote:" " ")
+	test $len(@args) -lt 3 && let args ++= master
 else
-	if ! remote="$(guess-remote)"; then
-		exit 1
-	fi
-fi
+#
+# If the first argument does not start with 'remote:' that means we were
+# given a branchto push to and no remote was given to us, use 'guess-remote'
+# to get us a nice remote for us to use and add it to the middle of the
+# args array, we need to it to the args array because we rely on having
+# at least 3 objects inside it, the 0th is the name of the script, the
+# 1st is the 'remote:' we should push to and the 2nd to the last are all
+# the branches we should push to
+#
+	let remote = $(guess-remote)
+	let args = [@args[0] remote:$remote @args[1..]]
+end
 
-[ -n "$FORCE_PUSH" ] && args="--force"
+#
+# arguments holds all commandline flags to be passed to git, like the
+# '--force' which is activated when we have FORCE_PUSH in the environment
+#
+let arguments = [""]
+exists -s FORCE_PUSH && let arguments ++= --force
 
-pushes=""
+#
+# This hold all the pushes we will do, a push is defined as:
+# local_branch:remote_branch
+# they can be the same (like master:master) or different ones
+# (like 3.11-dns:3.11-stable)
+#
+let pushes = [""]
 
-[ $# -lt 1 ] && set -- "$(git current-branch)"
-
-for arg; do
-	remote_branch=""
-
-	if echo "$arg" | grep -F -q ':'; then
-		pushes="$pushes $arg"
+#
+# Iterate over the third object forward, this for-loop will
+# populate all the objects in the pushes array
+#
+for arg in @args[2..]
+	#
+	# If the object given to us contain a colon : that means
+	# the user passed to us a complete object instead of just
+	# a branch name. we also continue to the next object of the
+	# loop as there is no need to run the rest of the code
+	#
+	# TODO(Leo): add a better check rather than just :, maybe we
+	#  can split it with : and check if the length is 2
+	#
+	if matches $arg :
+		let pushes ++= $arg
 		continue
-	fi
+	end
 
-	_REALBASE="$(alpine-stable-prefix "$arg")"
-	if [ -n "$_REALBASE" ]; then
-		remote_branch="$_REALBASE"-stable
+	#
+	# This is Alpine Linux specific, we use alpine-stable-prefix to
+	# check if we have a branch that matches an stable Alpine Linux
+	# release rather than Edge
+	#
+	let _REALBASE = $(alpine-stable-prefix $arg)
+
+	#
+	# Define remote_branch before, otherwise it will be lost inside
+	# the control flow below
+	#
+	let remote_branch = ""
+
+	#
+	# If we got a string in return that means we are in an Alpine
+	# Linux stable branch, we then add -stable to it, so if the user
+	# give us something like '3.11-<pkg>' then we push to '3.11-stable'
+	#
+	if exists -s _REALBASE
+		let remote_branch = $_REALBASE-stable
 	else
-		remote_branch=master
-	fi
+		#
+		# Otherwise we just push to the master branch, if the user wants
+		# us to push to another branch they can explicitly pass it to us
+		# by passing a complete object like foo:bar
+		#
+		let remote_branch = master
+	end
 
-	pushes="$pushes $arg:$remote_branch"
-done
+	#
+	# Finally append it to pushes so we push it later
+	#
+	let pushes ++= $arg:$remote_branch
+end
 
-pushes="$(echo "$pushes" | sed -e 's|  \+| |g' -e 's|^ ||g')"
-pushurl="$(git config --local remote.$remote.pushurl || git config --local remote.$remote.url)"
+#
+# This strips all whitespaces, otherwise the following assignment of the
+# 'pushurl' variable will fail terribly and silently
+#
+let remote = @split($remote)
 
-git push --atomic --quiet $args $remote $pushes >/dev/null || \
-	printerr "Failed push of '$pushes' to '$pushurl'" && \
-	printok "Pushed '$pushes' to '$pushurl'"
+#
+# Try getting from the pushurl of the git remote, this can be set by the user
+# to have a URL to push and another for fetching, if 'pushurl' fails then we
+# fallback on the url which should always be set
+#
+let pushurl = $(git config --local remote.$remote.pushurl || git config --local remote.$remote.url)
+
+#
+# If pushurl returned empty then we will be unable to push, error out to the user
+#
+if not exists -s pushurl
+	printerr $basename(@args[0]): No URL can be used to push from remote "'$remote'"
+	exit 1
+end
+
+#
+# if PUSHP_DRY_RUN is set then just show to the user the information we gathered
+# and exit, this is good for people that are afraid they might do a wrong push
+#
+if exists -s PUSHP_DRY_RUN
+	echo Args: @args
+	echo Arguments: @arguments
+	echo Remote: $remote
+	echo Pushes: @pushes
+	echo PushURL: $pushurl
+	exit 0
+end
+
+#
+# This is the most important part, this is where we actually do the operation we
+# were meant to do, we will push it in --atomic, so either ALL of the pushes will
+# work or none of them will
+#
+# We start with the 'arguments' array and then pass the remote and finally we pass
+# all the push operations we want to be done
+#
+if git push --atomic --quiet @arguments $remote @pushes >/dev/null
+	printok "Pushed '@pushes' to '$pushurl'"
+else
+	printerr "Failed push of '@pushes' to '$pushurl'"
+	exit 1
+end
