@@ -1,5 +1,5 @@
 .depends-mkmr=20200318.193402
-.dev-depends-mkmr=20200318.205006
+.dev-depends-mkmr=20200429.180644
 /bin/sh
 alacritty
 alpine-base
@@ -28,7 +28,6 @@ ffmpeg
 firefox
 fish
 flatpak<1.7.0
-flit
 font-fira-code
 font-fira-mono-nerd
 font-noto
