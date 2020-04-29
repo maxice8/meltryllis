@@ -16,7 +16,7 @@ let APORTSDIR = $or(APORTSDIR $PWD)
 # the wrong manner or when they call help
 #
 fn usage
-	echo "$basename(@args[0]): <h|e|b|n|c|mr|d|l> [package]"
+	echo "$basename(@args[0]): <h|e|b|n|c|mr|d|l|f> [package]"
 end
 
 #
@@ -32,7 +32,8 @@ fn show_help
  c|checksum		  : regenerate checksum of the package
  mr|merge-request : create merge request for the package
  d|diff			  : diff various attributes of the package
- l|lint			  : run linting tools from atools on the package"
+ l|lint			  : run linting tools from atools on the package
+ f|fix			  : run tools to automatically fix linting errors in the package"
 end
 
 #
@@ -329,6 +330,39 @@ match @args[1]
  		run $path [apkbuild-lint APKBUILD]
  		run $path [aports-lint APKBUILD]
  		run $path [secfixes-check APKBUILD]
+	case [f fix]
+		#
+		# No package name given to us, rely on the branch name instead
+		#
+		if test $len(@args) -eq 2
+			let args ++= $(git-current-branch)
+		end
+
+		#
+		# The usage of find_repo is extremely convenient as it is
+		# fast efficient, has good ordering (if there are 2 packages
+		# of the same name, the only in the more important repo comes
+		# first) and will return nothing if there is no packages instead
+		# of needlessly polluting stderr
+		#
+		let path = $(find_repo @args[2])
+		if not exists -s path
+			printerr no package named "'@args[2]'"
+			exit 1
+		end
+
+		#
+		# Check for the existence of the APKBUILD itself as well
+		#
+		if not exists -f $path/APKBUILD
+			printerr no package named "'@args[2]'"
+			exit 1
+		end
+
+		#
+		# Run all linting tools from atools in the APKBUILD
+		#
+		run $path [apkbuild-fixer APKBUILD]
 	case _
 		usage
 		show_help
@@ -577,15 +611,5 @@ exit 0
 # 	m) move_repo "$@" "$branch";;
 # 	r) rename_repo "$@" "$branch";;
 # 	w) mkgit "$@" "$branch";;
-# 	f)
-# 		apkbuild-fixer "$branch"/APKBUILD
-# 		;;
-# 	l)
-# 		apkbuild-lint "$branch"/APKBUILD
-# 		aports-lint "$branch"/APKBUILD
-# 		secfixes-check "$branch"/APKBUILD
-# 		;;
-# 	h) help;;
-# 	*) usage;;
 # esac
 
