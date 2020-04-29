@@ -10,9 +10,5 @@ else
 	let prompt = '$'
 end
 
-fn run prompt:str command:str
-	echo $prompt @command
-	@command
-end
-
-run $prompt [@split(@args[1..])]
+echo $prompt @args[1..]
+@args[1..]
