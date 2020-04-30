@@ -21,12 +21,8 @@ die() {
 	exit 1
 }
 
-pkg="$1"
-[ -z "$1" ] && pkg="$(git current-branch)"
-pkg="$(find_repo $pkg)"
-
 # shellcheck disable=SC1091
-. $pkg/APKBUILD || die "failed to source repo for package"
+. APKBUILD || die "failed to source repo for package"
 
 tmpdir=$(mktemp -d -t checkpkg-script.XXXXXX)
 # shellcheck disable=2064
@@ -69,26 +65,6 @@ for i in $pkglist; do
 			return 0
 		fi
 	done
-
-	oldpkg="$(echo "$oldpkgs" | grep -o "^$i-[0-9].*")"
-
-	for candidate in /var/cache/apk/"$oldpkg"*.apk; do
-		if ! [ -f "$candidate" ]; then
-			continue
-		fi
-		printok "Found cached $oldpkg"
-		echo "$candidate" > "$tmpdir"/"$_pkgname"
-		return 0
-	done
-
-	# Fetch the package for all runs
-	apk fetch \
-		--repositories-file "$tmpdir"/remote-repositories \
-		--output "$tmpdir" \
-		"$i" \
-		>/dev/null 2>&1 &&
-	printok "Fetched $oldpkg"
-	echo "$PWD"/"$oldpkg".apk > "$tmpdir"/"$i"
 	) &
 done
 wait
@@ -103,7 +79,7 @@ for i in $pkglist; do
 
 	apk="$(cat "$tmpdir"/"$i")"
 	{
-		msg "pkg=$i"
+		msg "pkg=$i ver=$pkgver"
 		tar -z --extract --to-stdout --file="$apk" '.PKGINFO' 2>/dev/null
 	} | less -r
 done
