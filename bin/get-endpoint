@@ -13,5 +13,5 @@ end
 if is_ssh $endpoint
 	ssh_to_https $endpoint
 else if is_https $endpoint
-	echo $regex_replace($endpoint '.git$' ' ')
+	strip-whitespace $regex_replace($endpoint '.git$' ' ')
 end
