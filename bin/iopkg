@@ -8,6 +8,12 @@
 
 NORMAL="\033[1;0m"
 RED="\033[1;31m"
+GREEN="\033[1;32m"
+
+msg() {
+	local _prompt="$GREEN>>>${NORMAL}"
+	printf "$_prompt %s\n" "$1"
+}
 
 die() {
 	local _prompt="${RED}>>> ERROR:${NORMAL}"
