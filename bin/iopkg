@@ -23,6 +23,8 @@ tmpdir=$(mktemp -d -t checkpkg-script.XXXXXX)
 trap "rm -rf '$tmpdir'" INT EXIT
 cd "$tmpdir" || die "failed to create temp dir"
 
+grep -E -v "^https?:" /etc/apk/repositories > "$tmpdir"/local-repositories
+
 _carch="$(abuild -A)"
 
 # We need ncurses for this, lets clean up the terminal
