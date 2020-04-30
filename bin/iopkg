@@ -8,12 +8,6 @@
 
 NORMAL="\033[1;0m"
 RED="\033[1;31m"
-GREEN="\033[1;32m"
-
-msg() {
-	local _prompt="$GREEN>>>${NORMAL}"
-	printf "$_prompt %s\n" "$1"
-}
 
 die() {
 	local _prompt="${RED}>>> ERROR:${NORMAL}"
@@ -29,10 +23,6 @@ tmpdir=$(mktemp -d -t checkpkg-script.XXXXXX)
 trap "rm -rf '$tmpdir'" INT EXIT
 cd "$tmpdir" || die "failed to create temp dir"
 
-# generate a temp repositories file with only the http(s) repos
-grep -E "^https?:" /etc/apk/repositories > "$tmpdir"/remote-repositories
-grep -E -v "^https?:" /etc/apk/repositories > "$tmpdir"/local-repositories
-
 _carch="$(abuild -A)"
 
 # We need ncurses for this, lets clean up the terminal
@@ -44,12 +34,6 @@ pkglist="$pkgname"
 for pkg in $subpackages; do
 	pkglist="$pkglist ${pkg%%:*}"
 done
-
-oldpkgs="$(apk fetch \
-		  --repositories-file "$tmpdir"/remote-repositories \
-		  --simulate \
-		  $pkglist 2>/dev/null \
-		  | grep Downloading | sed 's/^Downloading //')"
 
 for i in $pkglist; do
 	(
