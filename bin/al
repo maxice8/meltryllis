@@ -16,7 +16,7 @@ let APORTSDIR = $or(APORTSDIR $PWD)
 # the wrong manner or when they call help
 #
 fn usage
-	echo "$basename(@args[0]): <<h|e|b|n|c|mr|d|l|f|u|w>|<m> <repository>|<r> <package>> [package]"
+	echo "$basename(@args[0]): <<h|e|b|n|c|mr|d|l|f|u|w|i>|<m> <repository>|<r> <package>> [package]"
 end
 
 #
@@ -37,7 +37,8 @@ fn show_help
  m|move			  : move a package to another repo
  r|rename		  : rename a package
  u|unpack		  : unpack sources of the package and open the file manager in it
- w|work			  : unpack sources of the package, cd into it and init a git repo"
+ w|work			  : unpack sources of the package, cd into it and init a git repo
+ i|info			  : print information of the package"
 end
 
 #
@@ -95,7 +96,7 @@ let path = ""
 # package in itself exists
 #
 match @args[1]
-	case [e edit b build n navigate c checksum d diff mr merge-request l lint f fix u unpack w work]
+	case [e edit b build n navigate c checksum d diff mr merge-request l lint f fix u unpack w work i info]
 		#
 		# No package name given to us, rely on the branch name instead
 		#
@@ -339,6 +340,12 @@ match @args[1]
 			popd
 			break
 		end
+	case [i info]
+		#
+		# In the future, iopkg should be rewritten in rust, but it will suffice for
+		# now
+		#
+		run $path [iopkg]
 	case [m move]
 		#
 		# If the directory already exists then move all contents from inside
