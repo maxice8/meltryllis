@@ -1,5 +1,6 @@
 .depends-atools=20200429.181841
 .depends-mkmr=20200429.181840
+.depends-unified-safe-boot=20200502.190151
 .depends-unpk=20200429.181842
 .dev-depends-atools=20200429.181841
 .dev-depends-mkmr=20200429.181841
@@ -42,7 +43,6 @@ glow
 gnome
 gnome-apps=20200428.215532
 gnome-software-plugin-apk
-gummiboot
 hdparm
 ibus
 imagemagick
@@ -87,8 +87,6 @@ powertop
 ps_mem
 pulseaudio
 pulseaudio-alsa
-pulseaudio-ctl
-pulseaudio-utils
 py3-pynvim
 py3-requests
 python3
@@ -96,7 +94,6 @@ qt5-qtwayland
 ranger
 ripgrep
 rsync
-sbsigntool
 sed
 shellcheck
 smartmontools
@@ -104,7 +101,6 @@ snooze
 syncthing
 telegram-desktop
 tzdata
-util-linux
 wpa_supplicant
 xdg-utils
 xf86-input-libinput
@@ -112,5 +108,4 @@ xf86-video-intel
 xfsprogs
 xkeyboard-config
 xsel
-youtube-dl
 ytop
