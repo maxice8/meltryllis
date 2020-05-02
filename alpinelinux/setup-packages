@@ -39,3 +39,9 @@ doas apk add \
 	tar \
 	zstd \
 	--virtual .depends-unpk
+
+doas apk add \
+	gummiboot \
+	sbsigntool \
+	util-linux \
+	--virtual .depends-unified-safe-boot
