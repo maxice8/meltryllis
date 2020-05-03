@@ -251,7 +251,10 @@ match @args[1]
 		# to create the merge request from the command-line
 		#
 		git add $path
-		gc
+		if not gc
+			printerr Failed to commit changes, the tree is dirty, please fix
+			exit 1
+		end
  		mkmr -y
 	case [d diff]
 		#
