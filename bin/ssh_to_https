@@ -6,7 +6,7 @@
 # - Replace the : in the middle with /
 # - Remove the .git at the end
 test $len(@args) -eq 1 && exit 1
-echo @args[1] \
-	| sed -r \
-		-e 's|^git@(.*:)(/)?(.*/)|https://\1\3|' \
-		-e 's|(https://.*):(.*).git|\1/\2|'
+let url = @args[1]
+let url = $replace($url ':(/)?' /) 
+let url = $regex_replace($url '^git@' "https://")
+echo $join(@split($regex_replace($url '.git$' " ")))
