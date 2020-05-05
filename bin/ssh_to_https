@@ -7,6 +7,6 @@
 # - Remove the .git at the end
 test $len(@args) -eq 1 && exit 1
 let url = @args[1]
-let url = $replace($url ':(/)?' /) 
+let url = $regex_replace($url ':(/)?' /) 
 let url = $regex_replace($url '^git@' "https://")
 echo $join(@split($regex_replace($url '.git$' " ")))
