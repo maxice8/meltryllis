@@ -42,6 +42,19 @@ fn show_help
 end
 
 #
+# Strip the alpine linux prefix from the branch, if the branch is 3.11-openldap
+# then it will return openldap, if it doesn't have a prefix then do nothing
+#
+fn strip_al i:str
+	let val = $(alpine-stable-prefix $i)
+	if exists -s val
+		echo @split($i -)[1]
+	else
+		echo $i
+	end
+end
+
+#
 # This is used before running any command that requires switching to
 # the directory of the APKBUILD, almost all commands from abuild require
 # the user to switch to it
@@ -103,6 +116,13 @@ match @args[1]
 		if test $len(@args) -eq 2
 			let args ++= $(git-current-branch)
 		end
+
+		#
+		# use strip_al to remove the Alpine Linux specific branch name
+		# this will remove the stable version number before the package
+		# eg: 3.11-openldap returns openldap
+		#
+		let args[2] = $(strip_al @args[2])
 		
 		#
 		# The usage of find_repo is extremely convenient as it is
@@ -134,6 +154,13 @@ match @args[1]
 		if test $len(@args) -eq 3
 			let args ++= $(git-current-branch)
 		end
+
+		#
+		# use strip_al to remove the Alpine Linux specific branch name
+		# this will remove the stable version number before the package
+		# eg: 3.11-openldap returns openldap
+		#
+		let args[3] = $(strip_al @args[3])
 
 		#
 		# The usage of find_repo is extremely convenient as it is
@@ -183,6 +210,13 @@ match @args[1]
 		if test $len(@args) -eq 3
 			let args ++= $(git-current-branch)
 		end
+
+		#
+		# use strip_al to remove the Alpine Linux specific branch name
+		# this will remove the stable version number before the package
+		# eg: 3.11-openldap returns openldap
+		#
+		let args[3] = $(strip_al @args[3])
 
 		#
 		# The usage of find_repo is extremely convenient as it is
