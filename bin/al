@@ -48,7 +48,7 @@ end
 fn strip_al i:str
 	let val = $(alpine-stable-prefix $i)
 	if exists -s val
-		echo @split($i -)[1]
+		echo $join(@split($i -)[1..] "-")
 	else
 		echo $i
 	end
