@@ -24,8 +24,8 @@ merge_branch() {
 	# not pushing to alpine then this just noop to the master
 	# branch, if it is  alpine we add -stable to the version
 	# prefix
-	prefix="$(alpine-stable-prefix "$1" || echo master)"
-	[ "$prefix" = master ] || prefix="$prefix"-stable
+	prefix="$(alpine-stable-prefix "$1")"
+	[ -n $prefix ] && prefix="$prefix"-stable
 
 	gbr "$prefix" || return 1
 
