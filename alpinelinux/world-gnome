@@ -14,6 +14,7 @@ aspell
 atools-doc
 busybox-initscripts
 claws-mail
+corecollector
 cryptsetup
 dbus
 dbus-x11
@@ -36,7 +37,6 @@ font-fira-code
 font-fira-mono-nerd
 font-noto
 font-tewi
-font-ubuntu-nerd
 git
 git-doc
 glow
@@ -48,6 +48,7 @@ ibus
 imagemagick
 imgbrd-grabber<7.2.1
 inotify-tools
+intel-media-driver
 intel-ucode
 ion-shell
 iw
@@ -57,7 +58,6 @@ keepassxc
 kvantum
 libinput
 libnotify
-libva-intel-driver
 libva-utils
 linux-lts
 lua5.3
@@ -68,8 +68,6 @@ luacheck
 lvm2
 man-db
 materia-dark-compact
-mesa-dri-classic
-mesa-dri-gallium
 mesa-vulkan-intel
 meson
 meson-vim
@@ -78,7 +76,6 @@ mpv
 neovim<0.4.3-r2
 networkmanager-elogind
 newsboat
-nheko
 openssh-client
 pm-utils
 poedit
@@ -88,7 +85,6 @@ ps_mem
 pulseaudio
 pulseaudio-alsa
 py3-pynvim
-py3-requests
 python3
 qt5-qtwayland
 ranger
@@ -103,9 +99,11 @@ telegram-desktop
 tzdata
 wpa_supplicant
 xdg-utils
+xdotool
 xf86-input-libinput
 xf86-video-intel
 xfsprogs
 xkeyboard-config
 xsel
 ytop
+zstd
