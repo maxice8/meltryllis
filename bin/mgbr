@@ -25,7 +25,11 @@ merge_branch() {
 	# branch, if it is  alpine we add -stable to the version
 	# prefix
 	prefix="$(alpine-stable-prefix "$1")"
-	[ -n $prefix ] && prefix="$prefix"-stable
+	if [ -n "$prefix" ]; then
+		prefix="$prefix"-stable
+	else
+		prefix=master
+	fi
 
 	gbr "$prefix" || return 1
 
