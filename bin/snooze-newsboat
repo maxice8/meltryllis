@@ -1,4 +1,0 @@
-#!/bin/sh
-while :; do
-	snooze -H '*' -M '*/2' -S 10 newsboat -x reload
-done
