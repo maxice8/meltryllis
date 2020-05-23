@@ -42,6 +42,19 @@ fn show_help
 end
 
 #
+# Source a shellscript by using source-sh, we set 'set -a' so that the variables
+# are exported to the environment, and then source the APKBUILD given to us
+#
+fn sauce i:str
+	#
+	# Silence all output because it is useless, we just want it to act like
+	# source, it will error out if the script errors out then we shouldn't
+	# worry about it
+	#
+	source-sh "set -a; . $i" &>/dev/null
+end
+
+#
 # Strip the alpine linux prefix from the branch, if the branch is 3.11-openldap
 # then it will return openldap, if it doesn't have a prefix then do nothing
 #
@@ -319,25 +332,29 @@ match @args[1]
 		end
 
 		#
-		# APKBUILDs are shellscripts and as such we can't source them until source-sh
-		# is sorted out (see: https://gitlab.redox-os.org/redox-os/ion/issues/963), until
-		# then we can only do the next best thing and try to guess the builddir we should
-		# move into
+		# The sauce function will source a file with 'set -a', so we get all the variables
+		# of the APKBUILD set to us
 		#
-		# Run over all inodes inside the src directory of the package, ignore all ones that
-		# are not directory and open the file manager in the first one and then break.
+		sauce $path/APKBUILD
+
 		#
-		# This is not as good as having the capability of sourcing the shell to get the
-		# builddir= variable, but it is also not complex like writing our own mini parser
-		# for dealing with the most common usecases of the builddir= variable.
+		# This variable hold the path to where the source code of the package was extracted
+		# we will in the end of this function, open a file manager on it
 		#
-		# TODO(Leo): revisit this once the above is sorted out
-		#
-		for inode in $path/src/*
-			exists -d $inode || continue
-			f $inode
-			break
+		let workdir = $path/src
+
+		if exists -s builddir
+			#
+			# We don't need to put a '/' here first because a normal definition of builddir
+			# is "$srcdir"/foo-bar, the $srcdir won't be expanded and we will end with a
+			# string that starts with '/' itself
+			#
+			let workdir ++= $builddir
+		else
+			let workdir ++= /$pkgname-$pkgver
 		end
+
+		f $workdir
 	case [w work]
 		#
 		# Use $AX_ASUM (the version of abuild that does not run a docker container)
@@ -349,34 +366,53 @@ match @args[1]
 		end
 
 		#
-		# APKBUILDs are shellscripts and as such we can't source them until source-sh
-		# is sorted out (see: https://gitlab.redox-os.org/redox-os/ion/issues/963), until
-		# then we can only do the next best thing and try to guess the builddir we should
-		# move into
+		# The sauce function will source a file with 'set -a', so we get all the variables
+		# of the APKBUILD set to us
 		#
-		# Run over all inodes inside the src directory of the package, ignore all ones that
-		# are not directory and open the file manager in the first one and then break.
+		sauce $path/APKBUILD
+
 		#
-		# This is not as good as having the capability of sourcing the shell to get the
-		# builddir= variable, but it is also not complex like writing our own mini parser
-		# for dealing with the most common usecases of the builddir= variable.
+		# This variable hold the path to where the source code of the package was extracted
+		# we will in the end of this function, open a file manager on it
 		#
-		# TODO(Leo): revisit this once the above is sorted out
-		#
-		for inode in $path/src/*
-			exists -d $inode || continue
-			pushd $inode
-			git init >/dev/null
-			git add .
-			git commit -m 'Start work' >/dev/null
+		let workdir = $path/src
+
+		if exists -s builddir
 			#
-			# Start a temporary shell that allows users to do all the work
-			# they need, default to ion if SHELL is not set in the environment
+			# We don't need to put a '/' here first because a normal definition of builddir
+			# is "$srcdir"/foo-bar, the $srcdir won't be expanded and we will end with a
+			# string that starts with '/' itself
 			#
-			$or($SHELL ion)
-			popd
-			break
+			let workdir ++= $builddir
+		else
+			let workdir ++= /$pkgname-$pkgver
 		end
+
+		#
+		# Push into the work directory given to us, we will pop out of it after we are
+		# done
+		#
+		pushd $workdir
+
+		#
+		# Initialize a git repository and add all files to it, then make an initial commit
+		# this will allow us to easily create patches from any future changes
+		#
+		git init >/dev/null
+		git add .
+		git commit -m 'Start work' >/dev/null
+
+		#
+		# Start a temporary shell that allows users to do all the work
+		# they need, default to ion if SHELL is not set in the environment
+		#
+		$or($SHELL ion)
+
+		#
+		# As we have finished everything we pop out of the directory back into where the user
+		# was
+		#
+		popd
 	case [i info]
 		#
 		# In the future, iopkg should be rewritten in rust, but it will suffice for
