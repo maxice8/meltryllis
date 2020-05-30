@@ -6,7 +6,7 @@ if test $len(@args) -eq 1
 end
 
 for branch in @args[1..]
-	for ver in 3.11 3.10 3.9 3.8
+	for ver in 3.12 3.11 3.10 3.9 3.8
 		starts-with $branch $ver && echo $ver
 	end
 end
