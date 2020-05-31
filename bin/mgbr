@@ -71,8 +71,12 @@ for branch in "$@"; do
 			EDGE="$EDGE $branch"
 			shift
 			;;
+		3.12)
+			stable312="${stable312} $branch"
+			shift
+			;;
 		3.11)
-			stable310="${stable310} $branch"
+			stable311="${stable311} $branch"
 			shift
 			;;
 		3.10)
@@ -95,6 +99,7 @@ for branch in "$@"; do
 done
 
 [ -n "$EDGE" ] && merge_branch $EDGE
+[ -n "${stable312}" ] && merge_branch ${stable312}
 [ -n "${stable311}" ] && merge_branch ${stable311}
 [ -n "${stable310}" ] && merge_branch ${stable310}
 [ -n "${stable39}" ] && merge_branch ${stable39}
