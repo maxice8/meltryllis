@@ -30,7 +30,7 @@ fn show_help
  b|build		  : build the package
  n|navigate		  : navigate the directory of the package
  c|checksum		  : regenerate checksum of the package
- mr|merge-request : create merge request for the package
+ mr|merge-request	  : create merge request for the package
  d|diff			  : diff various attributes of the package
  l|lint			  : run linting tools from atools on the package
  f|fix			  : run tools to automatically fix linting errors in the package
@@ -38,7 +38,8 @@ fn show_help
  r|rename		  : rename a package
  u|unpack		  : unpack sources of the package and open the file manager in it
  w|work			  : unpack sources of the package, cd into it and init a git repo
- i|info			  : print information of the package"
+ i|info			  : print information of the package
+ p|pick			  : interactively cherry pick commits between 2 branches"
 end
 
 #
@@ -122,7 +123,7 @@ let path = ""
 # package in itself exists
 #
 match @args[1]
-	case [e edit b build n navigate c checksum d diff mr merge-request l lint f fix u unpack w work i info]
+	case [e edit b build n navigate c checksum d diff mr merge-request l lint f fix u unpack w work i info p pick]
 		#
 		# No package name given to us, rely on the branch name instead
 		#
@@ -499,6 +500,114 @@ match @args[1]
 				NOAPORTS_LINT=1 \
 				NOPKGVERCHECK=1 \
 				git commit -m "$repo/@args[2]: rename from @args[3]"
+		end
+	case [p pick]
+		#
+		# The source branch is the branch we are getting the commits from, most
+		# of the time this branch is 'master' as we are backporting to from Edge
+		# onto stable branches, be they bugfixes for community/ or security fixes
+		# for main/
+		#
+		# If we were given a second arument, treat that as the branch we want
+		# to source our commits from, otherwise assume we are using master
+		#
+		let source_branch = ""
+		if test $len(@args) -gt 3
+			let source_branch = @args[3]
+		else
+			let source_branch = master
+		end
+
+		#
+		# The target branch is the branch we are on, it is the branch we want to
+		# port the commits to
+		#
+		let target_branch = $(git-current-branch)
+
+		#
+		# Check if we were not passed the same branch as both target and source
+		# branches, there is no sense to backport from itself
+		#
+		if test $target_branch = $source_branch
+			printerr Both branches passed are the same
+			exit 1
+		end
+
+		#
+		# Show all commits between the target_branch and the source_branch that
+		# modified the path given to us
+		#
+		let commits = $(git log --oneline $target_branch..$source_branch -- $path)
+
+		#
+		# Check if there is any output with the commits passed to us, if it is empty
+		# then there is nothing to be backported
+		#
+		if not exists -s commits
+			printerr no changes between $target_branch and $source_branch for $path
+			exit 1
+		end
+
+		#
+		# Create an array that will hold all the options that are to be available
+		# in our checkboxes which are composed of:
+		# SHA1 - title - off
+		#
+		# SHA1 is the SHA of the commit in question, we use those in git cherry-pick
+		# title is the title of the commit, the user must know these
+		# off is passed to the dialog(1) utility and makes the option not ticked by
+		#  default
+		#
+
+		#
+		# The options array must be created here or it will go out of scope if done
+		# inside the for-loop
+		#
+		let options = []
+
+		#
+		# Iterate over all the commits, line-by-line
+		#
+		for line in @split($commits \n)
+			#
+			# Split the line by whitespace into an array, the first element
+			# is the SHA1 and the other elements make up the title
+			#
+			let splitted = [@split($line)]
+
+			#
+			# Append the SHA1, title and off to the options array, the title
+			# must be quoted otherwise it will be split into various elements
+			# instead we must have a single element that is a string with
+			# whitespace present
+			#
+			let options = [@options @splitted[0] "@splitted[1..]" off]
+		end
+
+
+		#
+		# Create a dialog with our options, the options picked by the user
+		# will be present in the file .al-cherry-pick inside the XDG_RUNTIME_DIR
+		# if one does not have that then just fail and let the user figure it out
+		# XDG_RUNTIME_DIR is the best we have and it is not worth it to support
+		# fallbacks for such a widely used feature
+		#
+		dialog \
+			--colors \
+			--keep-tite \
+			--no-shadow \
+			--no-mouse \
+			--aspect 20 \
+			--checklist "Pick commits for $path" \
+			14 60 0 \
+			@options ^> $XDG_RUNTIME_DIR/.al-cherry-pick
+
+		#
+		# Read the SHA1 of the commits picked by the user, use the @split method
+		# so they are split by whitespace
+		#
+		for commit in @split($(cat $XDG_RUNTIME_DIR/.al-cherry-pick))
+			git cherry-pick $commit
 		end
 	case _
 		usage
