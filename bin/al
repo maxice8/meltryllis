@@ -606,8 +606,15 @@ match @args[1]
 		# Read the SHA1 of the commits picked by the user, use the @split method
 		# so they are split by whitespace
 		#
-		for commit in @split($(cat $XDG_RUNTIME_DIR/.al-cherry-pick))
-			git cherry-pick $commit
+		let commit = $(cat $XDG_RUNTIME_DIR/.al-cherry-pick)
+
+		if not exists -s $commit
+			printerr No commits were picked for $path
+			exit 1
+		end
+
+		for c in @split($commit)
+			git cherry-pick -x $c
 		end
 	case _
 		usage
