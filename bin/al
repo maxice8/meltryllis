@@ -616,7 +616,7 @@ match @args[1]
 		#
 		let commit = $(cat $XDG_RUNTIME_DIR/.al-cherry-pick)
 
-		if not exists -s $commit
+		if not exists -s commit
 			printerr No commits were picked for $path
 			exit 1
 		end
