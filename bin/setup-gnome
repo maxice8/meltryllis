@@ -37,7 +37,6 @@ doas apk add --virtual gnome-apps \
 	gpaste \
 	gnome-weather \
 	gnome-tweaks \
-	gnome-software \
 	gnome-disk-utility \
 	gnome-calculator \
 	gnome-photos \
