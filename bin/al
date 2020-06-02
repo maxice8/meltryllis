@@ -503,6 +503,14 @@ match @args[1]
 		end
 	case [p pick]
 		#
+		# We will need dialog(1) utility, check if we have an executable
+		#
+		if not which dialog &>/dev/null
+			printerr the dialog'(1)' utility is missing
+			exit 1
+		end
+
+		#
 		# The source branch is the branch we are getting the commits from, most
 		# of the time this branch is 'master' as we are backporting to from Edge
 		# onto stable branches, be they bugfixes for community/ or security fixes
