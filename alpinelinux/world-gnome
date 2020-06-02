@@ -11,15 +11,13 @@ alpine-sdk
 alsa-plugins-pulse
 alsa-utils
 aspell
-atools-doc
-busybox-initscripts
 claws-mail
 corecollector
 cryptsetup
 dbus
 dbus-x11
 dhcpcd<9.0.0
-diffutils
+dialog
 doas
 docker
 e2fsprogs
@@ -29,7 +27,6 @@ elogind<243.7
 eudev
 exiftool
 fd
-ffmpeg
 firefox
 fish
 flatpak<1.7.0
@@ -37,12 +34,10 @@ font-fira-code
 font-fira-mono-nerd
 font-noto
 font-tewi
-git
 git-doc
 glow
 gnome
-gnome-apps=20200428.215532
-gnome-software-plugin-apk
+gnome-apps=20200602.184718
 hdparm
 ibus
 imagemagick
@@ -58,7 +53,6 @@ keepassxc
 kvantum
 libinput
 libnotify
-libva-utils
 linux-lts
 lua5.3
 lua5.3-filesize
@@ -69,8 +63,6 @@ lvm2
 man-db
 materia-dark-compact
 mesa-vulkan-intel
-meson
-meson-vim
 mkmr-doc
 mpv
 neovim<0.4.3-r2
@@ -93,10 +85,8 @@ rsync
 sed
 shellcheck
 smartmontools
-snooze
 syncthing
 telegram-desktop
-tzdata
 wpa_supplicant
 xdg-utils
 xdotool
