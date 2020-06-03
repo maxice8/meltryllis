@@ -616,11 +616,23 @@ match @args[1]
 		#
 		let commit = $(cat $XDG_RUNTIME_DIR/.al-cherry-pick)
 
+		#
+		# Check if any commits were picked via the dialog(1) interface
+		# this value will be empty if none are picked
+		#
 		if not exists -s commit
 			printerr No commits were picked for $path
 			exit 1
 		end
 
+		#
+		# Use the cherry-pick command from git, there will most likely be conflicts
+		# but those are none of our concerns, the user can fix those and --continue
+		# the cherry-pick.
+		#
+		# Use -x so that we will get a nice message pointing from where we backported
+		# the commit, only if there are no conflicts
+		#
 		for c in @split($commit)
 			git cherry-pick -x $c
 		end
