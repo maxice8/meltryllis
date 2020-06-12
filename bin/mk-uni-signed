@@ -3,8 +3,8 @@
 # This is meant to produce a unified kernel image that is signed with keys from a
 # known location. It hardcodes all sorts of things like:
 # - Arch (x86_64)
-# - Kernel Image name (vmlinuz-lts)
-# - Initramfs name (initramfs-lts)
+# - Kernel Image name (vmlinuz-edge)
+# - Initramfs name (initramfs-edge)
 # - Intel Microcode support and its name (intel-ucode.img)
 # - Location of keys for signing the image and bootloader ($HOME/usr/secrets/$hostname-keys)
 # - Which bootloader you're using (systemd-boot)
@@ -16,8 +16,8 @@
 #
 bootdir=/boot # Root directory of bootloader (commonly /boot)
 certdir=/home/enty/usr/secrets/$(hostname)-keys # Can't use $HOME here since we run this as root
-kernel="$bootdir"/vmlinuz-lts # Where the kernel is
-initramfs="$bootdir"/initramfs-lts # Where the initramfs
+kernel="$bootdir"/vmlinuz-edge # Where the kernel is
+initramfs="$bootdir"/initramfs-edge # Where the initramfs
 microcode="$bootdir"/intel-ucode.img # Where the intel microcode is
 image="$bootdir"/alpine.efi # Where the Unified Kernel Image will be
 #
