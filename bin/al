@@ -545,7 +545,7 @@ match @args[1]
 		# Show all commits between the target_branch and the source_branch that
 		# modified the path given to us
 		#
-		let commits = $(git log --oneline $target_branch..$source_branch -- $path)
+		let commits = $(git log --oneline --reverse $target_branch..$source_branch -- $path)
 
 		#
 		# Check if there is any output with the commits passed to us, if it is empty
