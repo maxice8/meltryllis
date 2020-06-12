@@ -543,7 +543,10 @@ match @args[1]
 
 		#
 		# Show all commits between the target_branch and the source_branch that
-		# modified the path given to us
+		# modified the path given to us.
+		#
+		# We use --reverse so the list will come with the older commits on the top,
+		# which should always be cherry-picked before the others
 		#
 		let commits = $(git log --oneline --reverse $target_branch..$source_branch -- $path)
 
@@ -592,7 +595,6 @@ match @args[1]
 			let options = [@options @splitted[0] "@splitted[1..]" off]
 		end
 
-
 		#
 		# Create a dialog with our options, the options picked by the user
 		# will be present in the file .al-cherry-pick inside the XDG_RUNTIME_DIR
@@ -605,9 +607,8 @@ match @args[1]
 			--keep-tite \
 			--no-shadow \
 			--no-mouse \
-			--aspect 20 \
 			--checklist "Pick commits for $path" \
-			14 60 0 \
+			0 0 0 \
 			@options ^> $XDG_RUNTIME_DIR/.al-cherry-pick
 
 		#
