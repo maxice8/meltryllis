@@ -1,0 +1,35 @@
+#!/usr/bin/ion
+
+let sockdir = "$XDG_RUNTIME_DIR"/dtach
+
+fn usage
+	echo "usage: dm [hl] [r alias] <alias> [command]
+
+<alias> : name of the socket used to communicate
+[command] : name of the program to run on the socket
+
+h|help: show this message and exit
+l|list: list sockets
+r|rm: delete a socket"
+end
+
+if test $len(@args) -lt 2
+	usage
+	exit 1
+end
+
+if not test -d "$sockdir"
+	mkdir -p -- "$sockdir"
+end
+
+match @args[1]
+	case [l list]
+		ls -1 "$sockdir"
+	case [r rm]
+		rm -f -- "$sockdir"/@args[2]
+	case [h help]
+		usage
+		exit 1
+	case _
+		exec dtach -A "$sockdir"/@args[1] -e '^f' -r winch @args[2..]
+end
