@@ -1,10 +1,5 @@
 #!/usr/bin/ion
-let _REALBASE = $(alpine-stable-prefix)
-if exists -s _REALBASE
-	let _REALBASE ++= -stable
-else
-	let _REALBASE = master
-end
+let _REALBASE = $(tracking-branch)
 
 let remote = $(guess-remote)
 if not exists -s remote
