@@ -516,7 +516,7 @@ match @args[1]
 		# onto stable branches, be they bugfixes for community/ or security fixes
 		# for main/
 		#
-		# If we were given a second arument, treat that as the branch we want
+		# If we were given a second argument, treat that as the branch we want
 		# to source our commits from, otherwise assume we are using master
 		#
 		let source_branch = ""
