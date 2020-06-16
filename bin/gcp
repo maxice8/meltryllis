@@ -8,12 +8,6 @@ let remote = $(guess-remote)
 test -z $remote && exit 1
 
 for branch in @args[1..]
-	let _REALBASE = $(alpine-stable-prefix $branch)
-	if exists -s _REALBASE
-		let _REALBASE = $_REALBASE-stable
-	else
-		let _REALBASE = master
-	end
-
-	git log $remote/$_REALBASE..$branch --pretty='%C(yellow)%h %C(white)%s'
+	let remote_branch = $(tracking-branch $branch)
+	git log $remote/$remote_branch..$branch --pretty='%C(yellow)%h %C(white)%s'
 end
