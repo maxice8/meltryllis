@@ -71,38 +71,10 @@ for arg in @args[2..]
 	end
 
 	#
-	# This is Alpine Linux specific, we use alpine-stable-prefix to
-	# check if we have a branch that matches an stable Alpine Linux
-	# release rather than Edge
+	# Follow the tracking branch, if the use has branch 'foo' that tracks
+	# upstream/bar then we will end pushing to 'bar'
 	#
-	let _REALBASE = $(alpine-stable-prefix $arg)
-
-	#
-	# Define remote_branch before, otherwise it will be lost inside
-	# the control flow below
-	#
-	let remote_branch = ""
-
-	#
-	# If we got a string in return that means we are in an Alpine
-	# Linux stable branch, we then add -stable to it, so if the user
-	# give us something like '3.11-<pkg>' then we push to '3.11-stable'
-	#
-	if exists -s _REALBASE
-		let remote_branch = $_REALBASE-stable
-	else
-		#
-		# Otherwise we just push to the tracking of our given branch,
-		# if the user gave us 'we-track-branch-X' then we will push from
-		# 'we-track-branch-X' to 'branch-X'
-		#
-		# if the user wants us to push to another branch they can explicitly
-		# pass it to us by passing a complete object like foo:bar
-		#
-		let _full = $(git rev-parse --abbrev-ref --symbolic-full-name $arg)
-		let _full = [@split($_full /)]
-		let remote_branch = @_full[1]
-	end
+	let remote_branch = $(tracking-branch)
 
 	#
 	# Finally append it to pushes so we push it later
