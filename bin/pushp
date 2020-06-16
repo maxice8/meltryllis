@@ -20,12 +20,11 @@ let remote = ''
 # case strip the 'remote:' and store the rest in the 'remote' variable
 #
 # We also check if we have less than 3 arguments, that means we were
-# not given a branch to push to, so default to 'master' which is the
-# most common branch
+# not given a branch to push to, so default to the branch name itself
 #
 if starts-with @args[1] remote:
 	let remote = $regex_replace(@args[1] "^remote:" " ")
-	test $len(@args) -lt 3 && let args ++= master
+	test $len(@args) -lt 3 && let args ++= $(git rev-parse --abbrev-ref HEAD)
 else
 #
 # If the first argument does not start with 'remote:' that means we were
@@ -93,11 +92,16 @@ for arg in @args[2..]
 		let remote_branch = $_REALBASE-stable
 	else
 		#
-		# Otherwise we just push to the master branch, if the user wants
-		# us to push to another branch they can explicitly pass it to us
-		# by passing a complete object like foo:bar
+		# Otherwise we just push to the tracking of our given branch,
+		# if the user gave us 'we-track-branch-X' then we will push from
+		# 'we-track-branch-X' to 'branch-X'
 		#
-		let remote_branch = master
+		# if the user wants us to push to another branch they can explicitly
+		# pass it to us by passing a complete object like foo:bar
+		#
+		let _full = $(git rev-parse --abbrev-ref --symbolic-full-name $arg)
+		let _full = [@split($_full /)]
+		let remote_branch = @_full[1]
 	end
 
 	#
