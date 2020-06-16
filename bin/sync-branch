@@ -1,5 +1,5 @@
 #!/usr/bin/ion
-let branches = $or(@args[1..] master)
+let branches = $or(@args[1..] $(tracking-branch))
 
 for branch in @split($branches)
 	env PRINTERR_QUIET=yes PRINTOK_QUIET=yes gbr $branch
