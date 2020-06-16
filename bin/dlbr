@@ -16,7 +16,20 @@ fn delete_local_branch branch:str
 	end
 
 	if test $(git-current-branch) = $branch
-		env PRINTOK_QUIET=yes gbr master
+		#
+		# Try to switch to the tracking branch
+		# otherwise try to switch to the default branch
+		#
+		let _full = $(git rev-parse --abbrev-ref --symbolic-full-name $arg)
+		let _full = [@split($_full /)]
+		if test @_full[1] = $branch
+			#
+			# We need a way to detect the default git branch
+			#
+			env PRINTOK_QUIET=yes gbr master
+		else
+			env PRINTOK_QUIET=yes gbr @_full[1]
+		end
 	end
 
 	if not git branch -D "$branch" &>/dev/null
