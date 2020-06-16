@@ -20,7 +20,7 @@ fn delete_local_branch branch:str
 		# Try to switch to the tracking branch
 		# otherwise try to switch to the default branch
 		#
-		let _full = $(git rev-parse --abbrev-ref --symbolic-full-name '@{u}')
+		let _full = $(tracking-branch $branch)
 
 		if test $_full = $branch
 			#
