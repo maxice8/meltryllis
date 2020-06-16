@@ -5,4 +5,5 @@ for branch in @split($branches)
 	env PRINTERR_QUIET=yes PRINTOK_QUIET=yes gbr $branch
 	pullp
 	env FORCE_PUSH=1 pushp remote:origin "$branch":"$branch"
+	git clean-branches
 end
