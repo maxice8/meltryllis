@@ -19,17 +19,11 @@ merge_branch() {
 	# For when you need to leave before pushing
 	earlyleave=0
 
-	# Assume that the first branch given to us has the
-	# prefix that we are pushing to on alpine, if we are
-	# not pushing to alpine then this just noop to the master
-	# branch, if it is  alpine we add -stable to the version
-	# prefix
-	prefix="$(alpine-stable-prefix "$1")"
-	if [ -n "$prefix" ]; then
-		prefix="$prefix"-stable
-	else
-		prefix=master
-	fi
+	#
+	# Use the tracking branch as the branch we want to
+	# merge our changes into
+	#
+	prefix="$(tracking-branch "$1")"
 
 	gbr "$prefix" || return 1
 
