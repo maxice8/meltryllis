@@ -20,15 +20,21 @@ fn delete_local_branch branch:str
 		# Try to switch to the tracking branch
 		# otherwise try to switch to the default branch
 		#
-		let _full = $(git rev-parse --abbrev-ref --symbolic-full-name $arg)
-		let _full = [@split($_full /)]
-		if test @_full[1] = $branch
+		let _full = $(git rev-parse --abbrev-ref --symbolic-full-name '@{u}')
+
+		if test $_full = $branch
 			#
-			# We need a way to detect the default git branch
+			# We hit this in case we are deleting a branch with the same name
+			# as the branch it tracks, like having origin/foo tracking upstream/foo
+			# the user wants to delete origin/foo, so we can't switch to 'foo'
+			#
+			# In this case we default to 'master' for now, this will be solved
+			# once we can detect which branch is default (master is overwhelmingly
+			# the default right now)
 			#
 			env PRINTOK_QUIET=yes gbr master
 		else
-			env PRINTOK_QUIET=yes gbr @_full[1]
+			env PRINTOK_QUIET=yes gbr $_full
 		end
 	end
 
