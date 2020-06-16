@@ -1,4 +1,4 @@
 #!/usr/bin/ion
-# prch - show all commits that will be merged into master
+# prch - show all commits that will be merged into the main branch
 # check changes
 env GIT_PAGER=cat git show --color=always -"$(gcp | wc -l)" | expand -t 4 | less -r -x1,5
