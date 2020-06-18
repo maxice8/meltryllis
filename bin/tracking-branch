@@ -1,6 +1,23 @@
 #!/usr/bin/ion
 let branch = $or(@args[1] HEAD)
 let branch = $branch'@{u}'
-let _f = $(git rev-parse --abbrev-ref --symbolic-full-name $branch)
-let _f = [@split($_f /)]
-echo @_f[1]
+
+#
+# If there is no tracking branch then this will error out, so supress stderr
+# as it will return nothing in that case
+#
+let _f = $(git rev-parse --abbrev-ref --symbolic-full-name $branch ^>/dev/null)
+
+#
+# If there is no tracking branch then we can safely use our own branch name
+#
+if ends-with '@{u}' $_f or if not exists -s _f
+	git-current-branch
+	exit 0
+end
+
+#
+# We only reach here if we have a tracking branch, which takes the form of
+# <remote>/<branch>, split by the / and take the second value
+#
+echo @split($_f /)[1]
