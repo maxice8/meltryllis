@@ -9,6 +9,16 @@ end
 let branch = $(git-current-branch)
 let url = $(git config --local remote.$remote.url)
 
+if exists -s PULLP_DRY_RUN
+	echo Args: @args
+	echo Remote Branch: $_REALBASE
+	echo Remote: $remote
+	echo Local Branch: $branch
+	echo Url: $url
+	echo FinalCommand: git pull --quiet $remote --rebase $_REALBASE
+	exit 0
+end
+
 git pull --quiet $remote --rebase $_REALBASE && \
 	printok "Rebased '$branch' on '$remote/$_REALBASE' from '$url'" || \
 	printerr "Failed to rebase '$branch' on '$remote/$_REALBASE' from '$url'"
