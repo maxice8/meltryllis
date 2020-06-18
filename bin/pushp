@@ -28,7 +28,7 @@ if starts-with @args[1] remote:
 else
 #
 # If the first argument does not start with 'remote:' that means we were
-# given a branchto push to and no remote was given to us, use 'guess-remote'
+# given a branch to push to and no remote was given to us, use 'guess-remote'
 # to get us a nice remote for us to use and add it to the middle of the
 # args array, we need to it to the args array because we rely on having
 # at least 3 objects inside it, the 0th is the name of the script, the
