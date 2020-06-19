@@ -635,7 +635,7 @@ match @args[1]
 		# the commit, only if there are no conflicts
 		#
 		for c in @split($commit)
-			git cherry-pick -x $c
+			git cherry-pick --strategy=recursive -X theirs -x $c
 		end
 	case _
 		usage
