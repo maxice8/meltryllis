@@ -3,7 +3,7 @@ if test $len(@args) -eq 1
 	let args ++= $(git current-branch)
 end
 
-let remote = $(guess-remote)
+let remote = $(tracking-remote)
 
 test -z $remote && exit 1
 
