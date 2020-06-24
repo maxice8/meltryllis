@@ -34,7 +34,6 @@ gsettings set org.gnome.desktop.wm.keybindings panel-run-dialog \
 msg Installing virtual version of gnome-apps with only apps we want
 doas apk add --virtual gnome-apps \
 	nautilus \
-	gpaste \
 	gnome-weather \
 	gnome-tweaks \
 	gnome-disk-utility \
