@@ -1,9 +1,11 @@
 .depends-atools=20200429.181841
+.depends-chessbot=20200628.034546
 .depends-mkmr=20200429.181840
 .depends-unified-safe-boot=20200502.190151
 .depends-unpk=20200429.181842
 .dev-depends-atools=20200429.181841
 .dev-depends-mkmr=20200429.181841
+.makedepends-abuild=20200701.220943
 /bin/sh
 alacritty
 alpine-base
@@ -29,6 +31,7 @@ efitools
 eudev
 exiftool
 fd
+firefox
 fish
 flatpak<1.7.0
 font-fira-code
@@ -84,7 +87,6 @@ sed
 shellcheck
 smartmontools
 syncthing
-telegram-desktop
 wpa_supplicant
 xdg-utils
 xdotool
