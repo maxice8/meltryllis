@@ -23,11 +23,8 @@ Plug 'itchyny/lightline.vim'
 Plug 'dense-analysis/ale'
 
 let g:ale_fix_on_save = 1
-let g:ale_fixers = {
-			\	'python': ['isort', 'black']
-			\	}
 let g:ale_linters = {
-			\	'python': ['vulture', 'flake8']
+			\	'cpp': ['clang']
 			\	}
 
 " Colorscheme
@@ -36,18 +33,6 @@ let g:ale_linters = {
 Plug 'danilo-augusto/vim-afterglow'
 
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-
-let g:deoplete#enable_at_startup = 1
-
-Plug 'deoplete-plugins/deoplete-jedi', { 'for': 'python' }
-
-" For Semshi
-let g:deoplete#auto_complete_delay = 100 
-
-Plug 'numirias/semshi', { 'do': ':UpdateRemotePlugins', 'for': 'python' }
-
-" Support for using the uncompromising formatter for python3
-Plug 'psf/black', { 'tag': '19.10b0', 'for': 'python' }
 
 " Add Plugins
 "
