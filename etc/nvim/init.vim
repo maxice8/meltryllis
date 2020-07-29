@@ -19,20 +19,7 @@ Plug 'airblade/vim-gitgutter'
 " - file type
 Plug 'itchyny/lightline.vim'
 
-" Async Lint engine, allows us to run linters
-Plug 'dense-analysis/ale'
-
-let g:ale_fix_on_save = 1
-let g:ale_linters = {
-			\	'cpp': ['clang']
-			\	}
-
-" Colorscheme
-" Plug 'sonph/onehalf', { 'rtp': 'vim' }
-
 Plug 'danilo-augusto/vim-afterglow'
-
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
 " Add Plugins
 "
