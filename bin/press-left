@@ -1,0 +1,6 @@
+#!/usr/bin/ion
+if exists -s WAYLAND_DISPLAY
+	ydotool click 1
+else
+	xdotool click 1
+end
