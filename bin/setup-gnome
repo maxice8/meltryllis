@@ -46,4 +46,5 @@ doas apk add --virtual gnome-apps \
 	gnome-characters \
 	gnome-system-monitor \
 	gnome-documents \
-	gnome-clocks
+	gnome-clocks \
+	celluloid
