@@ -1,0 +1,9 @@
+#!/usr/bin/lua5.3
+local filesize = require 'filesize'
+
+for i = 1, #arg do
+	-- Store the size we were given
+	size = filesize(tonumber(arg[i]), {base = 10})
+
+	io.write(size.."\n")
+end
