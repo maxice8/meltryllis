@@ -422,6 +422,20 @@ match @args[1]
 		run $path [iopkg]
 	case [m move]
 		#
+		# Check if we were given a path that ends with '/', it is not uncommon for
+		# for people to use shell completion which will complete 'dir' to 'dir/'
+		# the previous iteration of this (the one written in shell) would fail
+		# if the path given to us had '/'
+		#
+		if ends-with @args[2] /
+			let repopath = $join(@args[2])
+			let repolen = $len($repopath)
+			let repolen = $(( repolen - 1 ))
+			let repopath = [@split_at($repopath $repolen)]
+			let args[2] = @repopath[0]
+		end
+
+		#
 		# If the directory already exists then move all contents from inside
 		# the directory we're moving from to it, otherwise move the directory
 		# itself to the new location
