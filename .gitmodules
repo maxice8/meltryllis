@@ -4,3 +4,6 @@
 [submodule "atools"]
 	path = atools
 	url = https://gitlab.alpinelinux.org/Leo/atools
+[submodule "aports-helpers"]
+	path = aports-helpers
+	url = git@github.com:maxice8/aports-helpers.git
