@@ -1,2 +1,0 @@
-#!/usr/bin/ion
-exec nvim $or(@args[1..] "")
