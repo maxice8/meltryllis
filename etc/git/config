@@ -4,8 +4,6 @@
 [alias]
   ls = log --oneline --decorate --graph
   g = grep --break --heading --line-number
-[core]
-  editor = nvim
 [github]
 	user = maxice8
 # for $deity's sake, check that anything we're getting is complete and sane on a regular basis
@@ -28,3 +26,5 @@ fsckObjects = true
 	helper = cache --timeout=999999999
 [init]
 	defaultBranch = master
+[core]
+	editor = kak
