@@ -10,6 +10,13 @@ map global normal '<s-v>' 'x' -docstring 'Shift + v to select whole line'
 map global normal '<c-left>' '<b>' -docstring 'Go back to previous word'
 map global normal '<c-right>' '<e>' -docstring 'Go to the next word to next word'
 
+# Keybind to go to start and and end of the line
+map global normal '<c-up>' 'gh' -docstring 'Go to the beginning of the line'
+map global normal '<c-down>' 'gl' -docstring 'Go to the end of the line'
+
+map global insert '<c-up>' '<esc>ghi' -docstring 'Go to the beginning of the line'
+map global insert '<c-down>' '<esc>gli' -docstring 'Go to the end of the line'
+
 # If we press enter in normal mode then we save and quit, this is even faster
 # than our :x which is faster than neovim
 hook global NormalKey <ret> write-quit
