@@ -1,11 +1,9 @@
 #!/usr/bin/ion
-exists -s XDG_SESSION_TYPE || exit
-
 let clipboard:[str] = [""]
-if test $XDG_SESSION_TYPE = x11
-	let clipboard = [xsel -bi]
-else if test $XDG_SESSION_TYPE = wayland
+if exists -s WAYLAND_DISPLAY
 	let clipboard = [wl-copy]
+else
+	let clipboard = [xsel -bi]
 end
 
 if test $len(@args) -gt 1
