@@ -42,3 +42,13 @@ map global normal / /(?i) -docstring 'case insensitive search'
 
 # Custom colorscheme
 colorscheme gruvbox
+
+# Define function on APKBUILDs to upgrade the pkgver
+hook global BufCreate (.*/)?APKBUILD %{
+	define-command -docstring 'Upgrade pkgver to another version' \
+	up -params 1 %{
+  	execute-keys '%s(?S)^pkgver=.*<ret>cpkgver=' %arg{1}<esc>
+  	execute-keys -draft '%s(?S)^pkgrel=.*<ret>cpkgrel=0<esc>'
+	}
+}
+
