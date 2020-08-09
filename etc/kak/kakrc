@@ -50,9 +50,31 @@ hook global WinSetOption filetype=sh smarttab
 
 # Define function on APKBUILDs to upgrade the pkgver
 hook global BufCreate (.*/)?APKBUILD %{
-  define-command -docstring 'Upgrade pkgver to another version' \
+  define-command -docstring '
+up <version>: updates pkgver to <version> and sets pkgrel to 0, the number
+can be an absolute version (like 1.0.0) or a relative version prefixed by + (like +1)
+
+If using a relative version then a dot can be prefixed to increase a higher subversion.
+If +.1 is passed to a package with version 1.0.0, then the result will be 1.1.0, if +..1
+is passed then the version will be 2.0.0
+
+After setting a new version it will call al c to update the checksum, this will lock the
+interface until it is done and might take various seconds depending on the size of the
+archives in source' \
   up -params 1 %{
-    execute-keys '%s(?S)^pkgver=.*<ret>cpkgver=' %arg{1}<esc>
-    execute-keys -draft '%s(?S)^pkgrel=.*<ret>cpkgrel=0<esc>'
-  }
+    evaluate-commands -draft %sh{
+      [ -z "$1" ] && return 0
+      . $kak_buffile
+      if [ "$(echo "$1" | cut -c 1)" == "+" ]; then
+      	result=$(add-to-ver "$(echo $1 | cut -c 2-)" $pkgver)
+      else
+      	result="$1"
+      fi
+      sed -i "$kak_buffile" \
+      		-e "s|^pkgver=[A-Za-z0-9\._-]*|pkgver=$result|" \
+      		-e "s|^pkgrel=[0-9]*|pkgrel=0|"
+      al c
+    }
+    edit!
+ }
 }
