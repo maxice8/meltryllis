@@ -50,6 +50,14 @@ hook global WinSetOption filetype=sh smarttab
 
 # Define function on APKBUILDs to upgrade the pkgver
 hook global BufCreate (.*/)?APKBUILD %{
+  define-command -docstring 'yank variable defined in APKBUILD' \
+  get -params 1 %{
+    evaluate-commands -draft %sh{
+      [ -z "$1" ] && return 0
+      . $kak_buffile
+      eval printf '%s\\n' "\${${1}}" | copy
+    }
+  }
   define-command -docstring '
 up <version>: updates pkgver to <version> and sets pkgrel to 0, the number
 can be an absolute version (like 1.0.0) or a relative version prefixed by + (like +1)
