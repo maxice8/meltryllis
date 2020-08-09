@@ -15,7 +15,6 @@ alsa-plugins-pulse
 alsa-utils
 claws-mail
 cmd:7z
-cmd:clang++
 cmd:sort
 cmd:wl-copy
 corecollector
@@ -57,7 +56,6 @@ kvantum
 libinput
 libnotify
 linux-edge
-llvm10
 lua5.3
 lua5.3-filesize
 lua5.3-optarg
