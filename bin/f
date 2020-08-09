@@ -1,2 +1,2 @@
 #!/usr/bin/ion
-exec ranger $or(@args[1..] "")
+exec ranger $or(@args[1..] ".")
