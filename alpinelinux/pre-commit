@@ -128,6 +128,11 @@ for apkbuild in $(changed_files '**/APKBUILD'); do
 	OLDIFS="$IFS"
 	IFS="
 "
+	# Try to source the APKBUILD to check if they are valid shellcode
+	if ! . "$apkbuild"; then
+		error "$apkbuild is not valid shellcode"
+		return 1
+	fi
 	if [ -z "${NOAPORTS_LINT:-}" ]; then
 		for msg in $(IFS="$OLDIFS" aports-lint "$apkbuild"); do
 			error "$msg"
@@ -143,8 +148,8 @@ for apkbuild in $(changed_files '**/APKBUILD'); do
 	IFS="$OLDIFS"
 	if [ -z "${NOPKGVERCHECK:-}" ] && isupdate "$apkbuild"; then
 		grep -q '^pkgrel=0$' "$apkbuild" || {
-			error "pkgrel should be 0 for $apkbuild" >&2
-			return 1
+			error "pkgrel should be 0 for $apkbuild"
+			err=1
 		}
 	fi
 	[ ${err:-0} -eq 1 ] && return 1
