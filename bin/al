@@ -501,7 +501,7 @@ match @args[1]
 		# if it fails for any reason, the user can fix it later and amend the
 		# commit
 		#
-		sed -e "s|^pkgname=.*|pkgname=@args[2]|g" -i $path/APKBUILD
+		sed -e "s|^pkgname=.*|pkgname=@args[2]|g" -i $repo/@args[2]/APKBUILD
 
 		#
 		# Use the isclean function to check if we operating in a dirty git tree
