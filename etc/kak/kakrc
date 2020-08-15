@@ -19,7 +19,9 @@ map global insert '<c-down>' '<esc>gli' -docstring 'Go to the end of the line'
 
 # If we press enter in normal mode then we save and quit, this is even faster
 # than our :x which is faster than neovim
-hook global NormalKey <ret> write-quit
+hook global NormalKey <ret> write!
+
+hook global NormalKey <c-s> write-quit
 
 # If we do ':' then press x then we save-quit, even faster than our previous
 # neovim configuration
@@ -50,6 +52,24 @@ hook global WinSetOption filetype=sh smarttab
 
 # Define function on APKBUILDs to upgrade the pkgver
 hook global BufCreate (.*/)?APKBUILD %{
+  define-command -docstring 'quote a variable in APKBUILD' \
+  quote -params 1 %{
+    evaluate-commands -draft %sh{
+      [ -z "$1" ] && return 0
+      sed -i "$kak_buffile" \
+          -re "s|^$1=([^ ]*)|$1=\"\1\"|g"
+    }
+    edit!
+  }
+  define-command -docstring 'unquote a variable in APKBUILD' \
+  unquote -params 1 %{
+    evaluate-commands -draft %sh{
+      [ -z "$1" ] && return 0
+      sed -i "$kak_buffile" \
+          -re "s|^$1=\"([^\"]*)|$1=\1|g"
+    }
+    edit!
+  }
   define-command -docstring 'yank variable defined in APKBUILD' \
   get -params 1 %{
     evaluate-commands -draft %sh{
