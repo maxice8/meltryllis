@@ -3,7 +3,7 @@
 # This hook checks that all local sources specified in the staged APKBUILDs
 # are staged too or already committed and that checksums are correct.
 #
-set -eu
+set -e
 
 # Maximal allowed size (in bytes) of a file.
 FILE_SIZE_LIMIT=262144  # 256 kiB
@@ -120,7 +120,7 @@ for apkbuild in $(changed_files '**/APKBUILD'); do
 	IFS="
 "
 	# Try to source the APKBUILD to check if they are valid shellcode
-	. "$apkbuild" || {
+	srcdir="" . "$apkbuild" || {
 		error "$apkbuild is not valid shellcode"
 		return 1
 	}
