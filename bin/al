@@ -336,6 +336,9 @@ match @args[1]
 		# The sauce function will source a file with 'set -a', so we get all the variables
 		# of the APKBUILD set to us
 		#
+		if exists -s builddir
+			export builddir=""
+		end
 		sauce $path/APKBUILD
 
 		#
