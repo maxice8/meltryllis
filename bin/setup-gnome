@@ -1,25 +1,5 @@
 #!/usr/bin/ion
 #
-# Add keybindings for certain places
-#
-for ws in 1 2 3 4 5 6
-	msg Setting switch to workspace $ws to Super + $ws
-	gsettings set \
-		org.gnome.desktop.wm.keybindings switch-to-workspace-$ws \
-		"['<Super>$ws']"
-	msg Setting move window to workspace $ws to Shift + Super + $ws
-	gsettings set \
-		org.gnome.desktop.wm.keybindings move-to-workspace-$ws \
-		"['<Shift><Super>$ws']"
-end
-
-#
-# Alt-tab should only switch on its own workspace
-#
-msg Making Alt-Tab work only on windows of the same workspace
-gsettings set org.gnome.shell.app-switcher current-workspace-only true
-
-#
 # Super + R to run commands, i use it a lot it is better than the default
 # of Alt + F2
 #
@@ -48,3 +28,8 @@ doas apk add --virtual gnome-apps \
 	gnome-documents \
 	gnome-clocks \
 	celluloid
+
+msg Installing virtual package that has Theme and icons
+doas apk add --virtual .gnome-themes \
+	tela-icon-theme \
+	vimix-dark-amethyst
