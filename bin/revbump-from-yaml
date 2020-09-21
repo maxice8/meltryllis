@@ -1,0 +1,10 @@
+#!/bin/sh
+cd $APORTSDIR || exit 1
+yaml="$(adep list "$1")"
+
+# rebuild all packages from main, community, testing
+for x in main community testing; do
+	printf "%s\\n" "$yaml" | yq read - "$1.$x" | sed 's|- ||g' | while read -r pkg; do
+		apkgrel -a $x/$pkg
+	done
+done
