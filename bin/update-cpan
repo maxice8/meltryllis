@@ -1,0 +1,11 @@
+#!/bin/sh
+action="${0##*/}" # Basename
+action="${action%%-*}" # Remove everything after first '-'
+
+if [ -n "$1" ]; then
+    pkg="$1"
+else
+    pkg="$(git-current-branch)"
+fi
+
+cd "$(find_repo "$pkg")" && apkbuild-cpan $action
