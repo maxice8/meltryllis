@@ -1,2 +1,2 @@
-#!/bin/sh
+#!/usr/bin/ion
 exec flatpak run com.paradox.eu4
