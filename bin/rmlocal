@@ -1,0 +1,5 @@
+#!/usr/bin/ion
+let branch = $or(@args[1..] $(git-current-branch))
+for b in @split($branch)
+	env DLBR_LOCAL=1 dlbr $b
+end
