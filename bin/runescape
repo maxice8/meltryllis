@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/ion
 flatpak run \
 	--env=MSA_GLSL_CACHE_DIR= \
 	--env=SDL_VIDEODRIVER= \
