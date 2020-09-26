@@ -1,2 +1,0 @@
-#!/bin/sh
-mpv --ytdl-format="[height<720]" "$@"
