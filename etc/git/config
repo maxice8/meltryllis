@@ -28,3 +28,10 @@ fsckObjects = true
 	defaultBranch = master
 [core]
 	editor = kak
+	pager = delta
+[interactive]
+	diffFilter = delta
+[delta]
+	features = line-numbers decorations
+	syntax-theme = base16
+	whitespace-error-style = 22 reverse
