@@ -30,8 +30,8 @@ fsckObjects = true
 	editor = kak
 	pager = delta
 [interactive]
-	diffFilter = delta
+	diffFilter = delta --color-only
 [delta]
-	features = line-numbers decorations
+	features = line-numbers
 	syntax-theme = base16
 	whitespace-error-style = 22 reverse
