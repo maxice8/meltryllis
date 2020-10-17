@@ -1,9 +1,0 @@
-#!/bin/sh
-trap 'rm -f $_tmpfile' EXIT
-
-_tmpfile="$(mktemp)"
-
-echo "$1" > "$_tmpfile"
-
-"${EDITOR:-vi}" "$_tmpfile" >/dev/tty; cat "$_tmpfile"
-
