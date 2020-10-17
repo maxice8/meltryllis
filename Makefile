@@ -12,6 +12,9 @@ symlink: $(DOTFILES)
 
 subdirs: $(SUBDIRS)
 
+vdm:
+	@grep '^\.' /etc/apk/world | print-virtual-deps | jq . > alpinelinux/virtual-deps
+
 $(SUBDIRS):
 	cd $@ && $(MAKE)
 
