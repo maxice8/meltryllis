@@ -1,0 +1,68 @@
+{
+  ".depends-aports-helpers": [
+    "lua5.2",
+    "lua5.2-filesystem",
+    "lua5.2-lyaml",
+    "lua-aports"
+  ],
+  ".depends-atools": [
+    "lua5.3",
+    "lua5.3-lyaml"
+  ],
+  ".depends-chessbot": [
+    "so:libespeak.so.1",
+    "lc0"
+  ],
+  ".depends-copy": [
+    "cmd:wl-copy",
+    "cmd:xsel"
+  ],
+  ".depends-lc0": [
+    "intel-compute-runtime"
+  ],
+  ".depends-mkmr": [
+    "py3-gitlab",
+    "py3-gitpython",
+    "py3-giturlparse",
+    "py3-inquirer"
+  ],
+  ".depends-paste": [
+    "cmd:wl-paste",
+    "cmd:xsel"
+  ],
+  ".depends-pomfload": [
+    "cmd:sh",
+    "cmd:curl",
+    "cmd:jq"
+  ],
+  ".depends-tmpmail": [
+    "cmd:jq",
+    "cmd:bash",
+    "cmd:curl",
+    "coreutils",
+    "cmd:w3m"
+  ],
+  ".depends-unified-safe-boot": [
+    "cmd:objcopy",
+    "cmd:sbsign",
+    "cmd:efibootmgr",
+    "efitools",
+    "gummiboot"
+  ],
+  ".depends-unpk": [
+    "cmd:unrar",
+    "cmd:unzstd",
+    "cmd:uncompress",
+    "cmd:7z",
+    "busybox"
+  ],
+  ".dev-depends-atools": [
+    "cmd:redo",
+    "cmd:bats",
+    "cmd:scdoc"
+  ],
+  ".makedepends-abuild": [
+    "zlib-dev",
+    "openssl-dev"
+  ]
+}
