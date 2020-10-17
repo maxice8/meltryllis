@@ -1,0 +1,53 @@
+#!/bin/sh
+set -eu
+
+# Start of JSON document
+json="{"
+
+# We start on the first loop
+loopcount=1
+
+# Read /dev/stdin, each line is a different package, the main
+# use case is 'grep -o "^\." /etc/apk/world | print-virtual-deps'
+stdin="$(cat /dev/stdin)"
+
+# Count how many loops we will do by the number of lines
+linecount="$(echo "$stdin" | wc -l)"
+
+for line in $stdin; do
+	# Strip version by removing everything after '='
+	line="$(printf "%s\\n" "$line" | sed 's|=.*||g')"
+
+	# Print progress to the user, we don't want them to think
+	# nothing is happening, this is a violation of UNIX but I
+	# don't care atm, might visit this later
+	msg "Generating virutal dep mapping for $line" >&2
+
+	# Ask apk what packages our virtual package depends on
+	deps="$(apk info -q -R "$line")"
+
+	# Continue writing our JSON document
+	json="$json\"$line\": ["
+
+	# Count the number of dependencies we have
+	depcount="$(printf "%s\\n" "$deps" | wc -l)"
+	count=1
+
+	for dep in $deps; do
+		json="$json\"$dep\""
+		if [ $count -lt $depcount ]; then
+			json="$json,"
+		fi
+		count=$((count + 1))
+	done
+	json="$json]"
+	if [ "$loopcount" -lt $linecount ]; then
+		json="$json,"
+	fi
+	loopcount=$((loopcount + 1))
+
+	printok "Generated virtual dep mapping for $line" >&2
+done
+
+echo "$json}"
+
