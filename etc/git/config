@@ -4,6 +4,7 @@
 [alias]
   ls = log --oneline --decorate --graph
   g = grep --break --heading --line-number
+	s = show
 [github]
 	user = maxice8
 # for $deity's sake, check that anything we're getting is complete and sane on a regular basis
