@@ -6,7 +6,20 @@ if not exists -s remote
 	exit 1
 end
 
-let branch = $(git-current-branch)
+let pushmode = $(git config --get push.default)
+
+let branch = ""
+if test "current" = $pushmode
+	let prefix = $(alpine-stable-prefix $(git-current-branch))
+	if exists -s prefix
+		let branch = $prefix-stable
+	else
+		let branch = master
+	end
+else
+	let branch = $(git-current-branch)
+end
+
 let url = $(git config --local remote.$remote.url)
 
 if exists -s PULLP_DRY_RUN
