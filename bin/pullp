@@ -12,13 +12,13 @@ let branch = ""
 if test "current" = $pushmode
 	let prefix = $(alpine-stable-prefix $(git-current-branch))
 	if exists -s prefix
-		let branch = $prefix-stable
+		let _REALBASE = $prefix-stable
 	else
-		let branch = master
+		let _REALBASE = master
 	end
-else
-	let branch = $(git-current-branch)
 end
+
+let branch = $(git-current-branch)
 
 let url = $(git config --local remote.$remote.url)
 
