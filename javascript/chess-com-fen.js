@@ -112,9 +112,6 @@ const getFEN = async force => {
   const PGN = await buildPGN(moves);
   console.log(PGN)
   board.load_pgn(PGN);
-  /*for (m in moves) {
-    board.move(moves[m]);
-  }*/
   setClipboard(board.fen());
 };
 
