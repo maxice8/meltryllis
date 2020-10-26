@@ -65,9 +65,27 @@ function hotkey(e) {
     default:
       break;
   }
-}
+};
 
-const getFEN = async () => {
+const buildPGN = async moves => {
+  let PGN = "1.";
+  let movecount = 2;
+  
+  const movelength = moves.length;
+  for (let i = 0; i < movelength; i += 2) {
+    PGN = PGN + " " + moves[i]
+    if (i + 1 < movelength) {
+      PGN = PGN + " " + moves[i + 1];
+    }
+    if (i + 2 < movelength) {
+      PGN = PGN + " " + movecount + ".";
+      movecount++;
+    }
+  }
+  return PGN
+};
+
+const getFEN = async force => {
   // Create a new board, always.
   let board = new Chess();
   
@@ -91,9 +109,12 @@ const getFEN = async () => {
     path = window.location.pathname;
     movelength = moves.length;
   }
-  for (m in moves) {
-    board.move(m)
-  }
+  const PGN = await buildPGN(moves);
+  console.log(PGN)
+  board.load_pgn(PGN);
+  /*for (m in moves) {
+    board.move(moves[m]);
+  }*/
   setClipboard(board.fen());
 };
 
