@@ -9,16 +9,9 @@
     "lua5.3",
     "lua5.3-lyaml"
   ],
-  ".depends-chessbot": [
-    "so:libespeak.so.1",
-    "lc0"
-  ],
   ".depends-copy": [
     "cmd:wl-copy",
     "cmd:xsel"
-  ],
-  ".depends-lc0": [
-    "intel-compute-runtime"
   ],
   ".depends-mkmr": [
     "py3-gitlab",
