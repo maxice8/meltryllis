@@ -1,8 +1,6 @@
 .depends-aports-helpers=20200801.133853
 .depends-atools=20200429.181841
-.depends-chessbot=20201017.105808
 .depends-copy=20201017.112017
-.depends-lc0=20201013.192019
 .depends-mkmr=20200715.162439
 .depends-paste=20201017.112242
 .depends-pomfload=20201017.110146
@@ -68,8 +66,10 @@ lua5.3-optarg
 lua5.3-socket
 lvm2
 mandoc
+materia-dark-compact
 mesa-vulkan-intel
 mkmr-doc
+msr-tools
 newsboat
 openssh-client
 pavucontrol
@@ -85,6 +85,7 @@ qt5-qtwayland
 ranger
 ripgrep
 rsync
+sbsigntool
 sed
 shellcheck
 shotwell
@@ -100,6 +101,7 @@ xf86-video-intel
 xf86-video-modesetting
 xfsprogs
 xkeyboard-config
+xkill
 xorg-server
 ydotool
 yq
