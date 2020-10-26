@@ -101,6 +101,11 @@ const getFEN = async force => {
     movelength = 0;
   }
   
+  if (moves.length == 0) {
+    setClipboard('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+    return;
+  }
+  
   // Check if we are on the same path as before and we have the same number of moves, abort if we do.
   if (moves.length === movelength && !force) {
     console.log("Leaving, we already looked here");
