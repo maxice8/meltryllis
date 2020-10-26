@@ -60,7 +60,7 @@ function hotkey(e) {
   switch (e.code) {
     case 'KeyF':
       console.log("Getting FEN because Ctrl+Shift+F was pressed");
-      getFEN();
+      getFEN(true);
       break;
     default:
       break;
@@ -84,7 +84,7 @@ const getFEN = async () => {
   }
   
   // Check if we are on the same path as before and we have the same number of moves, abort if we do.
-  if (moves.length === movelength) {
+  if (moves.length === movelength && !force) {
     console.log("Leaving, we already looked here");
     return;
   } else {
@@ -129,7 +129,7 @@ const main = async () => {
       mutations.forEach(function(mutation) {
         if (mutation.addedNodes.length) {
           console.log("Getting FEN because", mutation.addedNodes.length, "nodes were added");
-          getFEN();
+          getFEN(false);
         }
       });
     }, 750);
