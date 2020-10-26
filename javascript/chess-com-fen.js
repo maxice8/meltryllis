@@ -139,7 +139,6 @@ const waitForElement = async (selector, timeout) => {
 const main = async () => {
   document.addEventListener('keydown', hotkey);
   
-  // Only for chess.com
   var target = await waitForElement(siteMap[host].movesSelector, 60);
   
   let timer
