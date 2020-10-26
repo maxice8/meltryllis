@@ -160,8 +160,6 @@ const main = async () => {
  
   // pass in the target node, as well as the observer options
   observer.observe(target, config);
-  
-  document.addEventListener('keydown', hotkey);
 };
 
 main();
