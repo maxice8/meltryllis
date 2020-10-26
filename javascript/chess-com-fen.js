@@ -152,7 +152,7 @@ const main = async () => {
           getFEN(false);
         }
       });
-    }, 750);
+    }, 500);
   });
 
   // configuration of the observer:
