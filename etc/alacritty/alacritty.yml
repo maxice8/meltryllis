@@ -115,113 +115,43 @@ font:
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 
-# Base16 Default Dark 256 - alacritty color config
-# Chris Kempson (http://chriskempson.com)
 colors:
   # Default colors
   primary:
-    background: '0x181818'
-    foreground: '0xd8d8d8'
+    background: '0x2c2c2c'
+    foreground: '0xd6d6d6'
 
-  # Colors the cursor will use if `custom_cursor_colors` is true
+    dim_foreground:    '0xdbdbdb'
+    bright_foreground: '0xd9d9d9'
+    dim_background:    '0x202020' # not sure
+    bright_background: '0x3a3a3a' # not sure
+
+  # Cursor colors
   cursor:
-    text: '0x181818'
-    cursor: '0xd8d8d8'
+    text:   '0x2c2c2c'
+    cursor: '0xd9d9d9'
 
   # Normal colors
   normal:
-    black:   '0x181818'
-    red:     '0xab4642'
-    green:   '0xa1b56c'
-    yellow:  '0xf7ca88'
-    blue:    '0x7cafc2'
-    magenta: '0xba8baf'
-    cyan:    '0x86c1b9'
-    white:   '0xd8d8d8'
+    black:   '0x1c1c1c'
+    red:     '0xbc5653'
+    green:   '0x909d63'
+    yellow:  '0xebc17a'
+    blue:    '0x7eaac7'
+    magenta: '0xaa6292'
+    cyan:    '0x86d3ce'
+    white:   '0xcacaca'
 
   # Bright colors
   bright:
-    black:   '0x585858'
-    red:     '0xab4642'
-    green:   '0xa1b56c'
-    yellow:  '0xf7ca88'
-    blue:    '0x7cafc2'
-    magenta: '0xba8baf'
-    cyan:    '0x86c1b9'
-    white:   '0xf8f8f8'
-
-  indexed_colors:
-    - { index: 16, color: '0xdc9656' }
-    - { index: 17, color: '0xa16946' }
-    - { index: 18, color: '0x282828' }
-    - { index: 19, color: '0x383838' }
-    - { index: 20, color: '0xb8b8b8' }
-    - { index: 21, color: '0xe8e8e8' }
-
-# Colors (One Half Dark)
-# colors:
-#   primary:
-#     background: '0x282c34'
-#     foreground: '0xdcdfe4'
-# 
-#   normal:
-#     black: '0x282c34'
-#     red: '0xe06c75'
-#     green: '0x98c379'
-#     yellow: '0xe5c07b'
-#     blue: '0x61afef'
-#     magenta: '0xc678dd'
-#     cyan: '0x56b6c2'
-#     white: '0xdcdfe4'
-# 
-#   bright:
-#     black: '0x282c34'
-#     red: '0xe06c75'
-#     green: '0x98c379'
-#     yellow: '0xe5c07b'
-#     blue: '0x61afef'
-#     magenta: '0xc678dd'
-#     cyan: '0x56b6c2'
-#     white: '0xdcdfe4'
-
-# # Afterglow
-# colors:
-#   # Default colors
-#   primary:
-#     background: '0x2c2c2c'
-#     foreground: '0xd6d6d6'
-# 
-#     dim_foreground:    '0xdbdbdb'
-#     bright_foreground: '0xd9d9d9'
-#     dim_background:    '0x202020' # not sure
-#     bright_background: '0x3a3a3a' # not sure
-# 
-#   # Cursor colors
-#   cursor:
-#     text:   '0x2c2c2c'
-#     cursor: '0xd9d9d9'
-# 
-#   # Normal colors
-#   normal:
-#     black:   '0x1c1c1c'
-#     red:     '0xbc5653'
-#     green:   '0x909d63'
-#     yellow:  '0xebc17a'
-#     blue:    '0x7eaac7'
-#     magenta: '0xaa6292'
-#     cyan:    '0x86d3ce'
-#     white:   '0xcacaca'
-# 
-#   # Bright colors
-#   bright:
-#     black:   '0x636363'
-#     red:     '0xbc5653'
-#     green:   '0x909d63'
-#     yellow:  '0xebc17a'
-#     blue:    '0x7eaac7'
-#     magenta: '0xaa6292'
-#     cyan:    '0x86d3ce'
-#     white:   '0xf7f7f7'
+    black:   '0x636363'
+    red:     '0xbc5653'
+    green:   '0x909d63'
+    yellow:  '0xebc17a'
+    blue:    '0x7eaac7'
+    magenta: '0xaa6292'
+    cyan:    '0x86d3ce'
+    white:   '0xf7f7f7'
 
   # Dim colors
   dim:
@@ -233,13 +163,6 @@ colors:
     magenta: '0x6e4962'
     cyan:    '0x5c8482'
     white:   '0x828282'
-
-  # Indexed Colors
-  #
-  # The indexed colors include all colors from 16 to 256.
-  # When these are not set, they're filled with sensible defaults.
-  #indexed_colors:
-  #  - { index: 16, color: '0x000000' }
 
 # Visual Bell
 #
