@@ -2,7 +2,7 @@
 " nvim plug
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Start pathogen
-call plug#begin('~/etc/nvim/autoload')
+call plug#begin()
 
 Plug 'kaicataldo/material.vim', { 'branch': 'main' }
 
@@ -238,4 +238,4 @@ autocmd BufRead APKBUILD
 				\ set filetype=sh |
 				\ set noexpandtab |
 				\ set textwidth=79 |
-				\ let g:ale_sh_shellcheck_executable = 'alpine-shellcheck'
+				\ let g:ale_sh_shellcheck_executable = 'ale-shellcheck'
