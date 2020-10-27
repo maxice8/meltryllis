@@ -115,54 +115,48 @@ font:
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 
+# Base16 Material Darker 256 - alacritty color config
+# Nate Peterson
 colors:
   # Default colors
   primary:
-    background: '0x2c2c2c'
-    foreground: '0xd6d6d6'
+    background: '0x212121'
+    foreground: '0xeeffff'
 
-    dim_foreground:    '0xdbdbdb'
-    bright_foreground: '0xd9d9d9'
-    dim_background:    '0x202020' # not sure
-    bright_background: '0x3a3a3a' # not sure
-
-  # Cursor colors
+  # Colors the cursor will use if `custom_cursor_colors` is true
   cursor:
-    text:   '0x2c2c2c'
-    cursor: '0xd9d9d9'
+    text: '0x212121'
+    cursor: '0xeeffff'
 
   # Normal colors
   normal:
-    black:   '0x1c1c1c'
-    red:     '0xbc5653'
-    green:   '0x909d63'
-    yellow:  '0xebc17a'
-    blue:    '0x7eaac7'
-    magenta: '0xaa6292'
-    cyan:    '0x86d3ce'
-    white:   '0xcacaca'
+    black:   '0x212121'
+    red:     '0xf07178'
+    green:   '0xc3e88d'
+    yellow:  '0xffcb6b'
+    blue:    '0x82aaff'
+    magenta: '0xc792ea'
+    cyan:    '0x89ddff'
+    white:   '0xeeffff'
 
   # Bright colors
   bright:
-    black:   '0x636363'
-    red:     '0xbc5653'
-    green:   '0x909d63'
-    yellow:  '0xebc17a'
-    blue:    '0x7eaac7'
-    magenta: '0xaa6292'
-    cyan:    '0x86d3ce'
-    white:   '0xf7f7f7'
+    black:   '0x4a4a4a'
+    red:     '0xf07178'
+    green:   '0xc3e88d'
+    yellow:  '0xffcb6b'
+    blue:    '0x82aaff'
+    magenta: '0xc792ea'
+    cyan:    '0x89ddff'
+    white:   '0xffffff'
 
-  # Dim colors
-  dim:
-    black:   '0x232323'
-    red:     '0x74423f'
-    green:   '0x5e6547'
-    yellow:  '0x8b7653'
-    blue:    '0x556b79'
-    magenta: '0x6e4962'
-    cyan:    '0x5c8482'
-    white:   '0x828282'
+  indexed_colors:
+    - { index: 16, color: '0xf78c6c' }
+    - { index: 17, color: '0xff5370' }
+    - { index: 18, color: '0x303030' }
+    - { index: 19, color: '0x353535' }
+    - { index: 20, color: '0xb2ccd6' }
+    - { index: 21, color: '0xeeffff' }
 
 # Visual Bell
 #
