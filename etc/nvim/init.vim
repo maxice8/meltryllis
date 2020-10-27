@@ -238,4 +238,4 @@ autocmd BufRead APKBUILD
 				\ set filetype=sh |
 				\ set noexpandtab |
 				\ set textwidth=79 |
-				\ let b:ale_sh_shellcheck_exclusions = 'SC2164,SC2154,SC2034'
+				\ let g:ale_sh_shellcheck_executable = 'alpine-shellcheck'
