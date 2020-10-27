@@ -4,6 +4,8 @@
 " Start pathogen
 call plug#begin('~/etc/nvim/autoload')
 
+Plug 'danilo-augusto/vim-afterglow'
+
 Plug 'vmchale/ion-vim', { 'for': 'ion' }
 
 " Better visuals for line indentation
@@ -82,12 +84,8 @@ set clipboard=unnamed,unnamedplus
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
-let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
-set termguicolors
-
 " Sets how many lines of history VIM has to remember
-set history=20
+set history=5
 
 " Enable filetype plugins
 filetype plugin on
@@ -104,9 +102,6 @@ let g:mapleader = ','
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Set 7 lines to the cursor - when moving vertically using j/k
-set so=7
-
 "Always show current position
 set ruler
 
@@ -146,6 +141,9 @@ set tm=500
 
 set cursorline
 
+" Fast save
+nmap <leader>s :w<cr>
+
 " Fast quitting
 nmap <leader>q :wq<cr>
 
@@ -161,8 +159,10 @@ set spelllang=en
 
 set guicursor=
 
-set t_Co=256
+" Colorscheme
 set background=dark
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+set termguicolors
 
 let g:afterglow_inherit_background = 1
 let g:afterglow_italic_comments = 1
@@ -206,32 +206,6 @@ set tw=100
 set ai "Auto indent
 set si "Smart indent
 set wrap "Wrap lines
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Moving around, tabs, windows and buffers
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
-map <space> /
-
-" Smart way to move between windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
-
-" Useful mappings for managing tabs
-map <leader>tn :tabnew<cr>
-map <leader>to :tabonly<cr>
-map <leader>tc :tabclose<cr>
-map <leader>tm :tabmove
-map <leader>t<leader> :tabnext<cr>
-
-" Opens a new tab with the current buffer's path
-" Super useful when editing files in the same directory
-map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
-
-" Switch CWD to the directory of the open buffer
-map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
 " Return to last edit position when opening files (You want this!)
 augroup reopen
