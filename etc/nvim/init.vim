@@ -4,8 +4,6 @@
 " Start pathogen
 call plug#begin('~/etc/nvim/autoload')
 
-Plug 'danilo-augusto/vim-afterglow'
-
 Plug 'kaicataldo/material.vim', { 'branch': 'main' }
 
 Plug 'vmchale/ion-vim', { 'for': 'ion' }
@@ -20,8 +18,9 @@ Plug 'airblade/vim-gitgutter'
 " - file type
 Plug 'itchyny/lightline.vim'
 
-Plug 'danilo-augusto/vim-afterglow'
+Plug 'dense-analysis/ale'
 
+"
 " Add Plugins
 "
 call plug#end()
@@ -78,14 +77,19 @@ let g:gitgutter_realtime = 1
 let g:gitgutter_eager = 0
 let g:gitgutter_override_sign_column_highlight = 0
 
+let g:ale_completion_enabled = 1
+
+" Set this variable to 1 to fix files when you save them.
+let g:ale_fix_on_save = 1
+
 " Clipboard
-set clipboard=unnamed,unnamedplus
+set clipboard+=unnamed,unnamedplus
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sets how many lines of history VIM has to remember
-set history=1000
+set history=20
 
 " Enable filetype plugins
 filetype plugin indent on
@@ -130,10 +134,13 @@ set magic
 set showmatch
 
 " Fast save
-nmap <leader>s :w<cr>
+nmap <leader>s :update<cr>
 
 " Fast quitting
-nmap <leader>q :wq<cr>
+nmap <leader>q :update<cr>:quit<cr>
+
+" Fast save and quit
+map <Enter> :update<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
@@ -142,6 +149,7 @@ nmap <leader>q :wq<cr>
 syntax enable
 syntax on
 
+" Use the cursor from the terminal
 set guicursor=
 
 " Colorscheme
@@ -221,3 +229,13 @@ if executable('rg')
   set grepprg=rg\ --vimgrep\ --no-heading
   set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Alpine LInux
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" It is a shellscript after all
+autocmd BufRead APKBUILD
+				\ set filetype=sh |
+				\ set noexpandtab |
+				\ set textwidth=79 |
+				\ let b:ale_sh_shellcheck_exclusions = 'SC2164,SC2154,SC2034'
