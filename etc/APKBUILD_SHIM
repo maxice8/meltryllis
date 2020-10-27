@@ -53,11 +53,9 @@ LDFLAGS=
 JOBS=
 MAKEFLAGS=
 
-if [ -n "$FILES_TO_SOURCE" ]; then
-  for file in $FILES_TO_SOURCE; do
-	. "$file"
-  done
-fi
+# We can do this because ALE puts us in the directory of the APKBUILD, which is
+# super convenient
+. ./APKBUILD
 
 : "$arch"
 : "$builddir"

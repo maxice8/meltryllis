@@ -1,0 +1,30 @@
+#!/bin/sh
+# Export the files we have to source so APKBUILD_SHIM can use them
+# they are a whitespace-separated list that is for-looped, we don't
+# pass it to the shellcheck command, instead APKBUILD_SHIM will source
+# them and thus with the '-a' option shellcheck will take a look at them
+
+# ALEInfo calls 'shellcheck --version', deal with any simple calls like
+# --version
+case "$1" in
+  --*)
+	exec shellcheck "$@"
+	;;
+esac
+
+# The 'sed' call is required because APKBUILD_SHIM is the one that will source
+# the apkbuild we want to shellcheck, thus it's output will have './APKBUILD'
+# instead of what ALE expects, which is '-' because ALE calls:
+# 'shellchck -s ash -f gcc - < $apkbuild_path'
+shellcheck -s ash \
+		   -e SC2016 \
+		   -e SC2086 \
+		   -e SC2169 \
+		   -e SC2155 \
+		   -e SC2100 \
+		   -e SC2209 \
+		   -e SC2030 \
+		   -e SC2031 \
+		   -e SC1090 \
+		   -f gcc \
+		   -ax "${XDG_CONFIG_HOME:-$HOME/.config}"/APKBUILD_SHIM | sed 's|^./APKBUILD|-|g'
