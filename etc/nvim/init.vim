@@ -4,9 +4,15 @@
 " Start pathogen
 call plug#begin()
 
-Plug 'kaicataldo/material.vim', { 'branch': 'main' }
+Plug 'ajmwagar/vim-deus'
 
+" For Ion shell
 Plug 'vmchale/ion-vim', { 'for': 'ion' }
+
+" It is not on GitHub so we need full path, also there is no 'for'
+" because it is the ftype required
+" Plug 'https://gitlab.alpinelinux.org/Leo/apkbuild.vim.git'
+Plug expand('~/usr/src/APKBUILD.vim')
 
 " Shows + - ~ signs on the left-side corner based on git differences
 Plug 'airblade/vim-gitgutter'
@@ -26,7 +32,7 @@ Plug 'dense-analysis/ale'
 call plug#end()
 
 let g:lightline = {
-    \ 'colorscheme': 'material_vim',
+    \ 'colorscheme': 'deus',
     \ 'active': {
     \   'left': [ [ 'mode', 'paste' ], [ 'filename' ] ],
     \   'right': [ [ 'lineinfo' ], ['percent'], [ 'fileencoding', 'filetype'] ]
@@ -45,18 +51,18 @@ let g:lightline = {
 " funtions for lightline
 "
 function! LightlineModified()
-  return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+  return &filetype =~# 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
 endfunction
 
 function! LightlineReadonly()
-  return &ft !~? 'help' && &readonly ? 'RO' : ''
+  return &filetype !~? 'help' && &readonly ? 'RO' : ''
 endfunction
 
 function! LightlineFilename()
   let fname = expand('%')
-  return ('' != LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
-        \ ('' != fname ? fname : '[No Name]') .
-        \ ('' != LightlineModified() ? ' ' . LightlineModified() : '')
+  return ('' !=# LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
+        \ ('' !=# fname ? fname : '[No Name]') .
+        \ ('' !=# LightlineModified() ? ' ' . LightlineModified() : '')
 
 endfunction
 
@@ -65,7 +71,7 @@ function! LightlineFiletype()
 endfunction
 
 function! LightlineFileencoding()
-  return &fenc !=# '' ? &fenc : &enc
+  return &fileencoding !=# '' ? &fileencoding : &encoding
 endfunction
 
 function! LightlineMode()
@@ -157,24 +163,28 @@ if (has('termguicolors'))
   set termguicolors
 endif
 
-" Configuration for theme
-let g:material_terminal_italics = 1
-let g:material_theme_style = 'darker'
-colorscheme material
+set t_Co=256
+
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+
+set background=dark    " Setting dark mode
+colorscheme deus
+let g:deus_termcolors=256
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
 scriptencoding utf-8
 
 " Use Unix as the standard file type
-set ffs=unix
+set fileformats=unix
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Turn backup off, since most stuff is in SVN, git et.c anyway...
 set nobackup
-set nowb
+set nowritebackup
 set noswapfile
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -184,12 +194,12 @@ set noswapfile
 set smarttab
 
 " 1 tab == 4 spaces
-set shiftwidth=2
+set shiftwidth=4
 set tabstop=4
 set softtabstop=4
 
-set ai "Auto indent
-set si "Smart indent
+set autoindent "Auto indent
+set smartindent "Smart indent
 set wrap "Wrap lines
 
 " Return to last edit position when opening files (You want this!)
@@ -230,12 +240,12 @@ if executable('rg')
   set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Alpine LInux
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" It is a shellscript after all
-autocmd BufRead APKBUILD
-				\ set filetype=sh |
-				\ set noexpandtab |
-				\ set textwidth=79 |
-				\ let g:ale_sh_shellcheck_executable = 'ale-shellcheck'
+" Quickly tracking syntax highlighting for debugging
+function! s:syntax_query() abort
+  for id in synstack(line('.'), col('.'))
+    echo synIDattr(id, 'name')
+  endfor
+endfunction
+command! SyntaxQuery call s:syntax_query()
+map <leader>sq :SyntaxQuery<cr>
+
