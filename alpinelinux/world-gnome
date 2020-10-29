@@ -4,7 +4,7 @@
 .depends-mkmr=20200715.162439
 .depends-paste=20201017.112242
 .depends-pomfload=20201017.110146
-.depends-tmpmail=20201017.110136
+.depends-tmpmail=20201029.033225
 .depends-unified-safe-boot=20201017.112350
 .depends-unpk=20201017.111900
 .dev-depends-atools=20201017.105933
@@ -15,7 +15,9 @@ alpine-base
 alpine-sdk
 alsa-plugins-pulse
 alsa-utils
+apk-tools-doc
 apkbuild-cpan
+atools-doc
 chromium
 claws-mail
 cmd:less
@@ -53,7 +55,6 @@ inotify-tools
 intel-ucode
 ion-shell
 iw
-kakoune
 kbd
 keepassxc
 kvantum
@@ -70,6 +71,8 @@ materia-dark-compact
 mesa-vulkan-intel
 mkmr-doc
 msr-tools
+neovim
+neovim-doc
 newsboat
 openssh-client
 pavucontrol
@@ -81,7 +84,6 @@ pulseaudio
 pulseaudio-alsa
 python3
 qbittorrent-nox
-qt5-qtwayland
 ranger
 ripgrep
 rsync
@@ -92,7 +94,7 @@ shotwell
 smartmontools
 syncthing
 vimix-amethyst-dark
-wl-clipboard
+vint
 wpa_supplicant
 xdg-utils
 xdotool
@@ -103,5 +105,6 @@ xfsprogs
 xkeyboard-config
 xkill
 xorg-server
+xterm
 ydotool
 yq

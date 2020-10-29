@@ -33,7 +33,8 @@
     "cmd:bash",
     "cmd:curl",
     "coreutils",
-    "cmd:w3m"
+    "cmd:w3m",
+    "cmd:column"
   ],
   ".depends-unified-safe-boot": [
     "cmd:objcopy",
