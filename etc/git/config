@@ -28,7 +28,7 @@ fsckObjects = true
 [init]
 	defaultBranch = master
 [core]
-	editor = kak
+	editor = nvim
 	pager = delta
 [interactive]
 	diffFilter = delta --color-only
