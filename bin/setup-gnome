@@ -27,9 +27,9 @@ doas apk add --virtual gnome-apps \
 	gnome-system-monitor \
 	gnome-documents \
 	gnome-clocks \
-	celluloid
+	gnome-software
 
 msg Installing virtual package that has Theme and icons
 doas apk add --virtual .gnome-themes \
 	tela-icon-theme \
-	vimix-dark-amethyst
+	materia-dark-compact
