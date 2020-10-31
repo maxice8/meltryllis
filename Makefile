@@ -14,6 +14,7 @@ subdirs: $(SUBDIRS)
 
 vdm:
 	@grep '^\.' /etc/apk/world | print-virtual-deps | jq . > alpinelinux/virtual-deps
+	@flatpak list --app --columns=name,application,version,branch,origin > alpinelinux/flatpaks
 
 $(SUBDIRS):
 	cd $@ && $(MAKE)
