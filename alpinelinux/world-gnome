@@ -8,6 +8,7 @@
 .depends-unified-safe-boot=20201017.112350
 .depends-unpk=20201017.111900
 .dev-depends-atools=20201017.105933
+.gnome-themes=20201031.074713
 .makedepends-abuild=20200701.220943
 /bin/sh
 alacritty
@@ -37,7 +38,6 @@ eog
 eudev
 exiftool
 fd
-firefox
 fish
 flatpak
 flatpak-builder
@@ -48,15 +48,15 @@ git-doc
 github-cli
 glow
 gnome
-gnome-apps=20200722.071554
+gnome-apps=20201031.074712
 hdparm
+imagemagick
 imgbrd-grabber
 inotify-tools
 intel-ucode
 ion-shell
 iw
 kbd
-keepassxc
 kvantum
 libinput
 libnotify
@@ -67,10 +67,12 @@ lua5.3-optarg
 lua5.3-socket
 lvm2
 mandoc
-materia-dark-compact
 mesa-vulkan-intel
 mkmr-doc
 msr-tools
+musl=1.2.1-r2
+musl-dbg=1.2.1-r2
+musl-utils=1.2.1-r2
 neovim
 neovim-doc
 newsboat
