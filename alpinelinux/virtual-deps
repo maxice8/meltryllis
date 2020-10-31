@@ -55,6 +55,10 @@
     "cmd:bats",
     "cmd:scdoc"
   ],
+  ".gnome-themes": [
+    "tela-icon-theme",
+    "materia-dark-compact"
+  ],
   ".makedepends-abuild": [
     "zlib-dev",
     "openssl-dev"
