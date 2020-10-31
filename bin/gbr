@@ -8,20 +8,29 @@ let remote = $(guess-remote)
 exists -s remote || exit
 
 for branch in @args[1..]
+	let spl = [@split($branch :)]
+	let branch = @spl[0]
+
 	if git rev-parse --quiet --verify $branch &>/dev/null
 		git switch --quiet $branch || \
 			printerr "Failed to switch to '$branch'" && \
 			printok "Switched to '$branch'"
 	else
-		let _REALBASE = $(alpine-stable-prefix $branch)
-		if exists -s _REALBASE
-			git switch --quiet --force-create $branch $remote/$_REALBASE-stable || \
+		if test $len(@spl) -eq 2
+			git switch --quiet --force-create $branch @spl[1] || \
 				printerr "Failed to switch to '$branch'" && \
-				printok "Switched to newly created '$branch'"
+				printok "Switched to newly created '$branch' based on '@spl[1]'"
 		else
-			git switch --quiet --force-create $branch $remote/master || \
-				printerr "Failed to switch to '$branch'" && \
-				printok "Switched to newly created '$branch'"
+			let _REALBASE = $(alpine-stable-prefix $branch)
+			if exists -s _REALBASE
+				git switch --quiet --force-create $branch $remote/$_REALBASE-stable || \
+					printerr "Failed to switch to '$branch'" && \
+					printok "Switched to newly created '$branch' based on '$_REALBASE-stable'"
+			else
+				git switch --quiet --force-create $branch $remote/master || \
+					printerr "Failed to switch to '$branch'" && \
+					printok "Switched to newly created '$branch' based on 'master'"
+			end
 		end
 	end
 end
