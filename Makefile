@@ -13,8 +13,10 @@ symlink: $(DOTFILES)
 subdirs: $(SUBDIRS)
 
 vdm:
-	@grep '^\.' /etc/apk/world | print-virtual-deps | jq . > alpinelinux/virtual-deps
-	@flatpak list --app --columns=name,application,version,branch,origin > alpinelinux/flatpaks
+	@grep '^\.' /etc/apk/world | print-virtual-deps | jq . > alpinelinux/virtual-deps.json
+
+fdm:
+	@./gen-fdm > alpinelinux/flatpaks.yaml
 
 $(SUBDIRS):
 	cd $@ && $(MAKE)
