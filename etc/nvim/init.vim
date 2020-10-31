@@ -89,7 +89,7 @@ let g:ale_completion_enabled = 1
 let g:ale_fix_on_save = 1
 
 " Clipboard
-set clipboard+=unnamed,unnamedplus
+set clipboard+=unnamedplus
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
