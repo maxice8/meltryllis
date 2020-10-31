@@ -1,7 +1,7 @@
 #!/usr/bin/ion
 let clipboard:[str] = [""]
 if exists -s WAYLAND_DISPLAY
-	wl-paste
+	wl-paste --no-newline
 else
 	xsel -bo
 end
