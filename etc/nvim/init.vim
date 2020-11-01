@@ -9,6 +9,8 @@ Plug 'ajmwagar/vim-deus'
 " For Ion shell
 Plug 'vmchale/ion-vim', { 'for': 'ion' }
 
+Plug 'junegunn/vader.vim'
+
 " It is not on GitHub so we need full path, also there is no 'for'
 " because it is the ftype required
 " Plug 'https://gitlab.alpinelinux.org/Leo/apkbuild.vim.git'
@@ -24,7 +26,8 @@ Plug 'airblade/vim-gitgutter'
 " - file type
 Plug 'itchyny/lightline.vim'
 
-Plug 'dense-analysis/ale'
+" Plug 'dense-analysis/ale'
+Plug expand('~/usr/src/ale')
 
 "
 " Add Plugins
@@ -193,10 +196,21 @@ set noswapfile
 " Be smart when using tabs ;)
 set smarttab
 
-" 1 tab == 4 spaces
-set shiftwidth=4
+
+" The width of a TAB is set to 4.
+" Still it is a \t. It is just that
+" Vim will interpret it to be having
+" a width of 4.
 set tabstop=4
+
+" Indents will have a width of 4
+set shiftwidth=4
+
+" Sets the number of columns for a TAB
 set softtabstop=4
+
+" Expand TABs to spaces
+set expandtab
 
 set autoindent "Auto indent
 set smartindent "Smart indent
