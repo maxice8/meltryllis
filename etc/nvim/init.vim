@@ -91,6 +91,10 @@ let g:ale_completion_enabled = 1
 " Set this variable to 1 to fix files when you save them.
 let g:ale_fix_on_save = 1
 
+let g:ale_linters = {
+\   'apkbuild': ['shellcheck', 'apkbuild_lint', 'secfixes_check'],
+\}
+
 " Clipboard
 set clipboard+=unnamedplus
 
@@ -261,5 +265,9 @@ function! s:syntax_query() abort
   endfor
 endfunction
 command! SyntaxQuery call s:syntax_query()
+
+
 map <leader>sq :SyntaxQuery<cr>
+map <leader>n :next<cr>
+map <leader>p :prev<cr>
 
