@@ -25,6 +25,7 @@ Plug 'airblade/vim-gitgutter'
 " - file encoding
 " - file type
 Plug 'itchyny/lightline.vim'
+Plug 'maximbaz/lightline-ale'
 
 " Plug 'dense-analysis/ale'
 Plug expand('~/usr/src/ale')
@@ -34,23 +35,48 @@ Plug expand('~/usr/src/ale')
 "
 call plug#end()
 
-let g:lightline = {
-    \ 'colorscheme': 'deus',
-    \ 'active': {
-    \   'left': [ [ 'mode', 'paste' ], [ 'filename' ] ],
-    \   'right': [ [ 'lineinfo' ], ['percent'], [ 'fileencoding', 'filetype'] ]
-    \ },
-    \ 'component_function': {
-    \   'filename': 'LightlineFilename',
-    \   'filetype': 'LightlineFiletype',
-    \   'fileencoding': 'LightlineFileencoding',
-    \   'mode': 'LightlineMode',
-    \ },
-    \ 'separator': { 'left': '', 'right': '' },
-    \ 'subseparator': { 'left': '|', 'right': '|' }
-    \ }
+let g:lightline = {'active':{'left':[], 'right':[]}}
 
-"
+let g:lightline.active.left = [ [ 'mode', 'paste' ], [ 'filename' ] ]
+
+let g:lightline.active.right = [ 
+    \   [ 'lineinfo' ],
+    \   ['percent'],
+    \   [ 'fileencoding', 'filetype' ],
+    \   [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ]
+    \]
+
+let g:lightline.component_function = {
+    \   'component_function': {
+    \       'filename': 'LightlineFilename',
+    \       'filetype': 'LightlineFiletype',
+    \       'fileencoding': 'LightlineFileencoding',
+    \       'mode': 'LightlineMode',
+    \   }
+    \}
+
+let g:lightline.colorscheme = 'deus'
+
+let g:lightline.separator = { 'left': '', 'right': '' }
+let g:lightline.subseparator = { 'left': '|', 'right': '|' }
+
+" Components for lightline in lightline
+let g:lightline.component_expand = {
+      \  'linter_checking': 'lightline#ale#checking',
+      \  'linter_infos': 'lightline#ale#infos',
+      \  'linter_warnings': 'lightline#ale#warnings',
+      \  'linter_errors': 'lightline#ale#errors',
+      \  'linter_ok': 'lightline#ale#ok',
+      \ }
+
+let g:lightline.component_type = {
+      \     'linter_checking': 'right',
+      \     'linter_infos': 'right',
+      \     'linter_warnings': 'warning',
+      \     'linter_errors': 'error',
+      \     'linter_ok': 'right',
+      \ }
+
 " funtions for lightline
 "
 function! LightlineModified()
@@ -152,8 +178,8 @@ nmap <leader>s :update<cr>
 " Fast quitting
 nmap <leader>q :update<cr>:quit<cr>
 
-" Fast save and quit
-map <Enter> :update<cr>
+" Fast save
+map <Enter> :w<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
