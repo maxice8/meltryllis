@@ -1,3 +1,13 @@
+- Name: qView
+  ID: com.interversehq.qView
+  version: "4.0"
+  branch: stable
+  origin: flathub
+- Name: RuneScape
+  ID: com.jagex.RuneScape
+  version: 2.2.7
+  branch: stable
+  origin: flathub
 - Name: Steam
   ID: com.valvesoftware.Steam
   version: 1.0.0.66
@@ -18,9 +28,39 @@
   version: ""
   branch: stable
   origin: nibbler-origin
+- Name: GNOME Calculator
+  ID: org.gnome.Calculator
+  version: 3.38.0
+  branch: stable
+  origin: flathub
+- Name: Calendar
+  ID: org.gnome.Calendar
+  version: 3.38.1
+  branch: stable
+  origin: flathub
+- Name: GNOME Characters
+  ID: org.gnome.Characters
+  version: 3.34.0
+  branch: stable
+  origin: flathub
+- Name: Shotwell
+  ID: org.gnome.Shotwell
+  version: 0.30.10
+  branch: stable
+  origin: flathub
+- Name: Weather
+  ID: org.gnome.Weather
+  version: 3.36.1
+  branch: stable
+  origin: flathub
+- Name: GNOME Clocks
+  ID: org.gnome.clocks
+  version: 3.38.0
+  branch: stable
+  origin: flathub
 - Name: KeePassXC
   ID: org.keepassxc.KeePassXC
-  version: 2.6.1
+  version: 2.6.2
   branch: stable
   origin: flathub
 - Name: Thunderbird
@@ -33,8 +73,13 @@
   version: 82.0.2
   branch: stable
   origin: flathub
+- Name: PulseAudio Volume Control
+  ID: org.pulseaudio.pavucontrol
+  version: "4.0"
+  branch: stable
+  origin: flathub
 - Name: Signal Desktop
   ID: org.signal.Signal
-  version: 1.37.2
+  version: 1.37.3
   branch: stable
   origin: flathub
