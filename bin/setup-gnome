@@ -14,19 +14,11 @@ gsettings set org.gnome.desktop.wm.keybindings panel-run-dialog \
 msg Installing virtual version of gnome-apps with only apps we want
 doas apk add --virtual gnome-apps \
 	nautilus \
-	gnome-weather \
 	gnome-tweaks \
 	gnome-disk-utility \
-	gnome-calculator \
-	gnome-photos \
 	gnome-power-manager \
 	gnome-screenshot \
-	dconf-editor \
-	gnome-calendar \
-	gnome-characters \
 	gnome-system-monitor \
-	gnome-documents \
-	gnome-clocks \
 	gnome-software
 
 msg Installing virtual package that has Theme and icons
