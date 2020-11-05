@@ -11,6 +11,9 @@ Plug 'vmchale/ion-vim', { 'for': 'ion' }
 
 Plug 'junegunn/vader.vim'
 
+" Support for scdoc, used to write manapges
+Plug 'gpanders/vim-scdoc'
+
 " It is not on GitHub so we need full path, also there is no 'for'
 " because it is the ftype required
 " Plug 'https://gitlab.alpinelinux.org/Leo/apkbuild.vim.git'
