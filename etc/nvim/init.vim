@@ -300,3 +300,4 @@ map <leader>sq :SyntaxQuery<cr>
 map <leader>n :next<cr>
 map <leader>p :prev<cr>
 
+let g:is_posix = 1
