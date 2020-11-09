@@ -18,9 +18,10 @@ doas apk add --virtual gnome-apps \
 	gnome-disk-utility \
 	gnome-power-manager \
 	gnome-screenshot \
-	gnome-system-monitor
+	gnome-system-monitor \
+    gnome-software
 
 msg Installing virtual package that has Theme and icons
 doas apk add --virtual .gnome-themes \
 	tela-icon-theme \
-    plata-theme
+    plata-noir-compact
