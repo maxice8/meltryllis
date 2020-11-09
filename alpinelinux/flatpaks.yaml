@@ -1,8 +1,3 @@
-- Name: RuneScape
-  ID: com.jagex.RuneScape
-  version: 2.2.7
-  branch: stable
-  origin: flathub
 - Name: Steam
   ID: com.valvesoftware.Steam
   version: 1.0.0.66
@@ -10,7 +5,7 @@
   origin: flathub
 - Name: Visual Studio Code
   ID: com.visualstudio.code
-  version: 1.50.1-1602600906
+  version: 1.51.0-1604600753
   branch: stable
   origin: flathub
 - Name: Element
@@ -18,11 +13,11 @@
   version: 1.7.12
   branch: stable
   origin: flathub
-- Name: nibbler
-  ID: org.fohristiwhirl.nibbler
-  version: ""
+- Name: ChessX
+  ID: net.sourceforge.Chessx
+  version: 1.5.0
   branch: stable
-  origin: nibbler-origin
+  origin: flathub
 - Name: GNOME Calculator
   ID: org.gnome.Calculator
   version: 3.38.0
@@ -53,6 +48,11 @@
   version: 3.38.0
   branch: stable
   origin: flathub
+- Name: Eye of GNOME
+  ID: org.gnome.eog
+  version: 3.38.0
+  branch: stable
+  origin: flathub
 - Name: KeePassXC
   ID: org.keepassxc.KeePassXC
   version: 2.6.2
@@ -60,12 +60,12 @@
   origin: flathub
 - Name: Thunderbird
   ID: org.mozilla.Thunderbird
-  version: 78.4.0
+  version: 78.4.1
   branch: stable
   origin: flathub
 - Name: Firefox
   ID: org.mozilla.firefox
-  version: 82.0.2
+  version: 82.0.3
   branch: stable
   origin: flathub
 - Name: PulseAudio Volume Control
