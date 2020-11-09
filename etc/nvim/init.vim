@@ -11,6 +11,8 @@ Plug 'vmchale/ion-vim', { 'for': 'ion' }
 
 Plug 'junegunn/vader.vim'
 
+Plug 'editorconfig/editorconfig-vim'
+
 " Support for scdoc, used to write manapges
 Plug 'gpanders/vim-scdoc'
 
