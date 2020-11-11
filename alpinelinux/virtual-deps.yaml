@@ -46,7 +46,7 @@
   - cmd:scdoc
 .gnome-themes:
   - tela-icon-theme
-  - plata-theme
+  - plata-noir-compact
 .makedepends-abuild:
   - zlib-dev
   - openssl-dev
