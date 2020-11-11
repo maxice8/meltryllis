@@ -10,7 +10,7 @@
   origin: flathub
 - Name: Element
   ID: im.riot.Riot
-  version: 1.7.12
+  version: 1.7.13
   branch: stable
   origin: flathub
 - Name: ChessX
@@ -60,7 +60,7 @@
   origin: flathub
 - Name: Thunderbird
   ID: org.mozilla.Thunderbird
-  version: 78.4.1
+  version: 78.4.2
   branch: stable
   origin: flathub
 - Name: Firefox
