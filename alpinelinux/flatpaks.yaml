@@ -5,7 +5,7 @@
   origin: flathub
 - Name: Visual Studio Code
   ID: com.visualstudio.code
-  version: 1.51.0-1604600753
+  version: 1.51.1-1605051630
   branch: stable
   origin: flathub
 - Name: Element
@@ -60,7 +60,7 @@
   origin: flathub
 - Name: Thunderbird
   ID: org.mozilla.Thunderbird
-  version: 78.4.2
+  version: 78.4.3
   branch: stable
   origin: flathub
 - Name: Firefox
