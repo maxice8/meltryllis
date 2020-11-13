@@ -40,6 +40,3 @@ _JAVA_AWT_WM_NONREPARENTING	DEFAULT=1
 _JAVA_OPTIONS				DEFAULT="-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
 
 NO_AT_BRIDGE		DEFAULT=1
-
-PATH	DEFAULT=@{HOME}/bin:@{HOME}/.local/bin:${PATH}
-ENV		DEFAULT=@{HOME}/etc/dash/env
