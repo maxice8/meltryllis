@@ -11,7 +11,8 @@ TREE
 ```
 .
 ├── bin
-├── etc
+├── .cache
+├── .config
 │   ├── alacritty
 │   ├── dash
 │   ├── fish
@@ -19,11 +20,7 @@ TREE
 │   ├── gtk-3.0
 │   ├── gtk-4.0
 │   ├── newsboat
-│   ├── nvim
-│   ├── ranger
-│   ├── rofi
-│   ├── sway
-│   └── waybar
+│   └── nvim
 ├── usr
 │   ├── Camera
 │   ├── Images
@@ -34,8 +31,7 @@ TREE
 │   ├── src
 │   ├── videos
 │   └── walls
-└── var
-    ├── cache
+└── .local
     ├── log
     └── share
 ```
