@@ -1,7 +1,7 @@
 LN := ln -sfv
 MKDIR := mkdir -pv
 
-ETCDIR = $(XDG_CONFIG_HOME)
+ETCDIR = $(HOME)/.config
 ETCDIRS = $(shell find . -type d)
 ETCFILES = $(shell find . \( -type f -o -type l \) -a -not -name Makefile)
 
