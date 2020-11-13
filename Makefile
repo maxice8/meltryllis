@@ -2,7 +2,7 @@ LN := ln -sfv
 MKDIR := mkdir -pv
 
 DOTFILES = profile pam_environment
-SUBDIRS = etc bin usr var
+SUBDIRS = .config bin usr .local
 
 .PHONY: $(DOTFILES) $(SUBDIRS)
 
