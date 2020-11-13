@@ -13,11 +13,6 @@
   version: 1.7.13
   branch: stable
   origin: flathub
-- Name: ChessX
-  ID: net.sourceforge.Chessx
-  version: 1.5.0
-  branch: stable
-  origin: flathub
 - Name: GNOME Calculator
   ID: org.gnome.Calculator
   version: 3.38.0
