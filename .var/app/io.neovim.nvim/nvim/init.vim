@@ -18,8 +18,7 @@ Plug 'gpanders/vim-scdoc'
 
 " It is not on GitHub so we need full path, also there is no 'for'
 " because it is the ftype required
-" Plug 'https://gitlab.alpinelinux.org/Leo/apkbuild.vim.git'
-Plug 'https://gitlab.alpinelinux.org/Leo/atools.git'
+Plug 'https://gitlab.alpinelinux.org/Leo/apkbuild.vim.git'
 
 " Shows + - ~ signs on the left-side corner based on git differences
 Plug 'airblade/vim-gitgutter'
