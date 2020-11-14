@@ -13,6 +13,11 @@
   version: 1.7.13
   branch: stable
   origin: flathub
+- Name: Neovim
+  ID: io.neovim.nvim
+  version: 0.4.3
+  branch: test
+  origin: nvim-origin
 - Name: GNOME Calculator
   ID: org.gnome.Calculator
   version: 3.38.0
