@@ -12,6 +12,7 @@ TREE
 .
 ├── bin
 ├── .cache
+├── .var
 ├── .config
 │   ├── alacritty
 │   ├── dash
