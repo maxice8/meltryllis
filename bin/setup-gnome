@@ -7,6 +7,12 @@ msg Making command run dialog be activated via Super + r
 gsettings set org.gnome.desktop.wm.keybindings panel-run-dialog \
 	"['<Super>r']"
 
+msg Making Alt+Tab only work between windows of the same workspace
+gsettings set org.gnome.shell.app-switcher current-workspace-only true
+
+msg Making Super not open activities when pressed
+gsettings set org.gnome.mutter overlay-key ""
+
 #
 # Create virtual package called gnome-enty-apps that has all the apps
 # from gnome-apps that we want
