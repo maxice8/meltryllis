@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/bin/sh
 #
 # Super + R to run commands, i use it a lot it is better than the default
 # of Alt + F2
