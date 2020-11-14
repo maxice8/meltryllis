@@ -1,2 +1,2 @@
-#!/usr/bin/ion
-exec setsid @args[1..] &
+#!/bin/sh
+exec setsid -f "$@" >/dev/null 2>&1
