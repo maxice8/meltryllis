@@ -1,3 +1,2 @@
-#!/usr/bin/ion
-test $len(@args) -eq 1 && exit 1
-exec $or($EDITOR "vi") @args[1..]
+#!/bin/sh
+exec "${EDITOR:-vi}" "$@"
