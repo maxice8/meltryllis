@@ -1,2 +1,2 @@
 #!/bin/sh
-exec flatpak --user run io.neovim.nvim -- "$@"
+exec flatpak --user run io.neovim.nvim "$@"
