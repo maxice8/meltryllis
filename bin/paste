@@ -1,7 +1,6 @@
-#!/usr/bin/ion
-let clipboard:[str] = [""]
-if exists -s WAYLAND_DISPLAY
+#!/bin/sh
+if [ "$WAYLAND_DISPLAY" ]; then
 	wl-paste --no-newline
 else
 	xsel -bo
-end
+fi
