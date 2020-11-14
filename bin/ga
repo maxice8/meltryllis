@@ -1,4 +1,3 @@
-#!/usr/bin/ion
-test $len(@args) -eq 1 && exec git add .
-exec git add @args[1..]
+#!/bin/sh
+exec git add "${@:-.}"
 
