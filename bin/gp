@@ -1,3 +1,2 @@
-#!/usr/bin/ion
-test $len(@args) -eq 1 && exec git push -f origin $(git current-branch)
-exec git push -f origin $(git current-branch) @args[1..]
+#!/bin/sh
+exec git push -f origin "$(git current-branch)" "$@"
