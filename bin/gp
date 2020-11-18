@@ -1,2 +1,2 @@
 #!/bin/sh
-exec git push -f origin "$(git current-branch)" "$@"
+exec git push --force-with-lease origin "$(git current-branch)" "$@"
