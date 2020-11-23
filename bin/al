@@ -303,7 +303,7 @@ match @args[1]
 			printerr Failed to commit changes, the tree is dirty, please fix
 			exit 1
 		end
- 		mkmr -y
+        agl mr create
 	case [d diff]
 		#
 		# run apkg-diff which will fetch the old packages and diff them
