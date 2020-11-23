@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/ion
 let clipboard:[str] = [""]
 if exists -s WAYLAND_DISPLAY
 	let clipboard = [wl-copy --trim-newline]
