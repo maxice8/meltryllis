@@ -75,7 +75,7 @@
   origin: flathub
 - Name: Signal Desktop
   ID: org.signal.Signal
-  version: 1.38.1
+  version: 1.38.2
   branch: stable
   origin: flathub
 - Name: Telegram Desktop
