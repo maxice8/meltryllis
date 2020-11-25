@@ -17,10 +17,11 @@ fi
 
 commits="$(git log --pretty='%s' ${ftag}...${stag})"
 
-feats=() # New Features
-fixes=() # Fixes
-tests=() # Changes to testsuites
-docs=()  # Changes to documentation
+feats=()     # New Features
+fixes=()     # Fixes
+tests=()     # Changes to testsuites
+docs=()      # Changes to documentation
+refactors=() # Refactoring of code
 
 
 while read -r c; do
@@ -42,6 +43,11 @@ while read -r c; do
 
     if grep -q '^docs(.*): ' <<< "$c"; then
         docs+=("${c#*docs}")
+        continue
+    fi
+
+    if grep -q '^refactor(.*): ' <<< "$c"; then
+        refactor+=("${c#*refactor}")
         continue
     fi
 done <<< "$commits"
@@ -88,6 +94,18 @@ if [ ${#docs[@]} -eq 0 ]; then
     echo " - No bugfixes"
 else
     for c in "${docs[@]}"; do
+        printf "%s\\n" " - $c"
+    done
+fi
+
+echo ""
+
+printf "%s\\n\\n" "## Refactoring"
+
+if [ ${#refactor[@]} -eq 0 ]; then
+    echo " - No refactorings"
+else
+    for c in "${refactor[@]}"; do
         printf "%s\\n" " - $c"
     done
 fi
