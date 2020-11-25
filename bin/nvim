@@ -1,2 +1,19 @@
 #!/bin/sh
+case "$1" in
+    *"$HOME"* ) ;;
+    "$HOME"/.var/app/io.neovim.nvim ) ;;
+    "$HOME"/.var/app )
+        echo ".var/app is not accesible from Flatpak sandbox" >&2
+        exit 1
+        ;;
+    /tmp* ) 
+        echo "/tmp is not accessible from Flatpak sandbox" >&2
+        exit 1
+        ;;
+    ^/* )
+        t="$1"
+        shift
+        set -- "$@" /var/run/host/"$t"
+        ;;
+esac
 exec flatpak --user run io.neovim.nvim "$@"
