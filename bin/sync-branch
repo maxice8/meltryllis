@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 let branches = $or(@args[1..] $(tracking-branch))
 
 for branch in @split($branches)

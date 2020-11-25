@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 # Show git branches and switch to them
 exists -d .git || exit
 test $len(@args) -eq 1 && exit 1

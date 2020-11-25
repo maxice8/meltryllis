@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 test $len(@args) -eq 1 && exit 1
 for path in @args[1..]
 	exists -d path || continue

@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 exists -d .git || exit
 
 if test $len(@args) -eq 1

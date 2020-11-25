@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 if git config remote.upstream.url >/dev/null
 	echo upstream
 	exit

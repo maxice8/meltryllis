@@ -1,2 +1,2 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 exec git rev-parse --abbrev-ref HEAD

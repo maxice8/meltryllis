@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 let bindir = "$HOME"/bin
 
 for binary in @args[1..]

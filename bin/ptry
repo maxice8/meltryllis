@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 # print the command and it's output and also copy to clipboard
 # useful to show to people
 test $len(@args) -eq 1 && exit 1

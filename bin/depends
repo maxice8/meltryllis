@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 let depends = $(apk list --depends @args[1..] | rg -o '\{.*\}' | sort -u)
 
 # We need to do this fancy $join(@split)) dance because ion shell doesn't

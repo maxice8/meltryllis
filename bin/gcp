@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 if test $len(@args) -eq 1
 	let args ++= $(git current-branch)
 end

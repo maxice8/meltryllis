@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 
 #
 # If we have only one argument that means that nothing was passed

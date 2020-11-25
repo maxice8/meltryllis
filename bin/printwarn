@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 exists -s PRINTOK_QUIET && exit
 test $len(@args) -eq 1 && exit 1
 echo ${color::yellow}'>>>' WARNING:${color::reset} @args[1..]

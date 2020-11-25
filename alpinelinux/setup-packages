@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 #
 # This adds the following packages:
 # .depends-mkmr

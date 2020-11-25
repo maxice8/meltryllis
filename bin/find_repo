@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 test $len(@args) -eq 1 && exit 1
 for pkg in @args[1..]
 	for repo in main community testing unmaintained non-free

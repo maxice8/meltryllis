@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 let endpoint = ''
 if test $len(@args) -gt 1
 	let endpoint = $(git config remote.@args[1].url | cut -d / -f -5)

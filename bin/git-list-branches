@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 test  -e .git || exit 99
 
 git branch | awk -F ' +' '! /\(no branch\)/ { print $2 }'

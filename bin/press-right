@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 if exists -s WAYLAND_DISPLAY
 	ydotool click 2
 else

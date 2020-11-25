@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 let _REALBASE = $(tracking-branch)
 
 let remote = $(guess-remote)

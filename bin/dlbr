@@ -1,4 +1,4 @@
-#!/usr/bin/ion
+#!/usr/bin/env ion
 # SPDX-License-Identifier: GPL-3.0-only
 # dlbr BRANCH... - Delete local and remote branches matching name
 fn delete_remote_branch branch:str
