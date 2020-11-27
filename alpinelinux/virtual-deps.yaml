@@ -1,3 +1,6 @@
+.depends-agl:
+  - libgit2-static
+  - libgit2-dev
 .depends-aports-helpers:
   - lua5.2
   - lua5.2-filesystem
