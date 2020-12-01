@@ -1,11 +1,12 @@
 #!/bin/sh
+
 case "$1" in
-    *"$HOME"* ) ;;
-    "$HOME"/.var/app/io.neovim.nvim ) ;;
-    "$HOME"/.var/app )
-        echo ".var/app is not accesible from Flatpak sandbox" >&2
+    "$HOME"/.var/app/io.neovim.nvim* ) ;;
+    "$HOME"/.var/app/* )
+        echo "$HOME/.var/app is not accesible from Flatpak sandbox" >&2
         exit 1
         ;;
+    *"$HOME"* ) ;;
     /tmp* ) 
         echo "/tmp is not accessible from Flatpak sandbox" >&2
         exit 1
