@@ -60,7 +60,7 @@
   origin: flathub
 - Name: Thunderbird
   ID: org.mozilla.Thunderbird
-  version: 78.5.0
+  version: 78.5.1
   branch: stable
   origin: flathub
 - Name: Firefox
