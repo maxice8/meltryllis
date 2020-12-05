@@ -11,7 +11,7 @@ case "$1" in
         echo "/tmp is not accessible from Flatpak sandbox" >&2
         exit 1
         ;;
-    ^/* )
+    /* )
         t="$1"
         shift
         set -- "$@" /var/run/host/"$t"
