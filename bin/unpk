@@ -1,29 +1,40 @@
-#!/usr/bin/env ion
-if test $len(@args) -eq 1
+#!/bin/sh
+if [ $# -lt 1 ]; then
 	echo unpk '<archives>'
 	exit 0
-end
+fi
 
-for pk in @args[1..]
-	match $pk
-		case [*.tar.bz2 *.tar.gz *.tar.xz *.tbz2 *.tgz *.txz *.tar *.xbps *.apk]
+for pk in "$@"; do
+    case "$pk" in
+        *.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar|*.xbps|*.apk)
 			tar xfv $pk
-		case *.lzma
+            ;;
+        *.lzma)
 			unlzma -cd "$pk"
-		case *.bz2
+            ;;
+		*.bz2)
 			bunzip2 -cd "$pk"
-		case *.rar
+            ;;
+		*.rar)
 			unrar x -ad "$pk"
-		case [*.gz *.zst]
+            ;;
+		*.gz|*.zst)
 			unzstd -cq "$pk"
-		case *.zip
+            ;;
+        *.zip)
 			unzip "$pk"
-		case *.Z
+            ;;
+		*.Z)
 			uncompress -c "$pk"
-		case [*.7z *.arj *.cab *.chm *.dmg *.iso *.lzh *.msi *.rpm *.udf *.wim *.xa]
+            ;;
+		*.7z|*.arj|*.cab|*.chm|*.dmg|*.iso|*.lzh|*.msi|*.rpm|*.udf|*.wim|*.xa)
 			7z x "$pk"
-		case *.xz
+            ;;
+		*.xz)
 			unxz -cd "$pk"
-		case _; echo file format for "$pk" not supported
-	end
-end
+            ;;
+        *)
+            echo file format for "$pk" not supported
+            ;;
+	esac
+done
