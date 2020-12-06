@@ -1,10 +1,10 @@
-#!/usr/bin/env ion
-let bindir = "$HOME"/bin
+#!/bin/sh
+bindir="$HOME"/bin
 
-for binary in @args[1..]
-	$EDITOR $bindir/$binary
+for bin in "$@"; do
+	$EDITOR "$bindir"/"$bin"
 
-	if test -f $bindir/$binary
-		chmod +x $bindir/$binary
-	end
-end
+	if [ -f "$bindir"/"$bin" ]; then
+		chmod +x "$bindir"/"$bin"
+	fi
+done
