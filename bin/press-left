@@ -1,6 +1,6 @@
-#!/usr/bin/env ion
-if exists -s WAYLAND_DISPLAY
+#!/bin/sh
+if [ -n $WAYLAND_DISPLAY ]; then
 	ydotool click 1
 else
 	xdotool click 1
-end
+fi
