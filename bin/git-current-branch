@@ -1,2 +1,2 @@
-#!/usr/bin/env ion
-exec git rev-parse --abbrev-ref HEAD
+#!/bin/sh
+exec git branch --show-current
