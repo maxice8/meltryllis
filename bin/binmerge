@@ -1,25 +1,31 @@
-#!/usr/bin/env ion
+#!/bin/sh
 
-let bindir = $HOME/bin
-let gitdir = $HOME/.ionwall
+bindir="$HOME"/bin
+gitdir="$HOME"/.ionwall
 
-cd "$HOME"/.ionwall
+cd "$gitdir" || exit 1
 
-for binary in @args[1..]
-	if not test -e $bindir/$binary
+for binary in "$@"; do
+    # Check if the binary actually exists
+    if ! [ -e "$bindir"/"$binary" ]; then
 		printerr "[$binary] not found"
-	else
-		if test -L $bindir/$binary
-			return 1
-		else
-			if not mv -- $bindir/$binary bin/$binary
-				printerr "[$binary] failed to move"
-				return 1
-			end
-			if not ln -sf -- $gitdir/bin/$binary $bindir
-				printerr "[$binary] failed to make symlink"
-				return 1
-			end
-		end
-	end
-end
+        continue
+    fi
+
+    # Check that the binary given is not already a symlink
+    if [ -L "$bindir"/"$binary" ]; then
+        continue
+    fi
+
+    # Try to move it from the bindir to the git repo
+	if ! mv -- "$bindir"/"$binary" "$gitdir"/bin/"$binary"; then
+		printerr "[$binary] failed to move"
+		continue
+	fi
+
+    # Try to link it from the gitdir to the bindir
+	if ! ln -sf -- "$gitdir"/bin/"$binary" "$bindir"; then
+		printerr "[$binary] failed to make symlink"
+		continue
+	fi
+done
