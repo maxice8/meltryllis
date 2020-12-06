@@ -1,4 +1,0 @@
-#!/usr/bin/env ion
-# prch - show all commits that will be merged into the main branch
-# check changes
-git show --color=always -"$(gcp | wc -l)"
