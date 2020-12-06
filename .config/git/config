@@ -20,6 +20,7 @@
     rbs = rebase --skip
     gam = commit --amend --verbose --no-edit
     ga = add
+    gp = push --force-with-lease
 [github]
 	user = maxice8
 # for $deity's sake, check that anything we're getting is complete and sane on a regular basis
