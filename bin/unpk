@@ -18,7 +18,10 @@ for pk in "$@"; do
 		*.rar)
 			unrar x -ad "$pk"
             ;;
-		*.gz|*.zst)
+        *.gz)
+            gunzip "$pk"
+            ;;
+        *.zst)
 			unzstd -cq "$pk"
             ;;
         *.zip)
