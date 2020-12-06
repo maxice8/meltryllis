@@ -1,0 +1,6 @@
+#!/bin/sh
+export NOAPORTS_LINT=1
+export NOAPKBUILD_LINT=1
+export NOSECFIXES_LINT=1
+export NOPKGVERCHECK=1
+exec git commit --no-edit "$@"
