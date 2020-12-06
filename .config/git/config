@@ -2,9 +2,16 @@
 	email = thinkabit.ukim@gmail.com
 	name = Leo
 [alias]
-  ls = log --oneline --decorate --graph
-  g = grep --break --heading --line-number
-	s = show
+    ls = log --oneline --decorate --graph
+    g = grep --break --heading --line-number
+    s = show
+    c = commit
+    co = checkout
+    st = status -sb
+    up = pull --rebase
+    re = remote
+    sta = stash
+    ch = !git show --color=always `git rev-list @{u}..HEAD`
 [github]
 	user = maxice8
 # for $deity's sake, check that anything we're getting is complete and sane on a regular basis
@@ -32,6 +39,8 @@ fsckObjects = true
 	pager = delta
 [interactive]
 	diffFilter = delta --color-only
+[color]
+    ui = true
 [delta]
 	features = line-numbers
 	syntax-theme = base16
