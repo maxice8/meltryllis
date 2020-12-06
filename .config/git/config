@@ -11,7 +11,15 @@
     up = pull --rebase
     re = remote
     sta = stash
-    ch = !git show --color=always `git rev-list @{u}..HEAD`
+    prch = !git show --color=always `git rev-list @{u}..HEAD`
+    cp = log @{u}.. --pretty='%C(yellow)%h %C(white)%s'
+    df = diff
+    rb = rebase
+    rbi = rebase -i
+    rbc = rebase --continue
+    rbs = rebase --skip
+    gam = commit --amend --verbose --no-edit
+    ga = add
 [github]
 	user = maxice8
 # for $deity's sake, check that anything we're getting is complete and sane on a regular basis
