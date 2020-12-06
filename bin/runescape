@@ -1,8 +1,0 @@
-#!/usr/bin/env ion
-flatpak run \
-	--env=MSA_GLSL_CACHE_DIR= \
-	--env=SDL_VIDEODRIVER= \
-	--env=ALSA_CONFIG_PATH= \
-	--socket=fallback-x11 \
-	\
-	com.jagex.RuneScape

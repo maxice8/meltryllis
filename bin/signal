@@ -1,2 +1,0 @@
-#!/usr/bin/env ion
-exec flatpak run org.signal.Signal
