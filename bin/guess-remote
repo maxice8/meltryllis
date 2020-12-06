@@ -1,10 +1,10 @@
-#!/usr/bin/env ion
-if git config remote.upstream.url >/dev/null
+#!/bin/sh
+if git config remote.upstream.url >/dev/null; then
 	echo upstream
 	exit
-else if git config remote.origin.url >/dev/null
+elif git config remote.origin.url >/dev/null; then
 	echo origin
 	exit
 else
 	exit 1
-end
+fi
