@@ -1,6 +1,0 @@
-#!/usr/bin/env ion
-if test $len(@args) -eq 1
-	exec git status
-else
-	exec git status @args[1..]
-end

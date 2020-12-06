@@ -1,3 +1,0 @@
-#!/usr/bin/env ion
-test $len(@args) -eq 1 && exec git commit --no-edit
-exec git commit --no-edit @args[1..]
