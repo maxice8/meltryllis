@@ -13,6 +13,7 @@
     prch = !git show --color=always `git rev-list @{u}..HEAD`
     cp = log @{u}.. --pretty='%C(yellow)%h %C(white)%s'
     df = diff
+    bre = branch -m
     rb = rebase
     rbi = rebase -i
     rbc = rebase --continue
