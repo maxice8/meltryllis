@@ -3,14 +3,13 @@
 	name = Leo
 [alias]
     ls = log --oneline --decorate --graph
-    g = grep --break --heading --line-number
     s = show
-    c = commit
+    c = commit --no-edit
     co = checkout
     st = status -sb
+    sta = stash
     up = pull --rebase
     re = remote
-    sta = stash
     prch = !git show --color=always `git rev-list @{u}..HEAD`
     cp = log @{u}.. --pretty='%C(yellow)%h %C(white)%s'
     df = diff
@@ -19,8 +18,9 @@
     rbc = rebase --continue
     rbs = rebase --skip
     gam = commit --amend --verbose --no-edit
-    ga = add
-    gp = push --force-with-lease
+    a = add
+    ap = add -p
+    p = push --force-with-lease
 [github]
 	user = maxice8
 # for $deity's sake, check that anything we're getting is complete and sane on a regular basis
@@ -54,3 +54,5 @@ fsckObjects = true
 	features = line-numbers
 	syntax-theme = base16
 	whitespace-error-style = 22 reverse
+[add "interactive"]
+	useBuiltin = true
