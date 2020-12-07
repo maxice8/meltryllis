@@ -1,5 +1,5 @@
 #!/bin/sh
 [ -n "$PRINTERR_QUIET" ] && exit 0
 [ $# -lt 1 ] && exit 1
-printf "\033[31m[ ERR ]\033[0m %s\n" "$@" >&2
+printf "\033[31m[ ERR ]\033[0m %s\n" "$*" >&2
 exit 1
