@@ -8,9 +8,14 @@
   version: 1.51.1-1605051630
   branch: stable
   origin: flathub
+- Name: Fragments
+  ID: de.haeckerfelix.Fragments
+  version: "1.5"
+  branch: stable
+  origin: flathub
 - Name: Element
   ID: im.riot.Riot
-  version: 1.7.14
+  version: 1.7.15
   branch: stable
   origin: flathub
 - Name: Neovim
@@ -80,7 +85,7 @@
   origin: flathub
 - Name: Signal Desktop
   ID: org.signal.Signal
-  version: 1.38.2
+  version: 1.39.2
   branch: stable
   origin: flathub
 - Name: Telegram Desktop
