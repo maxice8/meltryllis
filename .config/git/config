@@ -4,6 +4,7 @@
 [alias]
     ls = log --oneline --decorate --graph
     s = show
+    ss = show --stat
     c = commit --no-edit
     co = checkout
     st = status -sb
@@ -57,3 +58,5 @@ fsckObjects = true
 	whitespace-error-style = 22 reverse
 [add "interactive"]
 	useBuiltin = true
+[push]
+	default = current
