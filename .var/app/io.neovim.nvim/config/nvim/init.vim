@@ -4,8 +4,6 @@
 " Start pathogen
 call plug#begin()
 
-Plug 'ajmwagar/vim-deus'
-
 " For Ion shell
 Plug 'vmchale/ion-vim', { 'for': 'ion' }
 
@@ -23,6 +21,8 @@ Plug 'https://gitlab.alpinelinux.org/Leo/apkbuild.vim.git'
 " Shows + - ~ signs on the left-side corner based on git differences
 Plug 'airblade/vim-gitgutter'
 
+Plug 'morhetz/gruvbox'
+
 " Statusbar on the bottom that shows important information like:
 " - vim mode
 " - file path
@@ -32,8 +32,6 @@ Plug 'itchyny/lightline.vim'
 Plug 'maximbaz/lightline-ale'
 
 Plug 'dense-analysis/ale'
-
-Plug 'chriskempson/base16-vim'
 
 "
 " Add Plugins
@@ -60,7 +58,7 @@ let g:lightline.component_function = {
     \   }
     \}
 
-let g:lightline.colorscheme = 'deus'
+let g:lightline.colorscheme = 'gruvbox'
 
 let g:lightline.separator = { 'left': '', 'right': '' }
 let g:lightline.subseparator = { 'left': '|', 'right': '|' }
@@ -207,8 +205,14 @@ let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 
 set background=dark    " Setting dark mode
-let base16colorspace=256  " Access colors present in 256 colorspace
-colorscheme base16-gruvbox-dark-pale
+
+let g:gruvbox_italic=1
+
+let g:gruvbox_contrast_dark = "soft"
+
+let g:gruvbox_improved_warnings=1
+
+colorscheme gruvbox
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
