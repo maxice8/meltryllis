@@ -3,16 +3,16 @@
 # Takes 2 tags and get all commits between them and turns
 # it into a release notes based on AngularJS style
 if [ -z "$1" ]; then
-    echo "Need a starting tag" >&2
-    exit 1
+	echo "Need a starting tag" >&2
+	exit 1
 fi
 
 stag="$1"
 
 if [ "$2" ]; then
-    ftag="$2"
+	ftag="$2"
 else
-    ftag=master
+	ftag=master
 fi
 
 commits="$(git log --pretty='%s' ${ftag}...${stag})"
@@ -23,43 +23,42 @@ tests=()     # Changes to testsuites
 docs=()      # Changes to documentation
 refactors=() # Refactoring of code
 
-
 while read -r c; do
-    # Add all features to the array
-    if grep -q '^feat(.*): ' <<< "$c"; then
-        feats+=("${c#*feat}")
-        continue
-    fi
+	# Add all features to the array
+	if grep -q '^feat(.*): ' <<<"$c"; then
+		feats+=("${c#*feat}")
+		continue
+	fi
 
-    if grep -q '^fix(.*): ' <<< "$c"; then
-        fixes+=("${c#*fix}")
-        continue
-    fi
+	if grep -q '^fix(.*): ' <<<"$c"; then
+		fixes+=("${c#*fix}")
+		continue
+	fi
 
-    if grep -q '^tests(.*): ' <<< "$c"; then
-        tests+=("${c#*tests}")
-        continue
-    fi
+	if grep -q '^tests(.*): ' <<<"$c"; then
+		tests+=("${c#*tests}")
+		continue
+	fi
 
-    if grep -q '^docs(.*): ' <<< "$c"; then
-        docs+=("${c#*docs}")
-        continue
-    fi
+	if grep -q '^docs(.*): ' <<<"$c"; then
+		docs+=("${c#*docs}")
+		continue
+	fi
 
-    if grep -q '^refactor(.*): ' <<< "$c"; then
-        refactor+=("${c#*refactor}")
-        continue
-    fi
-done <<< "$commits"
+	if grep -q '^refactor(.*): ' <<<"$c"; then
+		refactor+=("${c#*refactor}")
+		continue
+	fi
+done <<<"$commits"
 
 printf "%s\\n\\n" "## Feature changes"
 
 if [ ${#feats[@]} -eq 0 ]; then
-    echo " - No new features"
+	echo " - No new features"
 else
-    for c in "${feats[@]}"; do
-        printf "%s\\n" " - $c"
-    done
+	for c in "${feats[@]}"; do
+		printf "%s\\n" " - $c"
+	done
 fi
 
 echo ""
@@ -67,11 +66,11 @@ echo ""
 printf "%s\\n\\n" "## Bugfixes"
 
 if [ ${#fixes[@]} -eq 0 ]; then
-    echo " - No bugfixes"
+	echo " - No bugfixes"
 else
-    for c in "${fixes[@]}"; do
-        printf "%s\\n" " - $c"
-    done
+	for c in "${fixes[@]}"; do
+		printf "%s\\n" " - $c"
+	done
 fi
 
 echo ""
@@ -79,11 +78,11 @@ echo ""
 printf "%s\\n\\n" "## Testsuite"
 
 if [ ${#tests[@]} -eq 0 ]; then
-    echo " - No bugfixes"
+	echo " - No bugfixes"
 else
-    for c in "${tests[@]}"; do
-        printf "%s\\n" " - $c"
-    done
+	for c in "${tests[@]}"; do
+		printf "%s\\n" " - $c"
+	done
 fi
 
 echo ""
@@ -91,11 +90,11 @@ echo ""
 printf "%s\\n\\n" "## Documentation"
 
 if [ ${#docs[@]} -eq 0 ]; then
-    echo " - No bugfixes"
+	echo " - No bugfixes"
 else
-    for c in "${docs[@]}"; do
-        printf "%s\\n" " - $c"
-    done
+	for c in "${docs[@]}"; do
+		printf "%s\\n" " - $c"
+	done
 fi
 
 echo ""
@@ -103,9 +102,9 @@ echo ""
 printf "%s\\n\\n" "## Refactoring"
 
 if [ ${#refactor[@]} -eq 0 ]; then
-    echo " - No refactorings"
+	echo " - No refactorings"
 else
-    for c in "${refactor[@]}"; do
-        printf "%s\\n" " - $c"
-    done
+	for c in "${refactor[@]}"; do
+		printf "%s\\n" " - $c"
+	done
 fi

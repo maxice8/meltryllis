@@ -41,8 +41,8 @@ trap "rm -rf '$tmpdir'" INT EXIT
 cd "$tmpdir" || die "failed to create temp dir"
 
 # generate a temp repositories file with only the http(s) repos
-grep -E "^https?:" /etc/apk/repositories > "$tmpdir"/remote-repositories
-grep -E -v "^https?:" /etc/apk/repositories > "$tmpdir"/local-repositories
+grep -E "^https?:" /etc/apk/repositories >"$tmpdir"/remote-repositories
+grep -E -v "^https?:" /etc/apk/repositories >"$tmpdir"/local-repositories
 
 _carch="$(abuild -A)"
 
@@ -57,10 +57,10 @@ for pkg in $subpackages; do
 done
 
 oldpkgs="$(apk fetch \
-		  --repositories-file "$tmpdir"/remote-repositories \
-		  --simulate \
-		  $pkglist 2>/dev/null \
-		  | grep Downloading | sed 's/^Downloading //')"
+	--repositories-file "$tmpdir"/remote-repositories \
+	--simulate \
+	$pkglist 2>/dev/null |
+	grep Downloading | sed 's/^Downloading //')"
 
 if [ "$(echo "$oldpkgs" | grep -o "^$pkgname-[0-9].*")" = "$pkgname-$pkgver-r$pkgrel" ]; then
 	die "$pkgname-$pkgver-r$pkgrel is the same as upstream"
@@ -70,47 +70,47 @@ fi
 for i in $pkglist; do
 
 	(
-	# shellcheck disable=SC2154
-	pkg="$i-$pkgver-r$pkgrel"
-	pkgfile=${pkg}.apk
+		# shellcheck disable=SC2154
+		pkg="$i-$pkgver-r$pkgrel"
+		pkgfile=${pkg}.apk
 
-	# We need to declare this here so the changes inside the loop change it
-	oldapkpath='' newapkpath=''
+		# We need to declare this here so the changes inside the loop change it
+		oldapkpath='' newapkpath=''
 
-	oldpkg="$(echo "$oldpkgs" | grep -o "^$i-[0-9].*")"
+		oldpkg="$(echo "$oldpkgs" | grep -o "^$i-[0-9].*")"
 
-	for repo in $(cat "$tmpdir"/local-repositories); do
-		if [ -f "$repo"/"$_carch"/"$pkgfile" ]; then
-			newapkpath="$repo"/"$_carch"/"$pkgfile"
-			break
-		fi
-	done
-	[ -f "$newapkpath" ] || die "can't find $pkgfile, maybe package wasn't built"
-
-	if [ -n "$oldpkg" ]; then
-		for candidate in /var/cache/apk/"$oldpkg".*.apk; do
-			if ! [ -f "$candidate" ]; then
-				continue
+		for repo in $(cat "$tmpdir"/local-repositories); do
+			if [ -f "$repo"/"$_carch"/"$pkgfile" ]; then
+				newapkpath="$repo"/"$_carch"/"$pkgfile"
+				break
 			fi
-			ok "Found cached $oldpkg"
-			oldapkpath="$candidate"
 		done
+		[ -f "$newapkpath" ] || die "can't find $pkgfile, maybe package wasn't built"
 
-		if ! [ -f "$oldapkpath" ]; then
-			# Fetch the package for all runs
-			msg "Fetching $oldpkg"
-			apk fetch \
-				--repositories-file "$tmpdir"/remote-repositories \
-				--output "$tmpdir" \
-				"$i" \
-				>/dev/null 2>&1 &&
-			ok "Fetched $oldpkg"
-			oldapkpath="$PWD"/"$oldpkg".apk
+		if [ -n "$oldpkg" ]; then
+			for candidate in /var/cache/apk/"$oldpkg".*.apk; do
+				if ! [ -f "$candidate" ]; then
+					continue
+				fi
+				ok "Found cached $oldpkg"
+				oldapkpath="$candidate"
+			done
+
+			if ! [ -f "$oldapkpath" ]; then
+				# Fetch the package for all runs
+				msg "Fetching $oldpkg"
+				apk fetch \
+					--repositories-file "$tmpdir"/remote-repositories \
+					--output "$tmpdir" \
+					"$i" \
+					>/dev/null 2>&1 &&
+					ok "Fetched $oldpkg"
+				oldapkpath="$PWD"/"$oldpkg".apk
+			fi
 		fi
-	fi
 
-	echo "$oldapkpath" > "$tmpdir"/old-"$i"
-	echo "$newapkpath" > "$tmpdir"/new-"$i"
+		echo "$oldapkpath" >"$tmpdir"/old-"$i"
+		echo "$newapkpath" >"$tmpdir"/new-"$i"
 	) &
 done
 wait
@@ -131,44 +131,44 @@ for i in $pkglist; do
 
 	for attr in "$@"; do
 		case "$attr" in
-			files)
-				[ -z "$oldapk" ] || \
-				tar -z --list --file="$oldapk" 2>/dev/null \
-					| grep -E -v '(^\.SIGN\.|^\.PKGINFO)' \
-					| sort > "$tmpdir"/difflist-"$i"-old-"$attr"
+		files)
+			[ -z "$oldapk" ] ||
+				tar -z --list --file="$oldapk" 2>/dev/null |
+				grep -E -v '(^\.SIGN\.|^\.PKGINFO)' |
+					sort >"$tmpdir"/difflist-"$i"-old-"$attr"
 
-				tar -z --list --file="$newapk" \
-					| grep -E -v '(^\.SIGN\.|^\.PKGINFO)' \
-					| sort > "$tmpdir"/difflist-"$i"-new-"$attr"
-				;;
-			* )
-				[ -z "$oldapk" ] || \
-				tar -z --extract --to-stdout --file="$oldapk" '.PKGINFO' 2>/dev/null \
-					| grep "^$attr =" \
-					| sed "s/^$attr = //" \
-					| sort > "$tmpdir"/difflist-"$i"-old-"$attr"
+			tar -z --list --file="$newapk" |
+				grep -E -v '(^\.SIGN\.|^\.PKGINFO)' |
+				sort >"$tmpdir"/difflist-"$i"-new-"$attr"
+			;;
+		*)
+			[ -z "$oldapk" ] ||
+				tar -z --extract --to-stdout --file="$oldapk" '.PKGINFO' 2>/dev/null |
+				grep "^$attr =" |
+					sed "s/^$attr = //" |
+					sort >"$tmpdir"/difflist-"$i"-old-"$attr"
 
-				tar -z --extract --to-stdout --file="$newapk" '.PKGINFO' \
-					| grep "^$attr = " \
-					| sed "s/^$attr = //" \
-					| sort > "$tmpdir"/difflist-"$i"-new-"$attr"
+			tar -z --extract --to-stdout --file="$newapk" '.PKGINFO' |
+				grep "^$attr = " |
+				sed "s/^$attr = //" |
+				sort >"$tmpdir"/difflist-"$i"-new-"$attr"
 
-				# When the user asks for size, we want to give them a human-readable size
-				if [ "$attr" = size ]; then
-					if [ -n "$oldapk" ]; then
-						filesize="$(cat "$tmpdir"/difflist-"$i"-old-"$attr")"
-						# Most common size of the key
-						filesize=$((filesize - 4096))
-						echo "$filesize" > "$tmpdir"/difflist-"$i"-old-"$attr"
-						human "$tmpdir"/difflist-"$i"-old-"$attr"
-					fi
-					if [ -s "$tmpdir"/difflist-"$i"-new-"$attr" ]; then
-						human "$tmpdir"/difflist-"$i"-new-"$attr"
-					fi
+			# When the user asks for size, we want to give them a human-readable size
+			if [ "$attr" = size ]; then
+				if [ -n "$oldapk" ]; then
+					filesize="$(cat "$tmpdir"/difflist-"$i"-old-"$attr")"
+					# Most common size of the key
+					filesize=$((filesize - 4096))
+					echo "$filesize" >"$tmpdir"/difflist-"$i"-old-"$attr"
+					human "$tmpdir"/difflist-"$i"-old-"$attr"
 				fi
+				if [ -s "$tmpdir"/difflist-"$i"-new-"$attr" ]; then
+					human "$tmpdir"/difflist-"$i"-new-"$attr"
+				fi
+			fi
 
-				;;
-			esac
+			;;
+		esac
 		if ! [ -f "$tmpdir"/difflist-"$i"-old-"$attr" ]; then
 			touch "$tmpdir"/difflist-"$i"-old-"$attr"
 		fi

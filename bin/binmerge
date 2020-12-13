@@ -6,24 +6,24 @@ gitdir="$HOME"/.ionwall
 cd "$gitdir" || exit 1
 
 for binary in "$@"; do
-    # Check if the binary actually exists
-    if ! [ -e "$bindir"/"$binary" ]; then
+	# Check if the binary actually exists
+	if ! [ -e "$bindir"/"$binary" ]; then
 		printerr "[$binary] not found"
-        continue
-    fi
+		continue
+	fi
 
-    # Check that the binary given is not already a symlink
-    if [ -L "$bindir"/"$binary" ]; then
-        continue
-    fi
+	# Check that the binary given is not already a symlink
+	if [ -L "$bindir"/"$binary" ]; then
+		continue
+	fi
 
-    # Try to move it from the bindir to the git repo
+	# Try to move it from the bindir to the git repo
 	if ! mv -- "$bindir"/"$binary" "$gitdir"/bin/"$binary"; then
 		printerr "[$binary] failed to move"
 		continue
 	fi
 
-    # Try to link it from the gitdir to the bindir
+	# Try to link it from the gitdir to the bindir
 	if ! ln -sf -- "$gitdir"/bin/"$binary" "$bindir"; then
 		printerr "[$binary] failed to make symlink"
 		continue

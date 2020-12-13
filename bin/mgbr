@@ -61,34 +61,34 @@ branches="$*"
 # different branches of alpine, like 3.10-stable.
 for branch in "$@"; do
 	case "$(alpine-stable-prefix "$branch")" in
-		'')
-			EDGE="$EDGE $branch"
-			shift
-			;;
-		3.12)
-			stable312="${stable312} $branch"
-			shift
-			;;
-		3.11)
-			stable311="${stable311} $branch"
-			shift
-			;;
-		3.10)
-			stable310="${stable310} $branch"
-			shift
-			;;
-		3.9)
-			stable39="${stable39} $branch"
-			shift
-			;;
-		3.8)
-			stable38="${stable38} $branch"
-			shift
-			;;
-		3.7)
-			stable37="${stable37} $branch"
-			shift
-			;;
+	'')
+		EDGE="$EDGE $branch"
+		shift
+		;;
+	3.12)
+		stable312="${stable312} $branch"
+		shift
+		;;
+	3.11)
+		stable311="${stable311} $branch"
+		shift
+		;;
+	3.10)
+		stable310="${stable310} $branch"
+		shift
+		;;
+	3.9)
+		stable39="${stable39} $branch"
+		shift
+		;;
+	3.8)
+		stable38="${stable38} $branch"
+		shift
+		;;
+	3.7)
+		stable37="${stable37} $branch"
+		shift
+		;;
 	esac
 done
 

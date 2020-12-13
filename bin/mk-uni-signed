@@ -14,18 +14,18 @@
 [ "$(id -u)" != 0 ] && exit 1
 #
 #
-bootdir=/boot # Root directory of bootloader (commonly /boot)
+bootdir=/boot                                   # Root directory of bootloader (commonly /boot)
 certdir=/home/enty/usr/secrets/$(hostname)-keys # Can't use $HOME here since we run this as root
-kernel="$bootdir"/vmlinuz-edge # Where the kernel is
-initramfs="$bootdir"/initramfs-edge # Where the initramfs
-microcode="$bootdir"/intel-ucode.img # Where the intel microcode is
-image="$bootdir"/alpine.efi # Where the Unified Kernel Image will be
+kernel="$bootdir"/vmlinuz-edge                  # Where the kernel is
+initramfs="$bootdir"/initramfs-edge             # Where the initramfs
+microcode="$bootdir"/intel-ucode.img            # Where the intel microcode is
+image="$bootdir"/alpine.efi                     # Where the Unified Kernel Image will be
 #
 # Create a initramfs with intel microcode by concatenating both together. This works
 # suprisingly, thanks UNIX.
 #
-cat "$microcode" "$initramfs" > /tmp/unified-initramfs && \
-	printok "created microcode-enabled initramfs" || \
+cat "$microcode" "$initramfs" >/tmp/unified-initramfs &&
+	printok "created microcode-enabled initramfs" ||
 	printere "Failed to create microcode-enabled initramfs"
 #
 # Create the efi image, use the systemd-boot bootloader
@@ -35,15 +35,15 @@ objcopy \
 	--add-section .cmdline="/proc/cmdline" --change-section-vma .cmdline=0x30000 \
 	--add-section .linux="$kernel" --change-section-vma .linux=0x40000 \
 	--add-section .initrd="/tmp/unified-initramfs" --change-section-vma .initrd=0x3000000 \
-	/usr/lib/gummiboot/linuxx64.efi.stub $image && \
-	printok "Created Unified Kernel Image" || \
+	/usr/lib/gummiboot/linuxx64.efi.stub $image &&
+	printok "Created Unified Kernel Image" ||
 	printerr "Failed to create Unified Kernel Image"
 #
 # Sign the kernel and the bootloader on its normal location and a location that is picked
 # up by defective EFI implementations that look only on the location of the WIN10 bootloader
 #
-sbsign --key "$certdir"/db.key --cert "$certdir"/db.crt --output $image $image && \
-	printok "Signed Unified Kernel Image" || \
+sbsign --key "$certdir"/db.key --cert "$certdir"/db.crt --output $image $image &&
+	printok "Signed Unified Kernel Image" ||
 	printerr "Failed to sign Unified Kernel Image"
 #
 # Only install the UEFI variable if we don't already have a boot entry
@@ -57,8 +57,8 @@ else
 		--part 1 \
 		--label "Alpine Linux" \
 		--loader "\alpine.efi" \
-		--quiet && \
-		printok "Created UEFI entry for Alpine Linux" || \
+		--quiet &&
+		printok "Created UEFI entry for Alpine Linux" ||
 		printerr "Failed to create UEFI entry for Alpine Linux"
 fi
 

@@ -29,7 +29,7 @@ tmpdir=$(mktemp -d -t checkpkg-script.XXXXXX)
 trap "rm -rf '$tmpdir'" INT EXIT
 cd "$tmpdir" || die "failed to create temp dir"
 
-grep -E -v "^https?:" /etc/apk/repositories > "$tmpdir"/local-repositories
+grep -E -v "^https?:" /etc/apk/repositories >"$tmpdir"/local-repositories
 
 _carch="$(abuild -A)"
 
@@ -45,18 +45,18 @@ done
 
 for i in $pkglist; do
 	(
-	# shellcheck disable=SC2154
-	pkg="$i-$pkgver-r$pkgrel"
-	pkgfile=${pkg}.apk
+		# shellcheck disable=SC2154
+		pkg="$i-$pkgver-r$pkgrel"
+		pkgfile=${pkg}.apk
 
-	# Try to get our package from our locally built and return early so we don't
-	# waste time trying to get a remote package
-	for repo in $(cat "$tmpdir"/local-repositories); do
-		if [ -f "$repo"/"$_carch"/"$pkgfile" ]; then
-			echo "$repo"/"$_carch"/"$pkgfile" > "$tmpdir"/"$i"
-			return 0
-		fi
-	done
+		# Try to get our package from our locally built and return early so we don't
+		# waste time trying to get a remote package
+		for repo in $(cat "$tmpdir"/local-repositories); do
+			if [ -f "$repo"/"$_carch"/"$pkgfile" ]; then
+				echo "$repo"/"$_carch"/"$pkgfile" >"$tmpdir"/"$i"
+				return 0
+			fi
+		done
 	) &
 done
 wait

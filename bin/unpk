@@ -5,39 +5,39 @@ if [ $# -lt 1 ]; then
 fi
 
 for pk in "$@"; do
-    case "$pk" in
-        *.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar|*.xbps|*.apk)
-			tar xfv $pk
-            ;;
-        *.lzma)
-			unlzma -cd "$pk"
-            ;;
-		*.bz2)
-			bunzip2 -cd "$pk"
-            ;;
-		*.rar)
-			unrar x -ad "$pk"
-            ;;
-        *.gz)
-            gunzip "$pk"
-            ;;
-        *.zst)
-			unzstd -cq "$pk"
-            ;;
-        *.zip)
-			unzip "$pk"
-            ;;
-		*.Z)
-			uncompress -c "$pk"
-            ;;
-		*.7z|*.arj|*.cab|*.chm|*.dmg|*.iso|*.lzh|*.msi|*.rpm|*.udf|*.wim|*.xa)
-			7z x "$pk"
-            ;;
-		*.xz)
-			unxz -cd "$pk"
-            ;;
-        *)
-            echo file format for "$pk" not supported
-            ;;
+	case "$pk" in
+	*.tar.bz2 | *.tar.gz | *.tar.xz | *.tbz2 | *.tgz | *.txz | *.tar | *.xbps | *.apk)
+		tar xfv $pk
+		;;
+	*.lzma)
+		unlzma -cd "$pk"
+		;;
+	*.bz2)
+		bunzip2 -cd "$pk"
+		;;
+	*.rar)
+		unrar x -ad "$pk"
+		;;
+	*.gz)
+		gunzip "$pk"
+		;;
+	*.zst)
+		unzstd -cq "$pk"
+		;;
+	*.zip)
+		unzip "$pk"
+		;;
+	*.Z)
+		uncompress -c "$pk"
+		;;
+	*.7z | *.arj | *.cab | *.chm | *.dmg | *.iso | *.lzh | *.msi | *.rpm | *.udf | *.wim | *.xa)
+		7z x "$pk"
+		;;
+	*.xz)
+		unxz -cd "$pk"
+		;;
+	*)
+		echo file format for "$pk" not supported
+		;;
 	esac
 done

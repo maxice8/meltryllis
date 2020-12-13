@@ -19,7 +19,7 @@ fi
 ENDPOINT="$(printf "%s\\n" "$HOST" | cut -d / -f -3)"/api/v4/projects
 
 # Get the user and repo and convert to compliant encoding for gitlab URLs
-ENDPOINT="$ENDPOINT"/"$(printf "%s\\n" "$HOST" | cut -d / -f 4- | sed  's|/|%2F|g')"
+ENDPOINT="$ENDPOINT"/"$(printf "%s\\n" "$HOST" | cut -d / -f 4- | sed 's|/|%2F|g')"
 
 mr="$1"
 shift
@@ -27,8 +27,8 @@ comment="$*"
 
 # JSON payload
 BODY="{
-	\"body\": \"$(printf "%s" "$comment" | awk '{printf  "%s\\n", $0}' )\"
-}";
+	\"body\": \"$(printf "%s" "$comment" | awk '{printf  "%s\\n", $0}')\"
+}"
 
 RETURN="$(curl -X POST "$ENDPOINT"/merge_requests/"$mr"/notes \
 	--header "PRIVATE-TOKEN: $(secret-tool lookup Path a.o/gitlab/token/mkmr)" \

@@ -4,14 +4,14 @@ set -e
 user="${1:?'missing first arg, username'}"
 
 if [ -z "${2:-}" ]; then
-    branch="$(git-current-branch)"
+	branch="$(git-current-branch)"
 else
-    branch="$2"
+	branch="$2"
 fi
 
 # We expect this is in SSH because it is the only protocol we care about
 # HTTPS users can switch to SSH
-url="$(git remote get-url --push "$(guess-remote)" \
-    | sed -r "s|:(.+)/|:$user/|")"
+url="$(git remote get-url --push "$(guess-remote)" |
+	sed -r "s|:(.+)/|:$user/|")"
 
 git push -f "$url" HEAD:"$branch"

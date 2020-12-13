@@ -7,31 +7,31 @@ stdin="$(cat /dev/stdin)"
 
 # Count how many loops we will do by the number of lines
 if [ "$(printf "%s\\n" "$stdin" | wc -l)" -lt 1 ]; then
-    exit 0
+	exit 0
 else
-    printf "%s\\n" "---"
+	printf "%s\\n" "---"
 fi
 
 for line in $stdin; do
-    (
-	    # Strip version by removing everything after '='
-	    line="$(printf "%s\\n" "$line" | sed 's|=.*||g')"
+	(
+		# Strip version by removing everything after '='
+		line="$(printf "%s\\n" "$line" | sed 's|=.*||g')"
 
-	    # Print progress to the user, we don't want them to think
-	    # nothing is happening, this is a violation of UNIX but I
-	    # don't care atm, might visit this later
-	    msg "Generating virutal dep mapping for $line" >&2
+		# Print progress to the user, we don't want them to think
+		# nothing is happening, this is a violation of UNIX but I
+		# don't care atm, might visit this later
+		msg "Generating virutal dep mapping for $line" >&2
 
-	    # Ask apk what packages our virtual package depends on
-	    deps="$(apk info -q -R "$line")"
+		# Ask apk what packages our virtual package depends on
+		deps="$(apk info -q -R "$line")"
 
-        printf "%s:\\n" "$line"
+		printf "%s:\\n" "$line"
 
-        for dep in $deps; do
-            printf "  - %s\\n" "$dep"
-        done
-	    printok "Generated virtual dep mapping for $line" >&2
-    ) &
+		for dep in $deps; do
+			printf "  - %s\\n" "$dep"
+		done
+		printok "Generated virtual dep mapping for $line" >&2
+	) &
 done
 
 wait

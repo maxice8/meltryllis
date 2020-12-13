@@ -34,8 +34,8 @@ trap "rm -rf '$tmpdir'" INT EXIT
 cd "$tmpdir" || die "failed to create temp dir"
 
 # generate a temp repositories file with only the http(s) repos
-grep -E "^https?:" /etc/apk/repositories > "$tmpdir"/remote-repositories
-grep -E -v "^https?:" /etc/apk/repositories > "$tmpdir"/local-repositories
+grep -E "^https?:" /etc/apk/repositories >"$tmpdir"/remote-repositories
+grep -E -v "^https?:" /etc/apk/repositories >"$tmpdir"/local-repositories
 
 _carch="$(abuild -A)"
 
@@ -50,46 +50,46 @@ for pkg in $subpackages; do
 done
 
 oldpkgs="$(apk fetch \
-		  --repositories-file "$tmpdir"/remote-repositories \
-		  --simulate \
-		  $pkglist 2>/dev/null \
-		  | grep Downloading | sed 's/^Downloading //')"
+	--repositories-file "$tmpdir"/remote-repositories \
+	--simulate \
+	$pkglist 2>/dev/null |
+	grep Downloading | sed 's/^Downloading //')"
 
 # Fetch all the APKs before doing the operations
 for i in $pkglist; do
 	(
-	# shellcheck disable=SC2154
-	pkg="$i-$pkgver-r$pkgrel"
-	pkgfile=${pkg}.apk
+		# shellcheck disable=SC2154
+		pkg="$i-$pkgver-r$pkgrel"
+		pkgfile=${pkg}.apk
 
-	# Try to get our package from our locally built and return early so we don't
-	# waste time trying to get a remote package
-	for repo in $(cat "$tmpdir"/local-repositories); do
-		if [ -f "$repo"/"$_carch"/"$pkgfile" ]; then
-			echo "$repo"/"$_carch"/"$pkgfile" > "$tmpdir"/"$i"
+		# Try to get our package from our locally built and return early so we don't
+		# waste time trying to get a remote package
+		for repo in $(cat "$tmpdir"/local-repositories); do
+			if [ -f "$repo"/"$_carch"/"$pkgfile" ]; then
+				echo "$repo"/"$_carch"/"$pkgfile" >"$tmpdir"/"$i"
+				return 0
+			fi
+		done
+
+		oldpkg="$(echo "$oldpkgs" | grep -o "^$i-[0-9].*")"
+
+		for candidate in /var/cache/apk/"$oldpkg".*.apk; do
+			if ! [ -f "$candidate" ]; then
+				continue
+			fi
+			printok "Found cached $oldpkg"
+			echo "$candidate" >"$tmpdir"/"$i"
 			return 0
-		fi
-	done
+		done
 
-	oldpkg="$(echo "$oldpkgs" | grep -o "^$i-[0-9].*")"
-
-	for candidate in /var/cache/apk/"$oldpkg".*.apk; do
-		if ! [ -f "$candidate" ]; then
-			continue
-		fi
-		printok "Found cached $oldpkg"
-		echo "$candidate" > "$tmpdir"/"$i"
-		return 0
-	done
-
-	# Fetch the package for all runs
-	apk fetch \
-		--repositories-file "$tmpdir"/remote-repositories \
-		--output "$tmpdir" \
-		"$i" \
-		>/dev/null 2>&1 &&
-	printok "Fetched $oldpkg"
-	echo "$PWD"/"$oldpkg".apk > "$tmpdir"/"$i"
+		# Fetch the package for all runs
+		apk fetch \
+			--repositories-file "$tmpdir"/remote-repositories \
+			--output "$tmpdir" \
+			"$i" \
+			>/dev/null 2>&1 &&
+			printok "Fetched $oldpkg"
+		echo "$PWD"/"$oldpkg".apk >"$tmpdir"/"$i"
 	) &
 done
 wait
@@ -106,8 +106,8 @@ for i in $pkglist; do
 
 	{
 		msg "pkg=$i"
-		tar -z --list --file="$apk" 2>/dev/null \
-			| grep -E -v '(^\.SIGN\.|^\.PKGINFO)' \
-			| sort ;
+		tar -z --list --file="$apk" 2>/dev/null |
+			grep -E -v '(^\.SIGN\.|^\.PKGINFO)' |
+			sort
 	} | less -r
 done
