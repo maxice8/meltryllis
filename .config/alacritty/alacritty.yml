@@ -115,48 +115,48 @@ font:
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 
-# Base16 Google Dark 256 - alacritty color config
-# Seth Wright (http://sethawright.com)
+# Base16 Gruvbox dark, pale 256 - alacritty color config
+# Dawid Kurek (dawikur@gmail.com), morhetz (https://github.com/morhetz/gruvbox)
 colors:
   # Default colors
   primary:
-    background: '0x1d1f21'
-    foreground: '0xc5c8c6'
+    background: '0x262626'
+    foreground: '0xdab997'
 
   # Colors the cursor will use if `custom_cursor_colors` is true
   cursor:
-    text: '0x1d1f21'
-    cursor: '0xc5c8c6'
+    text: '0x262626'
+    cursor: '0xdab997'
 
   # Normal colors
   normal:
-    black:   '0x1d1f21'
-    red:     '0xcc342b'
-    green:   '0x198844'
-    yellow:  '0xfba922'
-    blue:    '0x3971ed'
-    magenta: '0xa36ac7'
-    cyan:    '0x3971ed'
-    white:   '0xc5c8c6'
+    black:   '0x262626'
+    red:     '0xd75f5f'
+    green:   '0xafaf00'
+    yellow:  '0xffaf00'
+    blue:    '0x83adad'
+    magenta: '0xd485ad'
+    cyan:    '0x85ad85'
+    white:   '0xdab997'
 
   # Bright colors
   bright:
-    black:   '0x969896'
-    red:     '0xcc342b'
-    green:   '0x198844'
-    yellow:  '0xfba922'
-    blue:    '0x3971ed'
-    magenta: '0xa36ac7'
-    cyan:    '0x3971ed'
-    white:   '0xffffff'
+    black:   '0x8a8a8a'
+    red:     '0xd75f5f'
+    green:   '0xafaf00'
+    yellow:  '0xffaf00'
+    blue:    '0x83adad'
+    magenta: '0xd485ad'
+    cyan:    '0x85ad85'
+    white:   '0xebdbb2'
 
   indexed_colors:
-    - { index: 16, color: '0xf96a38' }
-    - { index: 17, color: '0x3971ed' }
-    - { index: 18, color: '0x282a2e' }
-    - { index: 19, color: '0x373b41' }
-    - { index: 20, color: '0xb4b7b4' }
-    - { index: 21, color: '0xe0e0e0' }
+    - { index: 16, color: '0xff8700' }
+    - { index: 17, color: '0xd65d0e' }
+    - { index: 18, color: '0x3a3a3a' }
+    - { index: 19, color: '0x4e4e4e' }
+    - { index: 20, color: '0x949494' }
+    - { index: 21, color: '0xd5c4a1' }
 
 # # Base16 Material Darker 256 - alacritty color config
 # # Nate Peterson
