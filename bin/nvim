@@ -1,46 +1,51 @@
 #!/bin/sh
 
-# Deal with programs that pass '--' before the script
-# loop until our first arg is not '--', this will also
-# break whenever there are no args
-while true; do
-    if [ "$1" != "--" ]; then
-        break
+args=""
+
+for arg in "$@"; do
+    # Skip over to the next argument if we were given '--'
+    # if we were given '-*' which is an option then add it to
+    # the arguments but continue to the next iteration
+    case "$arg" in
+        --) continue ;;
+        -*)
+            args="$args $arg"
+            continue
+            ;;
+    esac
+    
+    # Check if we are in an absolute path and we were passed something
+    # that is not empty
+    if [ "$arg" != "" ] && [ "$(printf "%s" "$arg" | cut -c 1)" != / ]; then
+        args="$args \"$PWD/$arg\""
     fi
-    shift
+    
+    case "$arg" in
+        # This is our $FLATPAK_SANDBOX_DIR, so we have access to it
+        "$HOME"/.var/app/io.neovim.nvim* ) ;;
+        # We don't have access to other sandboxes so error out
+        "$HOME"/.var/app/* )
+            echo "$HOME/.var/app is not accesible from Flatpak sandbox" >&2
+            exit 1
+            ;;
+        # If we are at home then move on because we have full access to our
+        # '$HOME'
+        "$HOME"* ) ;;
+        # nvim is explicitly granted to us via --filesystem=/tmp which mounts
+        # the system '/tmp' into the '/tmp' of the flatpak, this is required as
+        # many applications use it for temporary file like 'github-cli'
+        /tmp*) ;;
+        # flatpak with --filesystem=host mounts the host filesystem as read-only
+        # on '/var/run/host', so prefix the path we were given with it.
+        /* )
+            arg=/var/run/host"$arg"
+            ;;
+    esac
+    
+    args="$args $arg"
 done
 
-# Check if we are in an absolute path and we were passed something
-# that is not empty
-if [ "$1" != "" ] && [ "$(printf "%s" "$1" | cut -c 1)" != / ]; then
-    t="$PWD"/"$1"
-    shift
-    set -- "$t" "$@"
-fi
-
-case "$1" in
-    # This is our $FLATPAK_SANDBOX_DIR, so we have access to it
-    "$HOME"/.var/app/io.neovim.nvim* ) ;;
-    # We don't have access to other sandboxes so error out
-    "$HOME"/.var/app/* )
-        echo "$HOME/.var/app is not accesible from Flatpak sandbox" >&2
-        exit 1
-        ;;
-    # If we are at home then move on because we have full access to our
-    # '$HOME'
-    "$HOME"* ) ;;
-    # nvim is explicitly granted to us via --filesystem=/tmp which mounts
-    # the system '/tmp' into the '/tmp' of the flatpak, this is required as
-    # many applications use it for temporary file like 'github-cli'
-    /tmp*) ;;
-    # flatpak with --filesystem=host mounts the host filesystem as read-only
-    # on '/var/run/host', so prefix the path we were given with it.
-    /* )
-        t="$1"
-        shift
-        set -- /var/run/host"$t" "$@"
-        ;;
-esac
+set -- $args
 
 # Finally exec into the flatpak'd neovim instance
 exec flatpak --user run io.neovim.nvim "$@"
