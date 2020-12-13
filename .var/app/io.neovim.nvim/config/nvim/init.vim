@@ -208,7 +208,7 @@ let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 
 set background=dark    " Setting dark mode
 let base16colorspace=256  " Access colors present in 256 colorspace
-colorscheme base16-google-dark
+colorscheme base16-gruvbox-dark-pale
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
