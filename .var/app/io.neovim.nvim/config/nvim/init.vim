@@ -33,6 +33,8 @@ Plug 'maximbaz/lightline-ale'
 
 Plug 'dense-analysis/ale'
 
+Plug 'chriskempson/base16-vim'
+
 "
 " Add Plugins
 "
@@ -205,8 +207,8 @@ let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 
 set background=dark    " Setting dark mode
-colorscheme deus
-let g:deus_termcolors=256
+let base16colorspace=256  " Access colors present in 256 colorspace
+colorscheme base16-google-dark
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
