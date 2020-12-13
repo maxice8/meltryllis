@@ -5,7 +5,7 @@ action="${action%%-*}" # Remove everything after first '-'
 if [ -n "$1" ]; then
 	pkg="$1"
 else
-	pkg="$(git-current-branch)"
+	pkg="$(git branch --show-current)"
 fi
 
 cd "$(find_repo "$pkg")" && apkbuild-cpan $action

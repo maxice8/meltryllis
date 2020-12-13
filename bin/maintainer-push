@@ -4,7 +4,7 @@ set -e
 user="${1:?'missing first arg, username'}"
 
 if [ -z "${2:-}" ]; then
-	branch="$(git-current-branch)"
+	branch="$(git branch --show-current)"
 else
 	branch="$2"
 fi

@@ -10,7 +10,7 @@ let pushmode = $(git config --get push.default)
 
 let branch = ""
 if test "current" = $pushmode
-	let prefix = $(alpine-stable-prefix $(git-current-branch))
+	let prefix = $(alpine-stable-prefix $(git branch --show-current))
 	if exists -s prefix
 		let _REALBASE = $prefix-stable
 	else
@@ -18,7 +18,7 @@ if test "current" = $pushmode
 	end
 end
 
-let branch = $(git-current-branch)
+let branch = $(git branch --show-current)
 
 let url = $(git config --local remote.$remote.url)
 

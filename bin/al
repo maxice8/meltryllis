@@ -128,7 +128,7 @@ match @args[1]
 		# No package name given to us, rely on the branch name instead
 		#
 		if test $len(@args) -eq 2
-			let args ++= $(git-current-branch)
+			let args ++= $(git branch --show-current)
 		end
 
 		#
@@ -166,7 +166,7 @@ match @args[1]
 		# No package name given to us, rely on the branch name instead
 		#
 		if test $len(@args) -eq 3
-			let args ++= $(git-current-branch)
+			let args ++= $(git branch --show-current)
 		end
 
 		#
@@ -222,7 +222,7 @@ match @args[1]
 		# is the name of the package that will be renamed
 		#
 		if test $len(@args) -eq 3
-			let args ++= $(git-current-branch)
+			let args ++= $(git branch --show-current)
 		end
 
 		#
@@ -547,7 +547,7 @@ match @args[1]
 		# The target branch is the branch we are on, it is the branch we want to
 		# port the commits to
 		#
-		let target_branch = $(git-current-branch)
+		let target_branch = $(git branch --show-current)
 
 		#
 		# Check if we were not passed the same branch as both target and source

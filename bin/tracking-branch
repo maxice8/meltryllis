@@ -12,7 +12,7 @@ let _f = $(git rev-parse --abbrev-ref --symbolic-full-name $branch ^>/dev/null)
 # If there is no tracking branch then we can safely use our own branch name
 #
 if ends-with '@{u}' $_f or if not exists -s _f
-	git-current-branch
+	git branch --show-current
 	exit 0
 end
 

@@ -15,7 +15,7 @@ fn delete_local_branch branch:str
 		return 0
 	end
 
-	if test $(git-current-branch) = $branch
+	if test $(git branch --show-current) = $branch
 		#
 		# Try to switch to the tracking branch
 		# otherwise try to switch to the default branch
