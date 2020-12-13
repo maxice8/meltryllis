@@ -17,7 +17,7 @@ for arg in "$@"; do
 	# Check if we are in an absolute path and we were passed something
 	# that is not empty
 	if [ "$arg" != "" ] && [ "$(printf "%s" "$arg" | cut -c 1)" != / ]; then
-		args="$args \"$PWD/$arg\""
+		args="$args $PWD/$arg"
 	fi
 
 	case "$arg" in
