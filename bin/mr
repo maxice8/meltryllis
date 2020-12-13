@@ -1,9 +1,0 @@
-#!/usr/bin/env ion
-test $len(@args) -eq 1 && exit 1
-
-let endpoint = $(get-endpoint gitlab)
-exists -s endpoint || exit
-
-for mr in @args[1..]
-	curl -Ls $endpoint/-/merge_requests/$mr.patch | git am -3 || exit 1
-end
