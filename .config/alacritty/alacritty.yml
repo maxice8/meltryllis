@@ -115,48 +115,91 @@ font:
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 
-# Base16 Material Darker 256 - alacritty color config
-# Nate Peterson
+# Base16 Google Dark 256 - alacritty color config
+# Seth Wright (http://sethawright.com)
 colors:
   # Default colors
   primary:
-    background: '0x212121'
-    foreground: '0xeeffff'
+    background: '0x1d1f21'
+    foreground: '0xc5c8c6'
 
   # Colors the cursor will use if `custom_cursor_colors` is true
   cursor:
-    text: '0x212121'
-    cursor: '0xeeffff'
+    text: '0x1d1f21'
+    cursor: '0xc5c8c6'
 
   # Normal colors
   normal:
-    black:   '0x212121'
-    red:     '0xf07178'
-    green:   '0xc3e88d'
-    yellow:  '0xffcb6b'
-    blue:    '0x82aaff'
-    magenta: '0xc792ea'
-    cyan:    '0x89ddff'
-    white:   '0xeeffff'
+    black:   '0x1d1f21'
+    red:     '0xcc342b'
+    green:   '0x198844'
+    yellow:  '0xfba922'
+    blue:    '0x3971ed'
+    magenta: '0xa36ac7'
+    cyan:    '0x3971ed'
+    white:   '0xc5c8c6'
 
   # Bright colors
   bright:
-    black:   '0x4a4a4a'
-    red:     '0xf07178'
-    green:   '0xc3e88d'
-    yellow:  '0xffcb6b'
-    blue:    '0x82aaff'
-    magenta: '0xc792ea'
-    cyan:    '0x89ddff'
+    black:   '0x969896'
+    red:     '0xcc342b'
+    green:   '0x198844'
+    yellow:  '0xfba922'
+    blue:    '0x3971ed'
+    magenta: '0xa36ac7'
+    cyan:    '0x3971ed'
     white:   '0xffffff'
 
   indexed_colors:
-    - { index: 16, color: '0xf78c6c' }
-    - { index: 17, color: '0xff5370' }
-    - { index: 18, color: '0x303030' }
-    - { index: 19, color: '0x353535' }
-    - { index: 20, color: '0xb2ccd6' }
-    - { index: 21, color: '0xeeffff' }
+    - { index: 16, color: '0xf96a38' }
+    - { index: 17, color: '0x3971ed' }
+    - { index: 18, color: '0x282a2e' }
+    - { index: 19, color: '0x373b41' }
+    - { index: 20, color: '0xb4b7b4' }
+    - { index: 21, color: '0xe0e0e0' }
+
+# # Base16 Material Darker 256 - alacritty color config
+# # Nate Peterson
+# colors:
+#   # Default colors
+#   primary:
+#     background: '0x212121'
+#     foreground: '0xeeffff'
+# 
+#   # Colors the cursor will use if `custom_cursor_colors` is true
+#   cursor:
+#     text: '0x212121'
+#     cursor: '0xeeffff'
+# 
+#   # Normal colors
+#   normal:
+#     black:   '0x212121'
+#     red:     '0xf07178'
+#     green:   '0xc3e88d'
+#     yellow:  '0xffcb6b'
+#     blue:    '0x82aaff'
+#     magenta: '0xc792ea'
+#     cyan:    '0x89ddff'
+#     white:   '0xeeffff'
+# 
+#   # Bright colors
+#   bright:
+#     black:   '0x4a4a4a'
+#     red:     '0xf07178'
+#     green:   '0xc3e88d'
+#     yellow:  '0xffcb6b'
+#     blue:    '0x82aaff'
+#     magenta: '0xc792ea'
+#     cyan:    '0x89ddff'
+#     white:   '0xffffff'
+# 
+#   indexed_colors:
+#     - { index: 16, color: '0xf78c6c' }
+#     - { index: 17, color: '0xff5370' }
+#     - { index: 18, color: '0x303030' }
+#     - { index: 19, color: '0x353535' }
+#     - { index: 20, color: '0xb2ccd6' }
+#     - { index: 21, color: '0xeeffff' }
 
 # Visual Bell
 #
