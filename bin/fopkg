@@ -22,7 +22,7 @@ die() {
 }
 
 pkg="$1"
-[ -z "$1" ] && pkg="$(git current-branch)"
+[ -z "$1" ] && pkg="$(git branch --show-current)"
 pkg="$(find_repo $pkg)"
 
 # shellcheck disable=SC1091

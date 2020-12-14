@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
 # mgbr BRANCH-NAME ... - mgbr merge branches
-[ $# -lt 1 ] && set -- $(git current-branch)
+[ $# -lt 1 ] && set -- $(git branch --show-current)
 
 for branch in "$@"; do
 	if ! git show-ref --quiet refs/heads/"$branch"; then

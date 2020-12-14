@@ -2,7 +2,7 @@
 exists -d .git || exit
 
 if test $len(@args) -eq 1
-	let args ++= $(git current-branch)
+	let args ++= $(git branch --show-current)
 end
 
 for branch in @args[1..]
