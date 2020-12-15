@@ -1,6 +1,6 @@
 - Name: Steam
   ID: com.valvesoftware.Steam
-  version: 1.0.0.67
+  version: 1.0.0.68
   branch: stable
   origin: flathub
 - Name: Visual Studio Code
@@ -75,7 +75,7 @@
   origin: flathub
 - Name: Firefox
   ID: org.mozilla.firefox
-  version: "83.0"
+  version: "84.0"
   branch: stable
   origin: flathub
 - Name: PulseAudio Volume Control
