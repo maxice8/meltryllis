@@ -1,10 +1,10 @@
-#!/usr/bin/env ion
-test $len(@args) -eq 1 && exit 1
-for pkg in @args[1..]
-	for repo in main community testing unmaintained non-free
-		if test -f $repo/$pkg/APKBUILD
-			echo $repo/$pkg
-			continue
-		end
-	end
-end
+#!/bin/sh
+[ $# -lt 1 ] && exit 1
+for pkg; do
+    for repo in main community testing unmaintained non-free; do
+        if [ -f "$repo"/"$pkg"/APKBUILD ]; then
+            printf "%s/%s\\n" "$repo" "$pkg"
+            continue
+        fi
+    done
+done
