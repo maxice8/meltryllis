@@ -2,7 +2,7 @@
 bindir="$HOME"/bin
 
 for bin in "$@"; do
-	$EDITOR "$bindir"/"$bin"
+	${EDITOR:-nvim} "$bindir"/"$bin"
 
 	if [ -f "$bindir"/"$bin" ]; then
 		chmod +x "$bindir"/"$bin"
