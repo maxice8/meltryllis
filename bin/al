@@ -1,4 +1,4 @@
-#!/usr/bin/env ion
+#!/bin/sh
 
 #
 # Global variables we use extensively in the script
@@ -7,23 +7,23 @@
 # as '$or($APORTSDIR $PWD)' is equivalent to ': ${APORTSDIR:-$PWD}'
 # from POSIX shells
 #
-let AX_ABUILD = $or($AX_ABUILD abuild)
-let AX_ASUM = $or($AX_ASUM abuild)
-let APORTSDIR = $or(APORTSDIR $PWD)
+AX_ABUILD="${AX_ABUILD:=abuild}"
+AX_ASUM="${AX_ASUM:=abuild}"
+APORTSDIR="${APORTSDIR:=$PWD}"
 
 #
 # Simple usage that will be shown when the user uses a command in
 # the wrong manner or when they call help
 #
-fn usage
-	echo "$basename(@args[0]): <<h|e|b|n|c|mr|d|l|f|u|w|i>|<m> <repository>|<r> <package>> [package]"
-end
+usage() {
+	printf "%s <<h|e|b|n|c|mr|d|l|f|u|w|i>|<m> <repository>|<r> <package>> [package]\\n" "$(basename $0)"
+}
 
 #
 # This is used when the user calls -h this will be shown after showing
 # the 'usage'
 #
-fn show_help
+show_help() {
 	echo "keys:
  h|help			  : show this help message
  e|edit			  : edit an APKBUILD
@@ -40,52 +40,41 @@ fn show_help
  w|work			  : unpack sources of the package, cd into it and init a git repo
  i|info			  : print information of the package
  p|pick			  : interactively cherry pick commits between 2 branches"
-end
-
-#
-# Source a shellscript by using source-sh, we set 'set -a' so that the variables
-# are exported to the environment, and then source the APKBUILD given to us
-#
-fn sauce i:str
-	#
-	# Silence all output because it is useless, we just want it to act like
-	# source, it will error out if the script errors out then we shouldn't
-	# worry about it
-	#
-	source-sh "set -a; . $i" &>/dev/null
-end
+}
 
 #
 # Strip the alpine linux prefix from the branch, if the branch is 3.11-openldap
 # then it will return openldap, if it doesn't have a prefix then do nothing
 #
-fn strip_al i:str
-	let val = $(alpine-stable-prefix $i)
-	if exists -s val
-		echo $join(@split($i -)[1..] "-")
-	else
-		echo $i
-	end
-end
+strip_al() {
+    [ "$1" ] || return 1
+    val="$(alpine-stable-prefix $1)"
+    if [ "$val" ]; then
+        printf "%s\\n" "$val" | cut -d - -f 2-
+    else
+        printf "%s\\n" "$1"
+    fi
+}
 
 #
 # This is used before running any command that requires switching to
 # the directory of the APKBUILD, almost all commands from abuild require
 # the user to switch to it
 #
-fn run path:str cmd:[str]
-	pushd $APORTSDIR/$path &>/dev/null
-	@cmd
-	popd &>/dev/null
-end
+run() {
+    [ "$1" ] || [ "$2" ] || return 1
+	pushd $APORTSDIR/$1 >/dev/null 2>&1
+	$2
+	popd >/dev/null 2>&1
+}
 
 #
 # Helper function that returns a proper error code if the git tree is
 # dirty
 #
-fn isclean
+isclean() {
 	git diff --quiet --exit-code
-end
+}
 
 #
 # Check if we were given any arguments, the first argument is always one
@@ -99,10 +88,10 @@ end
 # calls 'ax e' and the branch is called 'poppler' then we assume the user wants
 # to edit the poppler package
 #
-if test $len(@args) -eq 1
-	usage
-	exit 1
-end
+if [ $# -lt 1 ]; then
+    usage
+    exit 1
+fi
 
 #
 # Change our directory to APORTSDIR, we want to do all operations relative to
@@ -115,28 +104,36 @@ cd $APORTSDIR
 # Define path here outside the scope of the next match because we will need to use
 # it later, if we don't it define outside the scope it will be lost
 #
-let path = ""
+path=""
+
+#
+# Store the first 3 arguments in these variables we manipulate
+# we need it here outside otherwise they will not be changed
+#
+firstArg="$1"
+secondArg="$2"
+thirdArg="$3"
 
 #
 # This is a super-match that will match classes of actions that require the same
 # setup actions, like automatically adding a missing argument and checking if the
 # package in itself exists
 #
-match @args[1]
-	case [e edit b build n navigate c checksum d diff mr merge-request l lint f fix u unpack w work i info p pick]
+case "$1" in
+    e|edit|b|build|n|navigate|c|checksum|d|diff|mr|merge-request|l|lint|f|fix|u|unpack|w|work|i|info|p|pick)
 		#
 		# No package name given to us, rely on the branch name instead
 		#
-		if test $len(@args) -eq 2
-			let args ++= $(git branch --show-current)
-		end
+        if [ -z "$secondArg" ]; then
+            secondArg="$(git branch --show-current)"
+        fi
 
 		#
 		# use strip_al to remove the Alpine Linux specific branch name
 		# this will remove the stable version number before the package
 		# eg: 3.11-openldap returns openldap
 		#
-		let args[2] = $(strip_al @args[2])
+        secondArg="$(strip_al "$secondArg")"
 		
 		#
 		# The usage of find_repo is extremely convenient as it is
@@ -148,33 +145,34 @@ match @args[1]
 		# Note that there is also no need to check if APKBUILD itself exists
 		# as that is what find_repo does
 		#
-		let path = $(find_repo @args[2])
-		if not exists -s path
-			printerr no package named "'@args[2]'"
+        path="$(find_repo "$secondArg")"
+        if [ -z "$path" ]; then
+			printerr no package named "'$secondArg'"
 			exit 1
-		end
-	case [m move]
+        fi
+        ;;
+    m|move)
 		#
 		# Check if we were given a repository as our 2nd argument
 		#
-		if test $len(@args) -eq 2
+        if [ -z "$secondArg" ]; then
 			printerr Please pass a repository to move the package to
 			exit 1
-		end
+		fi
 
 		#
 		# No package name given to us, rely on the branch name instead
 		#
-		if test $len(@args) -eq 3
-			let args ++= $(git branch --show-current)
-		end
+        if [ -z "$thirdArg" ]; then
+            thirdArg="$(git branch --show-current)"
+        fi
 
 		#
 		# use strip_al to remove the Alpine Linux specific branch name
 		# this will remove the stable version number before the package
 		# eg: 3.11-openldap returns openldap
 		#
-		let args[3] = $(strip_al @args[3])
+		thirdArg="$(strip_al "$thirdArg")"
 
 		#
 		# The usage of find_repo is extremely convenient as it is
@@ -186,51 +184,53 @@ match @args[1]
 		# Note that there is also no need to check if APKBUILD itself exists
 		# as that is what find_repo does
 		#
-		let path = $(find_repo @args[3])
-		if not exists -s path
-			printerr no package named "'@args[3]'"
+        path="$(find_repo "$thirdArg")"
+        if [ -z "$path" ]; then
+			printerr no package named "'$thirdArg'"
 			exit 1
-		end
+        fi
 
 		#
 		# Check if the repo we were given exists and if there already exists
 		# a package there with the same name
 		#
-		if not exists -d @args[2]
+        if [ ! -d "$secondArg" ]; then
 			printerr no repository named "'@args[2]'"
 			exit 1
-		end
+        fi
 
-		if exists -f @args[2]/@args[3]/APKBUILD
-			printerr There is already a package called "'@args[3]'" in repository "'@args[2]'"
+        
+		if [ -f @args[2]/@args[3]/APKBUILD ]; then
+			printerr "There is already a package called '$thirdArg' in repository '$secondArg'"
 			exit 1
-		end
-	case [r rename]
+        fi
+        ;;
+	r|rename)
 		#
 		# Check if we were given a package name as our first argument
 		# this package name is the name of the package we will rename
 		# the package to
 		#
-		if test $len(@args) -eq 2
-			printerr Please pass a new name for the package
+        if [ -z "$secondArg" ]; then
+			printerr "Please pass a new name for the package"
 			exit 1
-		end
+		fi
 
 		#
 		# No package name given to us, rely on the branch name instead
 		# this package name is different from the one above, this one
 		# is the name of the package that will be renamed
 		#
-		if test $len(@args) -eq 3
-			let args ++= $(git branch --show-current)
-		end
+        if [ -z "$thirdArg" ]; then
+            thirdArg="$(git branch --show-current)"
+        fi
 
 		#
 		# use strip_al to remove the Alpine Linux specific branch name
 		# this will remove the stable version number before the package
 		# eg: 3.11-openldap returns openldap
 		#
-		let args[3] = $(strip_al @args[3])
+		thirdArg="$(strip_al "$thirdArg")"
 
 		#
 		# The usage of find_repo is extremely convenient as it is
@@ -242,12 +242,12 @@ match @args[1]
 		# Note that there is also no need to check if APKBUILD itself exists
 		# as that is what find_repo does
 		#
-		let path = $(find_repo @args[2])
-		if exists -s path
-			printerr there is already a package named "'@args[2]'"
+		path=$(find_repo "$secondArg")
+		if [ "$path" ]; then
+			printerr there is already a package named "'$secondArg'"
 			exit 1
-		end
-end
+		fi
+esac
 
 #
 # Match the action, each action requires diferent argument parsing as they have
@@ -255,142 +255,146 @@ end
 # package name while stuff like 'm' (move an APKBUILD to another REPOSITORY)
 # require a repository to move to and a package name
 #
-match @args[1]
-	case [e edit]
+case "$firstArg" in 
+	e|edit)
 		#
 		# Open the APKBUILD in your favourite text editor
 		#
-		e $path/APKBUILD
-	case [b build]
+		${EDITOR:-nvim} "$path"/APKBUILD
+        ;;
+	b|build)
 		#
 		# Construct an array with all the flags to be passed to abuild
 		# this can be manipulated by the user by passing AX_BUILD_ARGS
 		#
-		let flags = [-r]
-		if exists -s AX_ABUILD_ARGS
-			let flags ++= @split($AX_ABUILD_ARGS)
-		end
+        flags="-r"
+        if [ "$AX_ABUILD_ARGS" ]; then
+            flags="$flags $AX_ABUILD_ARGS"
+        fi
 		
 		#
 		# AX_LOG is a variable that can be set so the output of the build
 		# process is logged to a temporary file
 		#
-		if exists -s AX_LOG
-			let _mktemp = $(mktemp)
- 			run $path [$AX_ABUILD @flags] | tee $_mktemp
+        if [ "$AX_LOG" ]; then
+			_mktemp="$(mktemp)"
+ 			run $path "$AX_ABUILD $flags" | tee $_mktemp
 		else
-			run $path [$AX_ABUILD @flags]
-		end
-	case [n navigate]
+			run $path "$AX_ABUILD $flags"
+		fi
+        ;;
+	n|navigate)
 		#
 		# Open the file manager in the directory of the package
 		#
 		f $path
-	case [c checksum]
+        ;;
+	c|checksum)
 		#
 		# run the binary pointed by 'AX_ASUM' and ask it to regenerate the
 		# checksum for the package
 		#
-		run $path [$AX_ASUM checksum]
-	case [mr merge-request]
+		run $path "$AX_ASUM checksum"
+        ;;
+	mr|merge-request)
 		#
 		# Add the files of the package into the git staging and then commit them
 		# rely on .githooks to produce a suitable commit message, then use mkmr
 		# to create the merge request from the command-line
 		#
 		git add $path
-		if not git commit --no-edit
+		if ! git commit --no-edit; then
 			printerr Failed to commit changes, the tree is dirty, please fix
 			exit 1
-		end
+		fi
         agl mr create
-	case [d diff]
+        ;;
+    d|diff)
 		#
 		# run apkg-diff which will fetch the old packages and diff them
 		# againast the new ones
 		#
-		run $path [apkg-diff size depend provides files] ;;
-	case [l lint]
+		run "$path" "apkg-diff size depend provides files"
+        ;;
+	l|lint)
 		#
 		# Run all linting tools from atools in the APKBUILD
 		#
- 		run $path [apkbuild-lint APKBUILD]
- 		run $path [aports-lint APKBUILD]
- 		run $path [secfixes-check APKBUILD]
-	case [f fix]
+ 		run "$path" "apkbuild-lint APKBUILD"
+ 		run "$path" "aports-lint APKBUILD"
+ 		run "$path" "secfixes-check APKBUILD"
+        ;;
+	f|fix)
 		#
 		# Run all linting tools from atools in the APKBUILD
 		#
-		run $path [apkbuild-fixer APKBUILD]
-	case [u unpack]
+		run "$path" "apkbuild-fixer APKBUILD"
+        ;;
+	u|unpack)
 		#
 		# Use $AX_ASUM (the version of abuild that does not run a docker container)
 		# to unpack the sources for us
 		#
-		if not run $path [$AX_ASUM unpack]
-			printerr Failed to unpack sources for "'@args[2]'"
+		if ! run "$path" "$AX_ASUM unpack"; then
+			printerr "Failed to unpack sources for '$secondArg'"
 			exit 1
-		end
+		fi
 
-		#
-		# The sauce function will source a file with 'set -a', so we get all the variables
-		# of the APKBUILD set to us
-		#
-		if exists -s builddir
-			export builddir=""
-		end
-		sauce $path/APKBUILD
+        #
+        # Source the APKBUILD, we need to get a few important variables
+        #
+		. "$path"/APKBUILD
 
 		#
 		# This variable hold the path to where the source code of the package was extracted
 		# we will in the end of this function, open a file manager on it
 		#
-		let workdir = $path/src
+		workdir="$path"/src
 
-		if exists -s builddir
+        if [ "$builddir" ]; then
 			#
 			# We don't need to put a '/' here first because a normal definition of builddir
 			# is "$srcdir"/foo-bar, the $srcdir won't be expanded and we will end with a
 			# string that starts with '/' itself
 			#
-			let workdir ++= $builddir
+            workdir="${workdir}$builddir"
 		else
-			let workdir ++= /$pkgname-$pkgver
-		end
+            workdir="${workdir}/$pkgname-$pkgver"
+		fi
 
-		f $workdir
-	case [w work]
+		f "$workdir"
+        ;;
+	w|work)
 		#
 		# Use $AX_ASUM (the version of abuild that does not run a docker container)
 		# to unpack the sources for us
 		#
-		if not run $path [$AX_ASUM unpack]
-			printerr Failed to unpack sources for "'@args[2]'"
+		if ! run "$path" "$AX_ASUM unpack"; then
+			printerr "Failed to unpack sources for '$secondArg'"
 			exit 1
-		end
+		fi
 
 		#
-		# The sauce function will source a file with 'set -a', so we get all the variables
-		# of the APKBUILD set to us
+        # Source the APKBUILD so we get their nice variables
 		#
-		sauce $path/APKBUILD
+		. "$path"/APKBUILD
 
 		#
 		# This variable hold the path to where the source code of the package was extracted
 		# we will in the end of this function, open a file manager on it
 		#
-		let workdir = $path/src
+		workdir="$path"/src
 
-		if exists -s builddir
+        if [ "$builddir" ]; then
 			#
 			# We don't need to put a '/' here first because a normal definition of builddir
 			# is "$srcdir"/foo-bar, the $srcdir won't be expanded and we will end with a
 			# string that starts with '/' itself
 			#
-			let workdir ++= $builddir
+            workdir="${workdir}$builddir"
 		else
-			let workdir ++= /$pkgname-$pkgver
-		end
+            workdir="${workdir}/$pkgname-$pkgver"
+		fi
 
 		#
 		# Push into the work directory given to us, we will pop out of it after we are
@@ -410,44 +414,42 @@ match @args[1]
 		# Start a temporary shell that allows users to do all the work
 		# they need, default to ion if SHELL is not set in the environment
 		#
-		$or($SHELL ion)
+        $SHELL
 
 		#
 		# As we have finished everything we pop out of the directory back into where the user
 		# was
 		#
 		popd
-	case [i info]
+        ;;
+	i|info)
 		#
 		# In the future, iopkg should be rewritten in rust, but it will suffice for
 		# now
 		#
-		run $path [iopkg]
-	case [m move]
+		run $path iopkg
+        ;;
+	m|move)
 		#
 		# Check if we were given a path that ends with '/', it is not uncommon for
 		# for people to use shell completion which will complete 'dir' to 'dir/'
 		# the previous iteration of this (the one written in shell) would fail
 		# if the path given to us had '/'
 		#
-		if ends-with @args[2] /
-			let repopath = $join(@args[2])
-			let repolen = $len($repopath)
-			let repolen = $(( repolen - 1 ))
-			let repopath = [@split_at($repopath $repolen)]
-			let args[2] = @repopath[0]
-		end
+        if printf "%s" "$secondArg" | grep -q '/$'; then
+            secondArg="$(printf "%s" "$secondArg" | sed 's/.$//')"
+		fi
 
 		#
 		# If the directory already exists then move all contents from inside
 		# the directory we're moving from to it, otherwise move the directory
 		# itself to the new location
 		#
-		if exists -d @args[2]/@args[3]
-			git mv -- $path/* @args[2]/@args[3]
+		if [ -d "$secondArg"/"$thirdArg" ]; then
+			git mv -- $path/* "$secondArg"/"$thirdArg"
 		else
-			git mv -- $path @args[2]
-		end
+			git mv -- $path "$secondArg"
+		fi
 
 		#
 		# Use the isclean function to check if we operating in a dirty git tree
@@ -457,13 +459,14 @@ match @args[1]
 		# In this case use the $basename of the $parent of $path, $path is the
 		# old path of the package at this point
 		#
-		if isclean
+		if isclean; then
 			env NOAPKBUILD_LINT=1 \
 				NOAPORTS_LINT=1 \
 				NOPKGVERCHECK=1 \
 				git commit -m "@args[2]/@args[3]: move from $basename($parent($path))"
-		end
-	case [r rename]
+		fi
+        ;;
+	r|rename)
 		#
 		# The usage of find_repo is extremely convenient as it is
 		# fast efficient, has good ordering (if there are 2 packages
@@ -474,29 +477,29 @@ match @args[1]
 		# Note that there is also no need to check if APKBUILD itself exists
 		# as that is what find_repo does
 		#
-		let old_path = $(find_repo @args[3])
-		if not exists -s old_path
-			printerr no package named "'@args[3]'"
+        old_path="$(find_repo "$thirdArg")"
+		if [ -z "$old_path" ]; then
+			printerr no package named "'$thirdArg'"
 			exit 1
-		end
+        fi
 
 		#
 		# Get the basename of the parent of the old path, this will give us the
 		# repository, path is something like 'main/poppler', so getting the
 		# basename of the parent means we get 'main'.
 		#
-		let repo = $basename($parent($old_path))
+        repo="$(basename ${old_path%/*})"
 
 		#
 		# If the directory already exists then move all contents from inside
 		# the directory we're moving from to it, otherwise move the directory
 		# itself to the new location
 		#
-		if exists -d $repo/@args[2]
-			git mv -- $old_path/* $repo/@args[2]
+		if [ -d $repo/"$secondArg" ]; then
+			git mv -- $old_path/* $repo/"$secondArg"
 		else
-			git mv -- $old_path $repo/@args[2]
-		end
+			git mv -- $old_path $repo/"$secondArg"
+		fi
 
 		#
 		# Try being nice to the user and automatically apply sed to change the
@@ -504,7 +507,7 @@ match @args[1]
 		# if it fails for any reason, the user can fix it later and amend the
 		# commit
 		#
-		sed -e "s|^pkgname=.*|pkgname=@args[2]|g" -i $repo/@args[2]/APKBUILD
+		sed -e "s|^pkgname=.*|pkgname=$secondArg|g" -i $repo/"$secondArg"/APKBUILD
 
 		#
 		# Use the isclean function to check if we operating in a dirty git tree
@@ -512,152 +515,153 @@ match @args[1]
 		# user
 		#
 		#
-		if isclean
+		if isclean; then
 			env NOAPKBUILD_LINT=1 \
 				NOAPORTS_LINT=1 \
 				NOPKGVERCHECK=1 \
 				git commit -m "$repo/@args[2]: rename from @args[3]"
-		end
-	case [p pick]
-		#
-		# We will need dialog(1) utility, check if we have an executable
-		#
-		if not which dialog &>/dev/null
-			printerr the dialog'(1)' utility is missing
-			exit 1
-		end
+        fi
+        ;;
+	# case [p pick]
+	# 	#
+	# 	# We will need dialog(1) utility, check if we have an executable
+	# 	#
+	# 	if not which dialog &>/dev/null
+	# 		printerr the dialog'(1)' utility is missing
+	# 		exit 1
+	# 	end
 
-		#
-		# The source branch is the branch we are getting the commits from, most
-		# of the time this branch is 'master' as we are backporting to from Edge
-		# onto stable branches, be they bugfixes for community/ or security fixes
-		# for main/
-		#
-		# If we were given a second argument, treat that as the branch we want
-		# to source our commits from, otherwise assume we are using master
-		#
-		let source_branch = ""
-		if test $len(@args) -gt 3
-			let source_branch = @args[3]
-		else
-			let source_branch = master
-		end
+	# 	#
+	# 	# The source branch is the branch we are getting the commits from, most
+	# 	# of the time this branch is 'master' as we are backporting to from Edge
+	# 	# onto stable branches, be they bugfixes for community/ or security fixes
+	# 	# for main/
+	# 	#
+	# 	# If we were given a second argument, treat that as the branch we want
+	# 	# to source our commits from, otherwise assume we are using master
+	# 	#
+	# 	let source_branch = ""
+	# 	if test $len(@args) -gt 3
+	# 		let source_branch = @args[3]
+	# 	else
+	# 		let source_branch = master
+	# 	end
 
-		#
-		# The target branch is the branch we are on, it is the branch we want to
-		# port the commits to
-		#
-		let target_branch = $(git branch --show-current)
+	# 	#
+	# 	# The target branch is the branch we are on, it is the branch we want to
+	# 	# port the commits to
+	# 	#
+	# 	let target_branch = $(git branch --show-current)
 
-		#
-		# Check if we were not passed the same branch as both target and source
-		# branches, there is no sense to backport from itself
-		#
-		if test $target_branch = $source_branch
-			printerr Both branches passed are the same
-			exit 1
-		end
+	# 	#
+	# 	# Check if we were not passed the same branch as both target and source
+	# 	# branches, there is no sense to backport from itself
+	# 	#
+	# 	if test $target_branch = $source_branch
+	# 		printerr Both branches passed are the same
+	# 		exit 1
+	# 	end
 
-		#
-		# Show all commits between the target_branch and the source_branch that
-		# modified the path given to us.
-		#
-		# We use --reverse so the list will come with the older commits on the top,
-		# which should always be cherry-picked before the others
-		#
-		let commits = $(git log --oneline --reverse $target_branch..$source_branch -- $path)
+	# 	#
+	# 	# Show all commits between the target_branch and the source_branch that
+	# 	# modified the path given to us.
+	# 	#
+	# 	# We use --reverse so the list will come with the older commits on the top,
+	# 	# which should always be cherry-picked before the others
+	# 	#
+	# 	let commits = $(git log --oneline --reverse $target_branch..$source_branch -- $path)
 
-		#
-		# Check if there is any output with the commits passed to us, if it is empty
-		# then there is nothing to be backported
-		#
-		if not exists -s commits
-			printerr no changes between $target_branch and $source_branch for $path
-			exit 1
-		end
+	# 	#
+	# 	# Check if there is any output with the commits passed to us, if it is empty
+	# 	# then there is nothing to be backported
+	# 	#
+	# 	if not exists -s commits
+	# 		printerr no changes between $target_branch and $source_branch for $path
+	# 		exit 1
+	# 	end
 
-		#
-		# Create an array that will hold all the options that are to be available
-		# in our checkboxes which are composed of:
-		# SHA1 - title - off
-		#
-		# SHA1 is the SHA of the commit in question, we use those in git cherry-pick
-		# title is the title of the commit, the user must know these
-		# off is passed to the dialog(1) utility and makes the option not ticked by
-		#  default
-		#
+	# 	#
+	# 	# Create an array that will hold all the options that are to be available
+	# 	# in our checkboxes which are composed of:
+	# 	# SHA1 - title - off
+	# 	#
+	# 	# SHA1 is the SHA of the commit in question, we use those in git cherry-pick
+	# 	# title is the title of the commit, the user must know these
+	# 	# off is passed to the dialog(1) utility and makes the option not ticked by
+	# 	#  default
+	# 	#
 
-		#
-		# The options array must be created here or it will go out of scope if done
-		# inside the for-loop
-		#
-		let options = []
+	# 	#
+	# 	# The options array must be created here or it will go out of scope if done
+	# 	# inside the for-loop
+	# 	#
+	# 	let options = []
 
-		#
-		# Iterate over all the commits, line-by-line
-		#
-		for line in @split($commits \n)
-			#
-			# Split the line by whitespace into an array, the first element
-			# is the SHA1 and the other elements make up the title
-			#
-			let splitted = [@split($line)]
+	# 	#
+	# 	# Iterate over all the commits, line-by-line
+	# 	#
+	# 	for line in @split($commits \n)
+	# 		#
+	# 		# Split the line by whitespace into an array, the first element
+	# 		# is the SHA1 and the other elements make up the title
+	# 		#
+	# 		let splitted = [@split($line)]
 
-			#
-			# Append the SHA1, title and off to the options array, the title
-			# must be quoted otherwise it will be split into various elements
-			# instead we must have a single element that is a string with
-			# whitespace present
-			#
-			let options = [@options @splitted[0] "@splitted[1..]" off]
-		end
+	# 		#
+	# 		# Append the SHA1, title and off to the options array, the title
+	# 		# must be quoted otherwise it will be split into various elements
+	# 		# instead we must have a single element that is a string with
+	# 		# whitespace present
+	# 		#
+	# 		let options = [@options @splitted[0] "@splitted[1..]" off]
+	# 	end
 
-		#
-		# Create a dialog with our options, the options picked by the user
-		# will be present in the file .al-cherry-pick inside the XDG_RUNTIME_DIR
-		# if one does not have that then just fail and let the user figure it out
-		# XDG_RUNTIME_DIR is the best we have and it is not worth it to support
-		# fallbacks for such a widely used feature
-		#
-		dialog \
-			--colors \
-			--keep-tite \
-			--no-shadow \
-			--no-mouse \
-			--checklist "Pick commits for $path" \
-			0 0 0 \
-			@options ^> $XDG_RUNTIME_DIR/.al-cherry-pick
+	# 	#
+	# 	# Create a dialog with our options, the options picked by the user
+	# 	# will be present in the file .al-cherry-pick inside the XDG_RUNTIME_DIR
+	# 	# if one does not have that then just fail and let the user figure it out
+	# 	# XDG_RUNTIME_DIR is the best we have and it is not worth it to support
+	# 	# fallbacks for such a widely used feature
+	# 	#
+	# 	dialog \
+	# 		--colors \
+	# 		--keep-tite \
+	# 		--no-shadow \
+	# 		--no-mouse \
+	# 		--checklist "Pick commits for $path" \
+	# 		0 0 0 \
+	# 		@options ^> $XDG_RUNTIME_DIR/.al-cherry-pick
 
-		#
-		# Read the SHA1 of the commits picked by the user, use the @split method
-		# so they are split by whitespace
-		#
-		let commit = $(cat $XDG_RUNTIME_DIR/.al-cherry-pick)
+	# 	#
+	# 	# Read the SHA1 of the commits picked by the user, use the @split method
+	# 	# so they are split by whitespace
+	# 	#
+	# 	let commit = $(cat $XDG_RUNTIME_DIR/.al-cherry-pick)
 
-		#
-		# Check if any commits were picked via the dialog(1) interface
-		# this value will be empty if none are picked
-		#
-		if not exists -s commit
-			printerr No commits were picked for $path
-			exit 1
-		end
+	# 	#
+	# 	# Check if any commits were picked via the dialog(1) interface
+	# 	# this value will be empty if none are picked
+	# 	#
+	# 	if not exists -s commit
+	# 		printerr No commits were picked for $path
+	# 		exit 1
+	# 	end
 
-		#
-		# Use the cherry-pick command from git, there will most likely be conflicts
-		# but those are none of our concerns, the user can fix those and --continue
-		# the cherry-pick.
-		#
-		# Use -x so that we will get a nice message pointing from where we backported
-		# the commit, only if there are no conflicts
-		#
-		for c in @split($commit)
-			git cherry-pick --strategy=recursive -X theirs -x $c
-		end
-	case _
+	# 	#
+	# 	# Use the cherry-pick command from git, there will most likely be conflicts
+	# 	# but those are none of our concerns, the user can fix those and --continue
+	# 	# the cherry-pick.
+	# 	#
+	# 	# Use -x so that we will get a nice message pointing from where we backported
+	# 	# the commit, only if there are no conflicts
+	# 	#
+	# 	for c in @split($commit)
+	# 		git cherry-pick --strategy=recursive -X theirs -x $c
+	# 	end
+	*)
 		usage
 		show_help
 		exit 1
-end
+esac
 
 exit 0
