@@ -1,37 +1,37 @@
-#!/usr/bin/env ion
-let _REALBASE = $(tracking-branch)
+#!/bin/sh
+_REALBASE="$(tracking-branch)"
 
-let remote = $(guess-remote)
-if not exists -s remote
+remote="$(guess-remote)"
+if [ -z "$remote" ]; then
 	exit 1
-end
+fi
 
-let pushmode = $(git config --get push.default)
+pushmode="$(git config --get push.default)"
 
-let branch = ""
-if test "current" = $pushmode
-	let prefix = $(alpine-stable-prefix $(git branch --show-current))
-	if exists -s prefix
-		let _REALBASE = $prefix-stable
+branch=""
+if [ "$pushmode" = current ]; then
+    prefix="$(alpine-stable-prefix "$(git branch --show-current)" )"
+    if [ "$prefix" ]; then
+		_REALBASE="$prefix"-stable
 	else
-		let _REALBASE = master
-	end
-end
+		_REALBASE=master
+	fi
+fi
 
-let branch = $(git branch --show-current)
+branch="$(git branch --show-current)"
 
-let url = $(git config --local remote.$remote.url)
+url="$(git config --local remote."$remote".url)"
 
-if exists -s PULLP_DRY_RUN
-	echo Args: @args
+if [ "$PULLP_DRY_RUN" ]; then
+	echo Args: "$@"
 	echo Remote Branch: $_REALBASE
-	echo Remote: $remote
-	echo Local Branch: $branch
-	echo Url: $url
-	echo FinalCommand: git pull --quiet $remote --rebase $_REALBASE
+	echo Remote: "$remote"
+	echo Local Branch: "$branch"
+	echo Url: "$url"
+	echo FinalCommand: git pull --quiet "$remote" --rebase $_REALBASE
 	exit 0
-end
+fi
 
-git pull --quiet $remote --rebase $_REALBASE && \
+git pull --quiet "$remote" --rebase $_REALBASE && \
 	printok "Rebased '$branch' on '$remote/$_REALBASE' from '$url'" || \
 	printerr "Failed to rebase '$branch' on '$remote/$_REALBASE' from '$url'"
