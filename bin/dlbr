@@ -1,28 +1,31 @@
-#!/usr/bin/env ion
+#!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
 # dlbr BRANCH... - Delete local and remote branches matching name
-fn delete_remote_branch branch:str
-	if not git push --quiet origin --delete $branch ^>/dev/null
+delete_remote_branch() {
+	if ! git push --quiet origin --delete $branch 2>/dev/null; then
 		printerr "Failed to delete remote '$branch'"
 		return 0
 	else
 		printok "Deleted remote '$branch'"
-	end
-end
+	fi
+}
 
-fn delete_local_branch branch:str
-	if not git rev-parse --verify "$branch" &>/dev/null
+delete_local_branch() {
+    [ "$1" ] || return 1
+    branch="$1"
+
+	if ! git rev-parse --quiet --verify "$branch" >/dev/null 2>&1; then
 		return 0
-	end
+	fi
 
-	if test $(git branch --show-current) = $branch
+	if [ $(git branch --show-current) == "$branch" ]; then
 		#
 		# Try to switch to the tracking branch
 		# otherwise try to switch to the default branch
 		#
-		let _full = $(tracking-branch $branch)
+		_full=$(tracking-branch $branch)
 
-		if test $_full = $branch
+		if [ "$_full" == "$branch" ]; then
 			#
 			# We hit this in case we are deleting a branch with the same name
 			# as the branch it tracks, like having origin/foo tracking upstream/foo
@@ -35,19 +38,19 @@ fn delete_local_branch branch:str
 			env PRINTOK_QUIET=yes gbr master
 		else
 			env PRINTOK_QUIET=yes gbr $_full
-		end
-	end
+		fi
+	fi
 
-	if not git branch -D "$branch" &>/dev/null
+	if ! git branch -D "$branch" >/dev/null 2>&1; then
 		printerr "Failed to delete local '$branch'"
 		return 1
 	else
 		printok "Deleted local '$branch'"
-	end
-end
+	fi
+}
 
-test $len(@args) -eq 1 && exit 1
-for branch in @args[1..]
-	not exists -s DLBR_LOCAL && delete_remote_branch $branch
+[ $# -lt 1 ] && exit 1
+for branch; do
+	[ -z "$DLBR_LOCAL" ] && delete_remote_branch $branch
 	delete_local_branch $branch
-end
+done
