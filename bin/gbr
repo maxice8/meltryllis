@@ -1,28 +1,33 @@
-#!/usr/bin/env ion
+#!/bin/sh
 # Show git branches and switch to them
-exists -d .git || exit
-test $len(@args) -eq 1 && exit 1
+[ -d .git ] || exit 1
+[ $# -lt 1 ] && exit 1
 
-let remote = $(guess-remote)
+remote="$(guess-remote)"
 
-exists -s remote || exit
+[ -z "$remote" ] && exit 1
 
-for branch in @args[1..]
-	let spl = [@split($branch :)]
-	let branch = @spl[0]
+for spec; do
+    branch="$(printf "%s" "$spec" | cut -d : -f1)"
 
-	if git rev-parse --quiet --verify $branch &>/dev/null
+    if printf "%s" "$spec" | grep -F -q ':'; then
+        based="$(printf "%s" "$spec" | cut -d : -f2)"
+    else
+        based=""
+    fi
+
+	if git rev-parse --quiet --verify $branch >/dev/null 2>&1; then
 		git switch --quiet $branch || \
 			printerr "Failed to switch to '$branch'" && \
 			printok "Switched to '$branch'"
-	else
-		if test $len(@spl) -eq 2
-			git switch --quiet --force-create $branch @spl[1] || \
+    else    
+        if [ -n "$based" ]; then
+			git switch --quiet --force-create $branch $based || \
 				printerr "Failed to switch to '$branch'" && \
-				printok "Switched to newly created '$branch' based on '@spl[1]'"
+				printok "Switched to newly created '$branch' based on '$based'"
 		else
-			let _REALBASE = $(alpine-stable-prefix $branch)
-			if exists -s _REALBASE
+			_REALBASE="$(alpine-stable-prefix $branch)"
+			if [ -n "$_REALBASE" ]; then
 				git switch --quiet --force-create $branch $remote/$_REALBASE-stable || \
 					printerr "Failed to switch to '$branch'" && \
 					printok "Switched to newly created '$branch' based on '$_REALBASE-stable'"
@@ -30,7 +35,7 @@ for branch in @args[1..]
 				git switch --quiet --force-create $branch $remote/master || \
 					printerr "Failed to switch to '$branch'" && \
 					printok "Switched to newly created '$branch' based on 'master'"
-			end
-		end
-	end
-end
+			fi
+        fi
+    fi
+done
