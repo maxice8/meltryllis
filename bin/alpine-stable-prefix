@@ -1,12 +1,12 @@
-#!/usr/bin/env ion
-exists -d .git || exit
+#!/bin/sh
+[ -d .git ] || exit 
+[ $# -lt 1 ] && set -- $(git branch --show-current)
 
-if test $len(@args) -eq 1
-	let args ++= $(git branch --show-current)
-end
-
-for branch in @args[1..]
-	for ver in 3.12 3.11 3.10 3.9 3.8
-		starts-with $branch $ver && echo $ver
-	end
-end
+for branch; do
+    case "$branch" in
+        3.10*) echo 3.10 ;;
+        3.11*) echo 3.11 ;; 
+        3.12*) echo 3.12 ;;
+        3.13*) echo 3.13 ;;
+    esac
+done
