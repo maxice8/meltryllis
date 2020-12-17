@@ -1,6 +1,2 @@
 #!/bin/sh
-if [ "$WAYLAND_DISPLAY" ]; then
-	wl-paste --no-newline
-else
-	xsel -bo
-fi
+wl-paste --no-newline

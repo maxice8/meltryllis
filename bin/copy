@@ -1,19 +1,12 @@
-#!/usr/bin/env ion
-let clipboard:[str] = [""]
-if exists -s WAYLAND_DISPLAY
-	let clipboard = [wl-copy --trim-newline]
-else
-	let clipboard = [xsel -bi]
-end
-
-if test $len(@args) -gt 1
-	@clipboard <<< "@args[1..]"
+#!/bin/sh
+if [ $# -gt 0 ]; then
+    printf -- "%s\\n" "$*" | wl-copy --trim-newline -
 	exit
-end
+fi
 
 #
 # If we use 'read input' then it won't read multiline strings
 # use /dev/stdin instead which gives us actual multiline strings
 # and handles it just like the read function
 #
-@clipboard < /dev/stdin
+wl-copy --trim-newline < /proc/$$/fd/0
