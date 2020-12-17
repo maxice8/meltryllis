@@ -1,7 +1,3 @@
-#!/usr/bin/env ion
-let depends = $(apk list --depends @args[1..] | rg -o '\{.*\}' | sort -u)
-
-# We need to do this fancy $join(@split)) dance because ion shell doesn't
-# accept an empty input for any fucntion like $repalce and $regex_replace
-# so we can't just remove the brackets without adding an whitespace
-echo $join(@split($regex_replace($depends "[{}]" " ")) '\n')
+#!/bin/sh
+depends="$(apk list --depends "$@" | rg -o '\{.*\}' | sort -u)"
+printf -- "%s\\n" "$depends" | sed -e 's|[{}]||g'
