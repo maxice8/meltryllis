@@ -1,5 +1,5 @@
 #!/bin/sh
-[ -d .git ] || exit 
+[ -e .git ] || exit 
 [ $# -lt 1 ] && set -- $(git branch --show-current)
 
 for branch; do
