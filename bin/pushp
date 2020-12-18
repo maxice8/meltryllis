@@ -1,18 +1,18 @@
-#!/usr/bin/env ion
+#!/bin/sh
 
 #
 # If we have only one argument that means that nothing was passed
 # add a 'remote:$(guess-remote)' to our arguments to be parsed later
 #
-if test $len(@args) -eq 1
-	let args ++= remote:$(guess-remote)
-end
+if [ $# -lt 1 ]; then
+    set -- remote:$(guess-remote)
+fi
 
 #
 # Assign remote outside of the scope of the control flow, otherwise
 # they will be lost, this is not POSIX
 #
-let remote = ''
+remote=""
 
 #
 # Check if the first argument we are given starts with remote: this
@@ -22,9 +22,9 @@ let remote = ''
 # We also check if we have less than 3 arguments, that means we were
 # not given a branch to push to, so default to the branch name itself
 #
-if starts-with @args[1] remote:
-	let remote = $regex_replace(@args[1] "^remote:" " ")
-	test $len(@args) -lt 3 && let args ++= $(git rev-parse --abbrev-ref HEAD)
+if printf -- "%s" "$1" | grep -q '^remote:'; then
+    remote="$(printf -- "%s" "$1" | sed 's|^remote:||g')"
+    [ $# -lt 1 ] && set -- "$@" $(git rev-parse --abbrev-ref HEAD)
 else
 #
 # If the first argument does not start with 'remote:' that means we were
@@ -35,16 +35,16 @@ else
 # 1st is the 'remote:' we should push to and the 2nd to the last are all
 # the branches we should push to
 #
-	let remote = $(guess-remote)
-	let args = [@args[0] remote:$remote @args[1..]]
-end
+    remote="$(guess-remote)"
+    set -- remote:$remote "$@"
+fi
 
 #
 # arguments holds all commandline flags to be passed to git, like the
 # '--force' which is activated when we have FORCE_PUSH in the environment
 #
-let arguments = [""]
-exists -s FORCE_PUSH && let arguments ++= --force
+arguments=""
+[ "$FORCE_PUSH" ] && arguments="$arguments --force"
 
 #
 # This hold all the pushes we will do, a push is defined as:
@@ -52,79 +52,72 @@ exists -s FORCE_PUSH && let arguments ++= --force
 # they can be the same (like master:master) or different ones
 # (like 3.11-dns:3.11-stable)
 #
-let pushes = [""]
+pushes=""
 
 #
 # Iterate over the third object forward, this for-loop will
 # populate all the objects in the pushes array
 #
-for arg in @args[2..]
+args="$@"
+shift
+for arg; do
 	#
 	# If the object given to us contain a colon : that means
 	# the user passed to us a complete object instead of just
 	# a branch name. we also continue to the next object of the
 	# loop as there is no need to run the rest of the code
 	#
-	if eq $len([@split($arg :)]) 2
-		let pushes ++= $arg
+    if printf -- "%s" "$arg" | grep -q -F ':'; then
+        pushes="$pushes $arg"
 		continue
-	end
+	fi
 
 	#
 	# Follow the tracking branch, if the use has branch 'foo' that tracks
 	# upstream/bar then we will end pushing to 'bar'
 	#
-	let remote_branch = $(tracking-branch)
+	remote_branch="$(tracking-branch)"
 
 	#
 	# Finally append it to pushes so we push it later
 	#
-	let pushes ++= $arg:$remote_branch
-end
+	pushes="$pushes $arg:$remote_branch"
+done
 
 #
 # This strips all whitespaces, otherwise the following assignment of the
 # 'pushurl' variable will fail terribly and silently
 #
-let remote = @split($remote)
+remote="$(printf -- "%s" "$remote" | xargs)"
 
 #
 # Try getting from the pushurl of the git remote, this can be set by the user
 # to have a URL to push and another for fetching, if 'pushurl' fails then we
 # fallback on the url which should always be set
 #
-let pushurl = $(git config --local remote.$remote.pushurl || git config --local remote.$remote.url)
+pushurl="$(git config --local remote.$remote.pushurl || git config --local remote.$remote.url)"
 
 #
 # If pushurl returned empty then we will be unable to push, error out to the user
 #
-if not exists -s pushurl
-	printerr $basename(@args[0]): No URL can be used to push from remote "'$remote'"
+if [ -z "$pushurl" ]; then
+    printerr $0: No URL can be used to push from remote "'$remote'"
 	exit 1
-end
+fi
 
 #
 # if PUSHP_DRY_RUN is set then just show to the user the information we gathered
 # and exit, this is good for people that are afraid they might do a wrong push
 #
-if exists -s PUSHP_DRY_RUN
-	echo Args: @args
-	echo Arguments: @arguments
-	echo Remote: $remote
-	echo Pushes: @pushes
-	echo PushURL: $pushurl
-	echo FinalCommand: git push --atomic --quiet @arguments @pushes
+if [ "$PUSHP_DRY_RUN" ]; then
+	echo Args: "$args"
+	echo Arguments: "$arguments"
+	echo Remote: "$remote"
+	echo Pushes: "$pushes"
+	echo PushURL: "$pushurl"
+	echo FinalCommand: git push --atomic --quiet "$arguments" "$remote" "$pushes"
 	exit 0
-end
-
-#
-# Instead of passing 'remote' and 'arguments' separately we just append 'remote'
-# to 'arguments' and pass just 'arguments' to the final command.
-#
-# If we pass 'arguments' by itself and it has nothing then it will still be taken
-# as an argument and cause it to fail
-#
-let arguments ++= $remote
+fi
 
 #
 # This is the most important part, this is where we actually do the operation we
@@ -134,9 +127,9 @@ let arguments ++= $remote
 # We start with the 'arguments' array and then pass the remote and finally we pass
 # all the push operations we want to be done
 #
-if git push --atomic --quiet @arguments @pushes >/dev/null
-	printok "Pushed '@pushes' to '$pushurl'"
+if git push --atomic --quiet $arguments $remote $pushes >/dev/null; then
+	printok "Pushed '$pushes' to '$pushurl'"
 else
-	printerr "Failed push of '@pushes' to '$pushurl'"
+	printerr "Failed push of '$pushes' to '$pushurl'"
 	exit 1
-end
+fi
