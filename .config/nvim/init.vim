@@ -121,7 +121,7 @@ let g:ale_completion_enabled = 1
 let g:ale_fix_on_save = 1
 
 let g:ale_linters = {
-\   'apkbuild': ['shellcheck', 'apkbuild_lint', 'secfixes_check'],
+\   'apkbuild': ['apkbuild_lint', 'secfixes_check'],
 \}
 
 " Clipboard
@@ -277,15 +277,6 @@ set number
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Remap VIM 0 to first non-blank character
 map 0 ^
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Flatpak
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if !empty($FLATPAK_ID)
-    let g:ale_apkbuild_apkbuild_lint_executable = $HOME . "/bin/apkbuild-lint"
-    let g:ale_apkbuild_secfixes_check_executable = $HOME . "/bin/secfixes-check"
-    let g:ale_apkbuild_apkbuild_fixer_executable = $HOME . "/bin/apkbuild-fixer"
-endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Misc
