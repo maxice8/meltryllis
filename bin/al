@@ -195,12 +195,12 @@ case "$1" in
 		# a package there with the same name
 		#
         if [ ! -d "$secondArg" ]; then
-			printerr no repository named "'@args[2]'"
+			printerr no repository named "'$secondArg'"
 			exit 1
         fi
 
         
-		if [ -f @args[2]/@args[3]/APKBUILD ]; then
+		if [ -f "$secondArg"/"$thirdArg"/APKBUILD ]; then
 			printerr "There is already a package called '$thirdArg' in repository '$secondArg'"
 			exit 1
         fi
@@ -463,7 +463,7 @@ case "$firstArg" in
 			env NOAPKBUILD_LINT=1 \
 				NOAPORTS_LINT=1 \
 				NOPKGVERCHECK=1 \
-				git commit -m "@args[2]/@args[3]: move from $basename($parent($path))"
+				git commit -m "$secondArg/$thirdArg: move from $(basename "${path%/*}")"
 		fi
         ;;
 	r|rename)
@@ -519,7 +519,7 @@ case "$firstArg" in
 			env NOAPKBUILD_LINT=1 \
 				NOAPORTS_LINT=1 \
 				NOPKGVERCHECK=1 \
-				git commit -m "$repo/@args[2]: rename from @args[3]"
+				git commit -m "$repo/$secondArg: rename from $thirdArg"
         fi
         ;;
 	# case [p pick]
