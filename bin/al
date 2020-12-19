@@ -50,7 +50,7 @@ strip_al() {
     [ "$1" ] || return 1
     val="$(alpine-stable-prefix $1)"
     if [ "$val" ]; then
-        printf "%s\\n" "$val" | cut -d - -f 2-
+        printf "%s\\n" "$1" | cut -d - -f 2-
     else
         printf "%s\\n" "$1"
     fi
