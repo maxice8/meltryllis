@@ -1,8 +1,7 @@
-#
-# Load our actual configuration on a Read-Write place.
-#
-PATH="$HOME"/bin:"$HOME"/.local/bin:"$PATH"
-ENV="$HOME"/.config/dash/env
-
-export ENV PATH
-
+# is-interactive
+export PATH="$PATH":"$HOME"/bin
+[ "$APORTSDIR" ] && export APORTSDIR
+if command -v fish >/dev/null 2>&1; then
+    [ -t 0 ] && exec fish -l
+fi
+# vim: filetype=sh
