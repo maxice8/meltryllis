@@ -1,4 +1,4 @@
-LN := ln -sfv
+LN := ln -sfvr
 MKDIR := mkdir -pv
 
 ETCDIR = $(HOME)/.var
