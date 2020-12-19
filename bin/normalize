@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ $# -gt 0 ]; then
+    printf -- "%s" "$*" | xargs
+else
+    xargs < /proc/$$/fd/0
+fi
