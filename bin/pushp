@@ -84,11 +84,14 @@ for arg; do
 	pushes="$pushes $arg:$remote_branch"
 done
 
+# TODO: create binary called 'normalize' that does this on-demand
+pushes="$(normalize "$pushes")"
+
 #
 # This strips all whitespaces, otherwise the following assignment of the
 # 'pushurl' variable will fail terribly and silently
 #
-remote="$(printf -- "%s" "$remote" | xargs)"
+remote="$(normalize "$remote")"
 
 #
 # Try getting from the pushurl of the git remote, this can be set by the user
