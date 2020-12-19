@@ -1,9 +1,0 @@
-case $- in
-  *i* )
-    test -n "$NOFISH" && return
-    if command -v fish >/dev/null 2>&1; then
-      exec fish -l
-    fi ;;
-  * );;
-esac
-# vim: ft=sh

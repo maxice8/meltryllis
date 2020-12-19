@@ -6,6 +6,8 @@ function fish_prompt
         set_color 00b3b3
         if test (echo -n "$SSH_CLIENT" | string split ' ' | tail -1) = 2222
             echo -n "toolbox"
+        else if test (echo -n "$SSH_CLIENT" | string split ' ' | tail -1) = 2223
+            echo -n "alpine"
         else if test (echo -n "$SSH_CLIENT" | string split ' ' | tail -1) = 22
             echo -n "host"
         else
