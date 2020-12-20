@@ -322,7 +322,8 @@ case "$firstArg" in
 		# run apkg-diff which will fetch the old packages and diff them
 		# againast the new ones
 		#
-		run_ssh "$path" "apkg-diff size depend provides files"
+		output="$(run_ssh "$path" "apkg-diff size depend provides files")"
+        printf -- "%s\\n" "$output" | less -r --quit-if-one-screen
         ;;
 	l|lint)
 		#
