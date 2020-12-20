@@ -185,11 +185,8 @@ for i in $pkglist; do
 		oldpkg="${oldpkg##*/}"
 		ok "pkg=$pkg$(test -n "$oldapk" && echo " oldpkg=$oldpkg") prop=$attr:"
 		diff \
-			--color=always \
-			--unchanged-line-format='' \
-			--old-line-format="- %L" \
-			--new-line-format="+ %L" \
 			"$tmpdir"/difflist-"$i"-old-$attr \
-			"$tmpdir"/difflist-"$i"-new-$attr | colordiff
+			"$tmpdir"/difflist-"$i"-new-$attr \
+            | colordiff
 	done
 done | less -r --quit-if-one-screen
