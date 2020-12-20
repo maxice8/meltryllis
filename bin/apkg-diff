@@ -183,4 +183,4 @@ for i in $pkglist; do
 			"$tmpdir"/difflist-"$i"-new-$attr \
             | colordiff
 	done
-done | less -r --quit-if-one-screen
+done 
