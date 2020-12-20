@@ -69,6 +69,14 @@ run() {
 }
 
 #
+# Same as the run() function but run inside an ssh section in Alpine
+#
+run_ssh() {
+    [ "$1" ] || [ "$2" ] || return 1
+    ssh -tt Alpine "export PATH=$PATH; cd $APORTSDIR/$1 && $2"
+}
+
+#
 # Helper function that returns a proper error code if the git tree is
 # dirty
 #
@@ -314,7 +322,7 @@ case "$firstArg" in
 		# run apkg-diff which will fetch the old packages and diff them
 		# againast the new ones
 		#
-		run "$path" "apkg-diff size depend provides files"
+		run_ssh "$path" "apkg-diff size depend provides files"
         ;;
 	l|lint)
 		#
