@@ -1,23 +1,10 @@
-#!/usr/bin/lua5.3
-local filesize = require 'filesize'
-
-for i = 1, #arg do
-	-- Open the file we were given to read
-	local file = io.open(arg[i], "r")
-
-	-- Set
-	io.input(file)
-
-	-- Store the size we were given
-	local size = filesize(tonumber(io.read()))
-
-	io.close(file)
-
-	-- Open the file we were given to write from scratch
-	file = io.open(arg[i], "w+")
-
-	-- Sets the default output file
-	io.output(file)
-	io.write(size.."\n")
-	io.close(file)
-end
+#!/bin/sh
+awk 'function human(x) {
+         s=" B   KiB MiB GiB TiB EiB PiB YiB ZiB"
+         while (x>=1024 && length(s)>1) 
+               {x/=1024; s=substr(s,5)}
+         s=substr(s,1,4)
+         xf=(s==" B  ")?"%5d   ":"%8.2f"
+         return sprintf( xf"%s\n", x, s)
+    }
+    {gsub(/^[0-9]+/, human($1)); print}' | xargs
