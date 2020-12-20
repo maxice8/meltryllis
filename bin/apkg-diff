@@ -27,9 +27,11 @@ die() {
 	exit 1
 }
 
+# Escape sequence from printf, we need it because x1B is only understood
+# by GNU sed and we use busybox sed
+esc="$(printf -- '\033')"
 colordiff() {
-	# GNU SED specific
-	sed 's/^-/\x1b[31m-/;s/^+/\x1b[32m+/;s/$/\x1b[0m/'
+	sed "s/^-/${esc}[31m-/;s/^+/${esc}[32m+/;s/$/${esc}[0m/"
 }
 
 # shellcheck disable=SC1091
