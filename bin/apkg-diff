@@ -159,13 +159,12 @@ for i in $pkglist; do
 			if [ "$attr" = size ]; then
 				if [ -n "$oldapk" ]; then
 					filesize="$(cat "$tmpdir"/difflist-"$i"-old-"$attr")"
-					# Most common size of the key
-					filesize=$((filesize - 4096))
-					echo "$filesize" >"$tmpdir"/difflist-"$i"-old-"$attr"
-					human "$tmpdir"/difflist-"$i"-old-"$attr"
+                    filesize="$((filesize - 8192))"
+					echo "$filesize" | human >"$tmpdir"/difflist-"$i"-old-"$attr"
 				fi
 				if [ -s "$tmpdir"/difflist-"$i"-new-"$attr" ]; then
-					human "$tmpdir"/difflist-"$i"-new-"$attr"
+                    filesize="$(cat "$tmpdir"/difflist-"$i"-new-"$attr")"
+                    echo "$filesize" | human >"$tmpdir"/difflist-"$i"-new-"$attr"
 				fi
 			fi
 
