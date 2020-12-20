@@ -46,7 +46,7 @@ cd "$tmpdir" || die "failed to create temp dir"
 grep -E "^https?:" /etc/apk/repositories >"$tmpdir"/remote-repositories
 grep -E -v "^https?:" /etc/apk/repositories >"$tmpdir"/local-repositories
 
-_carch="$(abuild -A)"
+_carch="$(/usr/bin/abuild -A)"
 
 # We need ncurses for this, lets clean up the terminal
 clear
