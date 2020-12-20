@@ -54,9 +54,6 @@ grep -E -v "^https?:" /etc/apk/repositories >"$tmpdir"/local-repositories
 
 _carch="$(/usr/bin/abuild -A)"
 
-# We need ncurses for this, lets clean up the terminal
-clear
-
 # Create a package list that holds the name of the package
 # and the name of every subpackage
 pkglist="$pkgname"
@@ -122,9 +119,6 @@ for i in $pkglist; do
 	) &
 done
 wait
-
-# We need ncurses for this
-clear
 
 for i in $pkglist; do
 	if ! [ -f "$tmpdir"/new-"$i" ]; then
