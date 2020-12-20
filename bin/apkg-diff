@@ -31,7 +31,13 @@ die() {
 # by GNU sed and we use busybox sed
 esc="$(printf -- '\033')"
 colordiff() {
-	sed "s/^-/${esc}[31m-/;s/^+/${esc}[32m+/;s/$/${esc}[0m/"
+	sed \
+        -e '/^+++/d' \
+        -e '/^---/d' \
+        -e '/^[^-+]/d' \
+        -e "s/^-/${esc}[31m-/" \
+        -e "s/^+/${esc}[32m+/" \
+        -e "s/$/${esc}[0m/"
 }
 
 # shellcheck disable=SC1091
