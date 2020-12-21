@@ -8,4 +8,4 @@ else
 	pkg="$(git branch --show-current)"
 fi
 
-cd "$(find_repo "$pkg")" && apkbuild-cpan $action
+ssh Alpine -t "cd "$PWD"/"$(find_repo "$pkg")" && apkbuild-cpan $action"
