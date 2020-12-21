@@ -11,11 +11,6 @@ RED="\033[1;31m"
 GREEN="\033[1;32m"
 CYAN="\033[1;36m"
 
-msg() {
-	local _prompt="$CYAN>>>${NORMAL}"
-	printf "$_prompt %s\n" "$1"
-}
-
 ok() {
 	local _prompt="$GREEN>>>${NORMAL}"
 	printf "$_prompt %s\n" "$1"
@@ -97,19 +92,16 @@ for i in $pkglist; do
 				if ! [ -f "$candidate" ]; then
 					continue
 				fi
-				ok "Found cached $oldpkg"
 				oldapkpath="$candidate"
 			done
 
 			if ! [ -f "$oldapkpath" ]; then
 				# Fetch the package for all runs
-				msg "Fetching $oldpkg"
 				apk fetch \
 					--repositories-file "$tmpdir"/remote-repositories \
 					--output "$tmpdir" \
 					"$i" \
 					>/dev/null 2>&1 &&
-					ok "Fetched $oldpkg"
 				oldapkpath="$PWD"/"$oldpkg".apk
 			fi
 		fi
