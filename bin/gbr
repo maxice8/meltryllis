@@ -22,7 +22,7 @@ for spec; do
 			printok "Switched to '$branch'"
     else    
         if [ -n "$based" ]; then
-			git switch --quiet --force-create $branch $based || \
+			git switch --quiet --force-create $branch $remote/$based || \
 				printerr "Failed to switch to '$branch'" && \
 				printok "Switched to newly created '$branch' based on '$based'"
 		else
