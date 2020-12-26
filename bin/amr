@@ -1,0 +1,27 @@
+#!/bin/sh
+opts=""
+mrs=""
+for arg; do
+    case "$arg" in
+        ''|*[!0-9]*) opts="$opts $arg" ;;
+        *) mrs="$mrs $arg" ;;
+    esac
+done
+
+[ -n "$mrs" ] || exit 1
+
+if [ -n "$AMR_DRY_RUN" ]; then
+    printf -- "Merge Requests: !%s\n" $(printf -- "%s" "$mrs")
+    printf -- "Opts: %s\n" $(printf -- "%s" "$opts")
+    exit 0
+fi
+
+for mr in $mrs; do
+    glab mr rebase "$mr" \
+        && ( 
+            printok 'sleeping for 4 seconds to avoid gitlab API thinking just rebased branch cannot be merged'
+            sleep 4
+            printok 'slept for 4 seconds'
+           ) \
+        && glab mr merge "$mr" --when-pipeline-succeeds=false $opts
+done
