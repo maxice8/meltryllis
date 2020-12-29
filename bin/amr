@@ -1,4 +1,7 @@
 #!/bin/sh
+max_retries=5
+delay_between_tries=4
+
 opts=""
 mrs=""
 for arg; do
@@ -16,12 +19,21 @@ if [ -n "$AMR_DRY_RUN" ]; then
     exit 0
 fi
 
+mrcount="$(printf -- "%s" "$mrs" | tr ' ' '\n' | wc -l)"
 for mr in $mrs; do
-    glab mr rebase "$mr" \
-        && ( 
-            printok 'sleeping for 4 seconds to avoid gitlab API thinking just rebased branch cannot be merged'
-            sleep 4
-            printok 'slept for 4 seconds'
-           ) \
-        && glab mr merge "$mr" --when-pipeline-succeeds=false $opts
+    tries=0
+
+    if glab mr rebase "$mr"; then
+        while [ $tries -lt $max_retries ]; do
+            if output="$(glab mr merge "$mr" \
+                --when-pipeline-succeeds=$(test $mrcount -lt 2 && echo true || echo false) \
+                $opts 2>/dev/null)"; then
+                printf -- "%s\\n" "$output" | sed '/^$/d'
+                break
+            else
+                tries=$((tries + 1))
+                sleep $delay_between_tries
+            fi
+        done
+    fi
 done
