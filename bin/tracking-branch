@@ -1,12 +1,12 @@
 #!/bin/sh
-[ $# -lt 1  ] && branch="$1" || branch=HEAD
-branch=$branch'@{u}'
+branch=HEAD
+[ $# -gt 0 ] && branch="$1"
 
 #
 # If there is no tracking branch then this will error out, so supress stderr
 # as it will return nothing in that case
 #
-_f="$(git rev-parse --abbrev-ref --symbolic-full-name "$branch" 2>/dev/null)"
+_f="$(git for-each-ref --format='%(upstream:short)' "$(git rev-parse --symbolic-full-name "$branch")")"
 
 #
 # If there is no tracking branch then we can safely use our own branch name
