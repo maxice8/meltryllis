@@ -315,7 +315,7 @@ case "$firstArg" in
 			printerr Failed to commit changes, the tree is dirty, please fix
 			exit 1
 		fi
-        agl mr create
+        glab mr create -f -y
         ;;
     d|diff)
 		#
