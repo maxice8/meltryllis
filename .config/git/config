@@ -11,7 +11,8 @@
     sta = stash
     up = pull --rebase
     re = remote
-    prch = !git show --color=always `git rev-list @{u}..HEAD`
+    prch = !git show --color=always @{u}..HEAD
+    prss = !git diff --stat --color=always @{u}..HEAD
     cp = log @{u}.. --pretty='%C(yellow)%h %C(white)%s'
     df = diff
     bre = branch -m
