@@ -6,7 +6,8 @@ opts=""
 mrs=""
 for arg; do
     case "$arg" in
-        ''|*[!0-9]*) opts="$opts $arg" ;;
+        -*) opts="$opts $arg" ;;
+        '') ;;
         *) mrs="$mrs $arg" ;;
     esac
 done
