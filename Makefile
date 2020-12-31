@@ -2,7 +2,7 @@ LN := ln -sfvr
 MKDIR := mkdir -pv
 
 DOTFILES = profile
-SUBDIRS = .config bin usr .local .var
+SUBDIRS = .config bin usr .local
 
 .PHONY: $(DOTFILES) $(SUBDIRS)
 
