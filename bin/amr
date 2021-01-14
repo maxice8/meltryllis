@@ -12,7 +12,7 @@ for arg; do
     esac
 done
 
-[ -n "$mrs" ] || exit 1
+[ -n "$mrs" ] || mrs="$(git branch --show-current)"
 
 if [ -n "$AMR_DRY_RUN" ]; then
     printf -- "Merge Requests: !%s\n" $(printf -- "%s" "$mrs")
