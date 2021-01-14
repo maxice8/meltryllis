@@ -9,16 +9,13 @@
 NORMAL="\033[1;0m"
 RED="\033[1;31m"
 GREEN="\033[1;32m"
-CYAN="\033[1;36m"
 
 ok() {
-	local _prompt="$GREEN>>>${NORMAL}"
-	printf "$_prompt %s\n" "$1"
+	printf "$GREEN>>>$NORMAL %s\n" "$1"
 }
 
 die() {
-	local _prompt="${RED}>>> ERROR:${NORMAL}"
-	printf "$_prompt %s\n" "$1"
+	printf "$RED>>>ERROR:$NORMAL %s\n" "$1"
 	exit 1
 }
 
