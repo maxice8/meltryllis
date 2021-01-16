@@ -79,7 +79,7 @@ for i in $pkglist; do
 		for repo in $(cat "$tmpdir"/local-repositories); do
 			if [ -f "$repo"/"$_carch"/"$pkgfile" ]; then
 				newapkpath="$repo"/"$_carch"/"$pkgfile"
-				break
+				continue
 			fi
 		done
 		[ -f "$newapkpath" ] || die "can't find $pkgfile, maybe package wasn't built"
