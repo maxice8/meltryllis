@@ -26,11 +26,10 @@ for mr in $mrs; do
 
     if glab mr rebase "$mr"; then
         while [ $tries -lt $max_retries ]; do
-            if output="$(glab mr merge "$mr" \
+            if glab mr merge "$mr" \
                 --when-pipeline-succeeds=$(test $mrcount -lt 2 && echo true || echo false) \
-                $opts 2>/dev/null)"; then
-                printf -- "%s\\n" "$output" | sed '/^$/d'
-                break
+                $opts; then
+                break   
             else
                 tries=$((tries + 1))
                 sleep $delay_between_tries
