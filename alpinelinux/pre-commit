@@ -122,7 +122,7 @@ for apkbuild in $(changed_files '**/APKBUILD'); do
 	# Try to source the APKBUILD to check if they are valid shellcode
 	srcdir="" . "$apkbuild" || {
 		error "$apkbuild is not valid shellcode"
-		return 1
+		exit 1
 	}
 	if [ -z "${NOAPORTS_LINT:-}" ]; then
 		for msg in $(IFS="$OLDIFS" aports-lint "$apkbuild"); do
@@ -149,7 +149,7 @@ for apkbuild in $(changed_files '**/APKBUILD'); do
 			err=1
 		}
 	fi
-	[ ${err:-0} -eq 1 ] && return 1
+	[ ${err:-0} -eq 1 ] && exit $err
 done
 
 for path in $(changed_files); do
