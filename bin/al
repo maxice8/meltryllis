@@ -115,6 +115,11 @@ cd $APORTSDIR
 path=""
 
 #
+# version holds the suffix we want when using abuild
+#
+version=""
+
+#
 # Store the first 3 arguments in these variables we manipulate
 # we need it here outside otherwise they will not be changed
 #
@@ -134,6 +139,14 @@ case "$1" in
 		#
         if [ -z "$secondArg" ]; then
             secondArg="$(git branch --show-current)"
+        fi
+        
+        #
+        # Use alpine-stable-prefix to get the version
+        #
+        version="$(alpine-stable-prefix "$secondArg")"
+        if [ "$version" ]; then
+            version="-$version"
         fi
 
 		#
@@ -271,6 +284,12 @@ case "$firstArg" in
 		${EDITOR:-nvim} "$path"/APKBUILD
         ;;
 	b|build)
+        #
+        # Set AX_ABUILD to have the suffix of the version, this will be empty
+        # if it is edge
+        #
+        AX_ABUILD="$AX_ABUILD$version"
+
 		#
 		# Construct an array with all the flags to be passed to abuild
 		# this can be manipulated by the user by passing AX_BUILD_ARGS
@@ -298,6 +317,12 @@ case "$firstArg" in
 		f $path
         ;;
 	c|checksum)
+        #
+        # Set AX_ASUM to have the suffix of the version, this will be empty
+        # if it is edge
+        #
+        AX_ASUM="$AX_ASUM$version"
+
 		#
 		# run the binary pointed by 'AX_ASUM' and ask it to regenerate the
 		# checksum for the package
