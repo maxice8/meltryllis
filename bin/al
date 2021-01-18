@@ -3,9 +3,6 @@
 #
 # Global variables we use extensively in the script
 #
-# The usage of $or operator allow us to define the default
-# as '$or($APORTSDIR $PWD)' is equivalent to ': ${APORTSDIR:-$PWD}'
-# from POSIX shells
 #
 AX_ABUILD="${AX_ABUILD:=abuild}"
 AX_ASUM="${AX_ASUM:=abuild}"
@@ -48,7 +45,7 @@ show_help() {
 #
 strip_al() {
     [ "$1" ] || return 1
-    val="$(alpine-stable-prefix $1)"
+    val="$(alpine-stable-prefix "$1")"
     if [ "$val" ]; then
         printf "%s\\n" "$1" | cut -d - -f 2-
     else
@@ -63,7 +60,7 @@ strip_al() {
 #
 run() {
     [ "$1" ] || [ "$2" ] || return 1
-	pushd $APORTSDIR/$1 >/dev/null 2>&1
+	pushd "$APORTSDIR"/"$1" >/dev/null 2>&1
 	$2
 	popd >/dev/null 2>&1
 }
@@ -106,7 +103,10 @@ fi
 # it, some tools specifically assume we are in it and it is just good to cd into
 # it ourselves so people can call this script from anywhere else
 #
-cd $APORTSDIR
+cd "$APORTSDIR" || {
+    printf -- "failed to switch to %s\\n" "$APORTSDIR" 
+    exit 1
+}
 
 #
 # Define path here outside the scope of the next match because we will need to use
@@ -145,8 +145,13 @@ case "$1" in
         # Use alpine-stable-prefix to get the version
         #
         version="$(alpine-stable-prefix "$secondArg")"
+
+        #
+        # Update AX_ASUM and AX_ABUILD to have the suffixes
+        #
         if [ "$version" ]; then
-            version="-$version"
+            AX_ABUILD="$AX_ABUILD-$version"
+            AX_ASUM="$AX_ASUM-$version"
         fi
 
 		#
@@ -284,12 +289,6 @@ case "$firstArg" in
 		${EDITOR:-nvim} "$path"/APKBUILD
         ;;
 	b|build)
-        #
-        # Set AX_ABUILD to have the suffix of the version, this will be empty
-        # if it is edge
-        #
-        AX_ABUILD="$AX_ABUILD$version"
-
 		#
 		# Construct an array with all the flags to be passed to abuild
 		# this can be manipulated by the user by passing AX_BUILD_ARGS
@@ -305,29 +304,23 @@ case "$firstArg" in
 		#
         if [ "$AX_LOG" ]; then
 			_mktemp="$(mktemp)"
- 			run $path "$AX_ABUILD $flags" | tee $_mktemp
+ 			run "$path" "$AX_ABUILD $flags" | tee "$_mktemp"
 		else
-			run $path "$AX_ABUILD $flags"
+			run "$path" "$AX_ABUILD $flags"
 		fi
         ;;
 	n|navigate)
 		#
 		# Open the file manager in the directory of the package
 		#
-		f $path
+		f "$path"
         ;;
 	c|checksum)
-        #
-        # Set AX_ASUM to have the suffix of the version, this will be empty
-        # if it is edge
-        #
-        AX_ASUM="$AX_ASUM$version"
-
 		#
 		# run the binary pointed by 'AX_ASUM' and ask it to regenerate the
 		# checksum for the package
 		#
-		run $path "$AX_ASUM checksum"
+		run "$path" "$AX_ASUM checksum"
         ;;
 	mr|merge-request)
 		#
@@ -335,7 +328,7 @@ case "$firstArg" in
 		# rely on .githooks to produce a suitable commit message, then use mkmr
 		# to create the merge request from the command-line
 		#
-		git add $path
+		git add "$path"
 		if ! git commit --no-edit; then
 			printerr Failed to commit changes, the tree is dirty, please fix
 			exit 1
@@ -434,7 +427,7 @@ case "$firstArg" in
 		# Push into the work directory given to us, we will pop out of it after we are
 		# done
 		#
-		pushd $workdir
+		cd $workdir >/dev/null 2>&1 || return 1
 
 		#
 		# Initialize a git repository and add all files to it, then make an initial commit
@@ -454,7 +447,7 @@ case "$firstArg" in
 		# As we have finished everything we pop out of the directory back into where the user
 		# was
 		#
-		popd
+		cd - >/dev/null 2>&1 || return 1
         ;;
 	i|info)
 		#
@@ -480,9 +473,9 @@ case "$firstArg" in
 		# itself to the new location
 		#
 		if [ -d "$secondArg"/"$thirdArg" ]; then
-			git mv -- $path/* "$secondArg"/"$thirdArg"
+			git mv -- "$path"/* "$secondArg"/"$thirdArg"
 		else
-			git mv -- $path "$secondArg"
+			git mv -- "$path" "$secondArg"
 		fi
 
 		#
@@ -522,7 +515,7 @@ case "$firstArg" in
 		# repository, path is something like 'main/poppler', so getting the
 		# basename of the parent means we get 'main'.
 		#
-        repo="$(basename ${old_path%/*})"
+        repo="$(basename "${old_path%/*}")"
 
 		#
 		# If the directory already exists then move all contents from inside
@@ -530,9 +523,9 @@ case "$firstArg" in
 		# itself to the new location
 		#
 		if [ -d $repo/"$secondArg" ]; then
-			git mv -- $old_path/* $repo/"$secondArg"
+			git mv -- "$old_path"/* "$repo"/"$secondArg"
 		else
-			git mv -- $old_path $repo/"$secondArg"
+			git mv -- "$old_path" "$repo"/"$secondArg"
 		fi
 
 		#
@@ -541,7 +534,7 @@ case "$firstArg" in
 		# if it fails for any reason, the user can fix it later and amend the
 		# commit
 		#
-		sed -e "s|^pkgname=.*|pkgname=$secondArg|g" -i $repo/"$secondArg"/APKBUILD
+		sed -e "s|^pkgname=.*|pkgname=$secondArg|g" -i "$repo"/"$secondArg"/APKBUILD
 
 		#
 		# Use the isclean function to check if we operating in a dirty git tree
@@ -556,7 +549,7 @@ case "$firstArg" in
 				git commit -m "$repo/$secondArg: rename from $thirdArg"
         fi
         ;;
-    p|p)
+    p|pick)
 	#
 	# We will need dialog(1) utility, check if we have an executable
 	#
