@@ -24,6 +24,7 @@
     a = add
     ap = add -p
     p = push --force-with-lease
+    pi = cherry-pick
 [github]
 	user = maxice8
 # for $deity's sake, check that anything we're getting is complete and sane on a regular basis
