@@ -144,7 +144,7 @@ case "$1" in
         #
         # Use alpine-stable-prefix to get the version
         #
-        version="$(alpine-stable-prefix "$secondArg")"
+        version="$(alpine-stable-prefix "$(git branch --show-current)")"
 
         #
         # Update AX_ASUM and AX_ABUILD to have the suffixes
