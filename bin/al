@@ -297,6 +297,16 @@ case "$firstArg" in
             flags="$flags $AX_ABUILD_ARGS"
         fi
 		
+        #
+        # Check if we have a valid binary for building the packages
+        # this can happen in cases where we want to build from a branch
+        # we didn't make a container yet
+        #
+        if ! command -v "$AX_ABUILD" >/dev/null 2>&1; then
+            printerr "no binary for building the package tried: '$AX_ABUILD'"
+            exit 1
+        fi
+
 		#
 		# AX_LOG is a variable that can be set so the output of the build
 		# process is logged to a temporary file
@@ -315,6 +325,14 @@ case "$firstArg" in
 		f "$path"
         ;;
 	c|checksum)
+		#
+        # Check if we have a binary for doing checksum
+		#
+        if ! command -v "$AX_ASUM" >/dev/null 2>&1; then
+            printerr "no binary for regenerating checksum, tried: '$AX_ASUM'"
+            exit 1
+        fi
+
 		#
 		# run the binary pointed by 'AX_ASUM' and ask it to regenerate the
 		# checksum for the package
