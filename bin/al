@@ -4,7 +4,7 @@
 # Global variables we use extensively in the script
 #
 #
-AX_ABUILD="${AX_ABUILD:=abuild}"
+AX_ABUILD=abuild
 AX_ASUM="${AX_ASUM:=abuild}"
 APORTSDIR="${APORTSDIR:=$PWD}"
 
@@ -13,7 +13,7 @@ APORTSDIR="${APORTSDIR:=$PWD}"
 # the wrong manner or when they call help
 #
 usage() {
-	printf "%s <<h|e|b|n|c|mr|d|l|f|u|w|i>|<m> <repository>|<r> <package>> [package]\\n" "$(basename $0)"
+	printf "%s <<h|e|b|n|c|mr|d|l|f|u|w|i>|<m> <repository>|<r> <package>> [package]\\n" "$(basename "$0")"
 }
 
 #
@@ -151,7 +151,6 @@ case "$1" in
         #
         if [ "$version" ]; then
             AX_ABUILD="$AX_ABUILD-$version"
-            AX_ASUM="$AX_ASUM-$version"
         fi
 
 		#
