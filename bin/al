@@ -39,6 +39,10 @@ show_help() {
  p|pick			  : interactively cherry pick commits between 2 branches"
 }
 
+append_to_options() {
+    printf '%s "%s" "%s" "%s"' "$1" "$2" "$3" "$4"
+}
+
 #
 # Strip the alpine linux prefix from the branch, if the branch is 3.11-openldap
 # then it will return openldap, if it doesn't have a prefix then do nothing
@@ -618,61 +622,61 @@ case "$firstArg" in
 	# then there is nothing to be backported
 	#
 	if [ -z "$commits" ]; then
-		printerr no changes between $target_branch and $source_branch "for" $path
+		printerr no changes between "$target_branch" and "$source_branch" "for" "$path"
 		exit 1
 	fi
 
-	# 	#
-	# 	# Create an array that will hold all the options that are to be available
-	# 	# in our checkboxes which are composed of:
-	# 	# SHA1 - title - off
-	# 	#
-	# 	# SHA1 is the SHA of the commit in question, we use those in git cherry-pick
-	# 	# title is the title of the commit, the user must know these
-	# 	# off is passed to the dialog(1) utility and makes the option not ticked by
-	# 	#  default
-	# 	#
+	#
+	# Create an array that will hold all the options that are to be available
+	# in our checkboxes which are composed of:
+	# SHA1 - title - off
+	#
+	# SHA1 is the SHA of the commit in question, we use those in git cherry-pick
+	# title is the title of the commit, the user must know these
+	# off is passed to the dialog(1) utility and makes the option not ticked by
+	#  default
+	#
 
-	# 	#
-	# 	# The options array must be created here or it will go out of scope if done
-	# 	# inside the for-loop
-	# 	#
-	# 	let options = []
+	#
+	# The options array must be created here or it will go out of scope if done
+	# inside the for-loop
+	#
+    options=""
 
-	# 	#
-	# 	# Iterate over all the commits, line-by-line
-	# 	#
-	# 	for line in @split($commits \n)
-	# 		#
-	# 		# Split the line by whitespace into an array, the first element
-	# 		# is the SHA1 and the other elements make up the title
-	# 		#
-	# 		let splitted = [@split($line)]
+	#
+	# Iterate over all the commits, line-by-line
+	#
+    OLDIFS="$IFS"
+    IFS="
+" # Have newline as the splitting elemnt
+	for line in $commits; do
+        sha1="$(printf -- "%s\\n" "$line" | cut -d ' ' -f1)"
+        title="$(printf -- "%s\\n" "$line" | cut -d ' ' -f2-)"
+		#
+		# Append the SHA1, title and off to the options array, the title
+		# must be quoted otherwise it will be split into various elements
+		# instead we must have a single element that is a string with
+		# whitespace present
+		#
+        options="$(append_to_options "$options" "$sha1" "$title" off)"
+	done
+    IFS="$OLDIFS"
 
-	# 		#
-	# 		# Append the SHA1, title and off to the options array, the title
-	# 		# must be quoted otherwise it will be split into various elements
-	# 		# instead we must have a single element that is a string with
-	# 		# whitespace present
-	# 		#
-	# 		let options = [@options @splitted[0] "@splitted[1..]" off]
-	# 	end
-
-	# 	#
-	# 	# Create a dialog with our options, the options picked by the user
-	# 	# will be present in the file .al-cherry-pick inside the XDG_RUNTIME_DIR
-	# 	# if one does not have that then just fail and let the user figure it out
-	# 	# XDG_RUNTIME_DIR is the best we have and it is not worth it to support
-	# 	# fallbacks for such a widely used feature
-	# 	#
-	# 	dialog \
-	# 		--colors \
-	# 		--keep-tite \
-	# 		--no-shadow \
-	# 		--no-mouse \
-	# 		--checklist "Pick commits for $path" \
-	# 		0 0 0 \
-	# 		@options ^> $XDG_RUNTIME_DIR/.al-cherry-pick
+	#
+	# Create a dialog with our options, the options picked by the user
+	# will be present in the file .al-cherry-pick inside the XDG_RUNTIME_DIR
+	# if one does not have that then just fail and let the user figure it out
+	# XDG_RUNTIME_DIR is the best we have and it is not worth it to support
+	# fallbacks for such a widely used feature
+	#
+	dialog \
+		--colors \
+		--keep-tite \
+		--no-shadow \
+		--no-mouse \
+		--checklist "Pick commits for $path" \
+		0 0 0 \
+        "$options" 2>"$XDG_RUNTIME_DIR"/.al-cherry-pick
 
 	# 	#
 	# 	# Read the SHA1 of the commits picked by the user, use the @split method
