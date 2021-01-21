@@ -25,6 +25,7 @@
     ap = add -p
     p = push --force-with-lease
     pi = cherry-pick
+    h = !gha | tee /dev/tty | copy
 [github]
 	user = maxice8
 # for $deity's sake, check that anything we're getting is complete and sane on a regular basis
