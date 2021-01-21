@@ -16,24 +16,24 @@ for spec; do
         based=""
     fi
 
-	if git rev-parse --quiet --verify $branch >/dev/null 2>&1; then
-		git switch --quiet $branch || \
+	if git rev-parse --quiet --verify "$branch" >/dev/null 2>&1; then
+		git switch --quiet "$branch" || \
 			printerr "Failed to switch to '$branch'" && \
 			printok "Switched to '$branch'"
     else    
         if [ -n "$based" ]; then
-			git switch --quiet --force-create $branch $remote/$based || \
+			git switch --quiet --force-create "$branch" "$remote"/"$based" || \
 				printerr "Failed to switch to '$branch'" && \
 				printok "Switched to newly created '$branch' based on '$based'"
 		else
-			_REALBASE="$(alpine-stable-prefix $branch)"
+			_REALBASE="$(alpine-stable-prefix "$branch")"
 			if [ -n "$_REALBASE" ]; then
-				git switch --quiet --force-create $branch $remote/$_REALBASE-stable || \
+				git switch --quiet --force-create "$branch" "$remote"/"$_REALBASE"-stable || \
 					printerr "Failed to switch to '$branch'" && \
 					printok "Switched to newly created '$branch' based on '$_REALBASE-stable'"
 			else
                 tbranch="$(tracking-branch)"
-				git switch --quiet --force-create $branch $remote/$tbranch || \
+				git switch --quiet --force-create "$branch" "$remote"/"$tbranch" || \
 					printerr "Failed to switch to '$branch'" && \
 					printok "Switched to newly created '$branch' based on '$tbranch'"
 			fi
