@@ -11,8 +11,8 @@
     sta = stash
     up = pull --rebase
     re = remote
-    prch = !git show --color=always @{u}..HEAD
-    prss = !git diff --stat --color=always @{u}..HEAD
+    prch = !git show --color=auto @{u}..HEAD
+    prss = !git diff --stat --color=auto @{u}..HEAD
     cp = log @{u}.. --pretty='%C(yellow)%h %C(white)%s'
     df = diff
     bre = branch -m
@@ -26,6 +26,7 @@
     p = push --force-with-lease
     pi = cherry-pick
     h = !gha | tee /dev/tty | copy
+    show-title = show --no-patch --format=%s
 [github]
 	user = maxice8
 # for $deity's sake, check that anything we're getting is complete and sane on a regular basis
