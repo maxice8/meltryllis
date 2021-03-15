@@ -1,0 +1,2 @@
+#!/bin/sh
+basename $(git symbolic-ref refs/remotes/${1:-origin}/HEAD 2>/dev/null) 2>/dev/null || echo master
