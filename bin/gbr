@@ -32,8 +32,7 @@ for spec; do
 					printerr "Failed to switch to '$branch'" && \
 					printok "Switched to newly created '$branch' based on '$_REALBASE-stable'"
 			else
-                tbranch="$(tracking-branch)"
-                tbranch=master
+                tbranch="$(main-branch origin)"
 				git switch --quiet --force-create "$branch" "$remote"/"$tbranch" || \
 					printerr "Failed to switch to '$branch'" && \
 					printok "Switched to newly created '$branch' based on '$tbranch'"
