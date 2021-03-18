@@ -1,0 +1,25 @@
+#!/bin/sh
+[ $# -gt 2 ] || exit 99
+
+list_has() {
+	local needle="$1"
+	local i
+	shift
+	for i in $@; do
+		[ "$needle" = "$i" ] && return 0
+		[ "$needle" = "!$i" ] && return 1
+	done
+	return 1
+}
+
+# Source
+: ${dep:=${1:?'need a dependency'}}
+
+shift
+
+for apkbuild; do
+    . $apkbuild
+    if list_has $dep $depends $makedepends $checkdepends; then
+        echo $apkbuild
+    fi
+done

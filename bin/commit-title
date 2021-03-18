@@ -1,0 +1,2 @@
+#!/bin/sh
+exec git show -s --format=%s HEAD
