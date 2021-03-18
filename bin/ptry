@@ -1,14 +1,14 @@
-#!/usr/bin/env ion
+#!/bin/sh
 # print the command and it's output and also copy to clipboard
 # useful to show to people
-test $len(@args) -eq 1 && exit 1
+[ $# -eq 1 ] && exit 1
 
-let prompt = ''
-if test $(id -u) -eq 0
-	let prompt = '#'
+prompt=""
+if test $(id -u) -eq 0; then
+	prompt="#"
 else
-	let prompt = '$'
-end
+	prompt="$"
+fi
 
-echo $prompt @args[1..]
-@args[1..]
+printf -- "%s %s\\n" $prompt "$*"
+$@
