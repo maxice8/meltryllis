@@ -4,11 +4,6 @@
 " Start pathogen
 call plug#begin()
 
-" For Ion shell
-Plug 'vmchale/ion-vim', { 'for': 'ion' }
-
-Plug 'junegunn/vader.vim'
-
 Plug 'editorconfig/editorconfig-vim'
 
 " Support for scdoc, used to write manapges
@@ -21,7 +16,7 @@ Plug 'https://gitlab.alpinelinux.org/Leo/apkbuild.vim.git'
 " Shows + - ~ signs on the left-side corner based on git differences
 Plug 'airblade/vim-gitgutter'
 
-Plug 'morhetz/gruvbox'
+Plug 'srcery-colors/srcery-vim'
 
 " Statusbar on the bottom that shows important information like:
 " - vim mode
@@ -58,7 +53,7 @@ let g:lightline.component_function = {
     \   }
     \}
 
-let g:lightline.colorscheme = 'gruvbox'
+let g:lightline.colorscheme = 'srcery'
 
 let g:lightline.separator = { 'left': '', 'right': '' }
 let g:lightline.subseparator = { 'left': '|', 'right': '|' }
@@ -199,20 +194,8 @@ if (has('termguicolors'))
   set termguicolors
 endif
 
-set t_Co=256
-
-let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-
-set background=dark    " Setting dark mode
-
-let g:gruvbox_italic=1
-
-let g:gruvbox_contrast_dark = "hard"
-
-let g:gruvbox_improved_warnings=1
-
-colorscheme gruvbox
+let g:srcery_italic = 1
+colorscheme srcery
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
