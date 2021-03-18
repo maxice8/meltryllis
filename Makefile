@@ -1,19 +1,13 @@
 LN := ln -sfvr
 MKDIR := mkdir -pv
 
-DOTFILES = profile
 SUBDIRS = .config bin usr .local
 
-.PHONY: $(DOTFILES) $(SUBDIRS)
+.PHONY: $(SUBDIRS)
 
-all: symlink subdirs
-
-symlink: $(DOTFILES)
+all: subdirs
 
 subdirs: $(SUBDIRS)
 
 $(SUBDIRS):
 	cd $@ && $(MAKE)
-
-$(DOTFILES):
-	@$(LN) $(PWD)/$@ $(HOME)/.$@
