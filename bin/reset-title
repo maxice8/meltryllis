@@ -1,5 +1,0 @@
-#!/usr/bin/env ion
-test $len(@args) -lt 2 && exit 1
-for mr in @args[1..]
-	edmr mr title="$(git show --oneline -s --format=%s)"
-end
