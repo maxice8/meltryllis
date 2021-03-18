@@ -21,3 +21,16 @@ highlight article "\\[image\\ [0-9]+\\]" green default
 notify-always no
 notify-program notify-send
 pager ""
+
+# srcery newsboat
+# https://github.com/srcery-colors/srcery-shell
+
+# interface colors {{{
+
+color info              color15 color235 bold
+color listfocus         color10 color237
+color listfocus_unread  color9  color237
+color listnormal        color7  default
+color listnormal_unread color15 default
+
+# }}}
