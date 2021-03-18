@@ -1,0 +1,3 @@
+#!/bin/sh
+[ $# -eq 0 ] && exit 1
+exec youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]' --merge-output-format mp4 "$@"
