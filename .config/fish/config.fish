@@ -2,7 +2,7 @@
 set -gx fish_greeting ''
 
 # Set a SANE path
-set -gx PATH /usr/local/bin /usr/local/sbin /usr/bin /usr/sbin
+set -gx PATH /usr/local/bin /usr/local/sbin /usr/bin /usr/sbin /bin /sbin
 
 # Version 3.2.0 and above has fish_add_path
 if test (echo $FISH_VERSION | tr -d '.') -gt 320
