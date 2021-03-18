@@ -17,6 +17,8 @@ if hash nvim &>/dev/null
     set -gx VISUAL nvim
 end
 
+set -gx PAGER less
+
 # Set APORTSDIR and MANPAGER
 set -gx APORTSDIR "$HOME"/Repositories/aports
 set -gx MANPAGER "nvim -c 'set ft=man' -"
