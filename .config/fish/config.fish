@@ -1,3 +1,4 @@
+# You're annoying please stop
 set -gx fish_greeting ''
 
 # Set a SANE path
