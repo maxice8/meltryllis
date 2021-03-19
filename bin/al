@@ -64,9 +64,9 @@ strip_al() {
 #
 run() {
     [ "$1" ] || [ "$2" ] || return 1
-	pushd "$APORTSDIR"/"$1" >/dev/null 2>&1
+	cd "$APORTSDIR"/"$1" >/dev/null 2>&1
 	$2
-	popd >/dev/null 2>&1
+	cd - >/dev/null 2>&1
 }
 
 #
