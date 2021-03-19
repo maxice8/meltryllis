@@ -190,9 +190,7 @@ syntax on
 set guicursor=
 
 " Colorscheme
-if (has('termguicolors'))
-  set termguicolors
-endif
+set termguicolors
 
 let g:srcery_italic = 1
 colorscheme srcery
