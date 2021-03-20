@@ -1,6 +1,0 @@
-#!/bin/sh
-if [ -n $WAYLAND_DISPLAY ]; then
-	ydotool click 2
-else
-	xdotool click 3
-fi
