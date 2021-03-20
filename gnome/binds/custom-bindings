@@ -1,0 +1,19 @@
+[custom0]
+binding='<Super>Return'
+command='alacritty'
+name='Open Terminal'
+
+[custom1]
+binding='<Primary>e'
+command='ydotool click left'
+name='Press Left'
+
+[custom2]
+binding='<Primary>r'
+command='ydotool click right'
+name='Press Right'
+
+[custom3]
+binding='Launch3'
+command='press-left'
+name='Press Left'
