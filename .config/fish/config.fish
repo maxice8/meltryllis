@@ -1,27 +1,27 @@
 # You're annoying please stop
-set -gx fish_greeting ''
+set --global --export fish_greeting ''
 
 # Add our scripts and our flatpaks
 fish_add_path --global --prepend ~/bin ~/.local/share/flatpak/exports/bin
 
 # If we have nvim then use it
 if hash nvim &>/dev/null
-    set -gx EDITOR nvim
-    set -gx VISUAL nvim
+    set --global --export EDITOR nvim
+    set --global --export VISUAL nvim
 end
 
-set -gx PAGER less
+set --global --export PAGER less
 
 # Set APORTSDIR and MANPAGER
-set -gx APORTSDIR "$HOME"/Repositories/aports
-command -q nvim; and set -gx MANPAGER "nvim -c 'set ft=man' -"
+set --global --export APORTSDIR "$HOME"/Repositories/aports
+command -q nvim; and set --global --export MANPAGER "nvim -c 'set ft=man' -"
 
 if test -n "$SSH_CLIENT"
     if test (echo -n "$SSH_CLIENT" | string split ' ' | tail -1) = 2222
-        set -gx BROWSER 'flatpak-spawn --host firefox'
+        set --global --export BROWSER 'flatpak-spawn --host firefox'
     end
 end
 
 if test -n "$TOOLBOX_PATH"
-    set -gx BROWSER 'flatpak-spawn --host firefox'
+    set --global --export BROWSER 'flatpak-spawn --host firefox'
 end
