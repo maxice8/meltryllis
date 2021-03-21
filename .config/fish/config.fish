@@ -1,15 +1,8 @@
 # You're annoying please stop
 set -gx fish_greeting ''
 
-# Set a SANE path
-set -gx PATH /usr/local/bin /usr/local/sbin /usr/bin /usr/sbin /bin /sbin
-
-# Version 3.2.0 and above has fish_add_path
-if test (echo $FISH_VERSION | tr -d '.') -gt 320
-    fish_add_path -p ~/bin ~/.local/share/flatpak/exports/bin
-else
-    set -gx PATH ~/bin ~/.local/share/flatpak/exports/bin $PATH
-end
+# Add our scripts and our flatpaks
+fish_add_path --global --prepend ~/bin ~/.local/share/flatpak/exports/bin
 
 # If we have nvim then use it
 if hash nvim &>/dev/null
@@ -21,7 +14,7 @@ set -gx PAGER less
 
 # Set APORTSDIR and MANPAGER
 set -gx APORTSDIR "$HOME"/Repositories/aports
-set -gx MANPAGER "nvim -c 'set ft=man' -"
+command -q nvim; and set -gx MANPAGER "nvim -c 'set ft=man' -"
 
 if test -n "$SSH_CLIENT"
     if test (echo -n "$SSH_CLIENT" | string split ' ' | tail -1) = 2222
