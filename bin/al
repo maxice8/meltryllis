@@ -448,7 +448,7 @@ case "$firstArg" in
 		# Push into the work directory given to us, we will pop out of it after we are
 		# done
 		#
-		cd $workdir >/dev/null 2>&1 || return 1
+		cd $workdir >/dev/null 2>&1 || exit 1
 
 		#
 		# Initialize a git repository and add all files to it, then make an initial commit
@@ -468,7 +468,7 @@ case "$firstArg" in
 		# As we have finished everything we pop out of the directory back into where the user
 		# was
 		#
-		cd - >/dev/null 2>&1 || return 1
+		cd - >/dev/null 2>&1 || exit 1
         ;;
 	i|info)
 		#
