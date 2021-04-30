@@ -1,6 +1,6 @@
 #!/bin/sh
 max_retries=5
-delay_between_tries=4
+delay_between_tries=2
 
 opts=""
 mrs=""
@@ -24,16 +24,15 @@ mrcount="$(printf -- "%s" "$mrs" | tr ' ' '\n' | wc -l)"
 for mr in $mrs; do
     tries=0
 
-    if glab mr rebase "$mr"; then
-        while [ $tries -lt $max_retries ]; do
-            if glab mr merge "$mr" \
-                --when-pipeline-succeeds=$(test $mrcount -lt 2 && echo true || echo false) \
-                $opts; then
-                break   
-            else
-                tries=$((tries + 1))
-                sleep $delay_between_tries
-            fi
-        done
-    fi
+    while [ $tries -lt $max_retries ]; do
+        if echo | glab mr merge "$mr" \
+            --when-pipeline-succeeds=$(test $mrcount -lt 2 && echo true || echo false) \
+            --rebase \
+            $opts; then
+            break   
+        else
+            tries=$((tries + 1))
+            sleep $delay_between_tries
+        fi
+    done
 done
