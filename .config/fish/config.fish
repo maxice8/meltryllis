@@ -23,5 +23,5 @@ if test -n "$SSH_CLIENT"
 end
 
 if test -n "$TOOLBOX_PATH"
-    set --global --export BROWSER 'flatpak-spawn --host firefox'
+    set --global --export BROWSER 'flatpak-spawn --host flatpak --user run org.mozilla.firefox'
 end
