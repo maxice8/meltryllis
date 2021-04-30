@@ -2,11 +2,13 @@
 set -e
 
 user="${1:?'missing first arg, username'}"
+shift
 
-if [ -z "${2:-}" ]; then
+if [ -z "${1:-}" ]; then
 	branch="$(git branch --show-current)"
 else
-	branch="$2"
+	branch="$1"
+    shift
 fi
 
 # We expect this is in SSH because it is the only protocol we care about
@@ -14,4 +16,4 @@ fi
 url="$(git remote get-url --push "$(guess-remote)" |
 	sed -r "s|:(.+)/|:$user/|")"
 
-git push -f "$url" HEAD:"$branch"
+git push --force "$@" "$url" HEAD:"$branch"
