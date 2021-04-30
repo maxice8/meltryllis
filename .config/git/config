@@ -25,7 +25,7 @@
     ap = add -p
     p = push --force-with-lease
     pi = cherry-pick
-    h = !gha | tee /dev/tty | copy
+    h = !gha "$@" | tee /dev/tty | copy
     show-title = show --no-patch --format=%s
 [github]
 	user = maxice8
