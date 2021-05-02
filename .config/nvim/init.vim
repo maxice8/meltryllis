@@ -16,8 +16,6 @@ Plug 'https://gitlab.alpinelinux.org/Leo/apkbuild.vim.git'
 " Shows + - ~ signs on the left-side corner based on git differences
 Plug 'airblade/vim-gitgutter'
 
-Plug 'srcery-colors/srcery-vim'
-
 " Statusbar on the bottom that shows important information like:
 " - vim mode
 " - file path
@@ -27,6 +25,8 @@ Plug 'itchyny/lightline.vim'
 Plug 'maximbaz/lightline-ale'
 
 Plug 'dense-analysis/ale'
+
+Plug 'morhetz/gruvbox'
 
 "
 " Add Plugins
@@ -53,7 +53,7 @@ let g:lightline.component_function = {
     \   }
     \}
 
-let g:lightline.colorscheme = 'srcery'
+let g:lightline.colorscheme = 'gruvbox'
 
 let g:lightline.separator = { 'left': '', 'right': '' }
 let g:lightline.subseparator = { 'left': '|', 'right': '|' }
@@ -192,8 +192,9 @@ set guicursor=
 " Colorscheme
 set termguicolors
 
-let g:srcery_italic = 1
-colorscheme srcery
+let g:gruvbox_italic = 1
+let g:gruvbox_contrast_dark = "hard"
+colorscheme gruvbox
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
