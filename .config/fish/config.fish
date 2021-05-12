@@ -4,6 +4,9 @@ set --global --export fish_greeting ''
 # Add our scripts and our flatpaks
 fish_add_path --global --prepend ~/bin ~/.local/share/flatpak/exports/bin
 
+# Add go tools
+fish_add_path --global --append ~/go/bin
+
 # If we have nvim then use it
 if hash nvim &>/dev/null
     set --global --export EDITOR nvim
