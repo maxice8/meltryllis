@@ -21,18 +21,12 @@ if [ -n "$AMR_DRY_RUN" ]; then
 fi
 
 mrcount="$(printf -- "%s" "$mrs" | tr ' ' '\n' | wc -l)"
-for mr in $mrs; do
-    tries=0
 
-    while [ $tries -lt $max_retries ]; do
-        if echo | glab mr merge "$mr" \
-            --when-pipeline-succeeds=$(test $mrcount -lt 2 && echo true || echo false) \
-            --rebase \
-            $opts; then
-            break   
-        else
-            tries=$((tries + 1))
-            sleep $delay_between_tries
-        fi
-    done
+for mr in $mrs; do
+glab mr merge \
+	--yes \
+	--when-pipeline-succeeds=$(test $mrcount -lt 2 && echo true || echo false) \
+	--rebase \
+	$opts \
+        $mr
 done
