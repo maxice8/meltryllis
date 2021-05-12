@@ -1,6 +1,6 @@
 #!/bin/sh
-max_retries=5
-delay_between_tries=2
+# pm - ports merge
+# uses `glab` to merge a merge request
 
 opts=""
 mrs=""
