@@ -6,6 +6,10 @@ opts=""
 mrs=""
 for arg; do
     case "$arg" in
+        --help) 
+            glab --help
+            exit 0
+            ;;
         -*) opts="$opts $arg" ;;
         '') ;;
         *) mrs="$mrs $arg" ;;
@@ -23,10 +27,10 @@ fi
 mrcount="$(printf -- "%s" "$mrs" | tr ' ' '\n' | wc -l)"
 
 for mr in $mrs; do
-glab mr merge \
-	--yes \
-	--when-pipeline-succeeds=$(test $mrcount -lt 2 && echo true || echo false) \
-	--rebase \
-	$opts \
+    glab mr merge \
+    	--yes \
+    	--when-pipeline-succeeds=$(test $mrcount -lt 2 && echo true || echo false) \
+    	--rebase \
+    	$opts \
         $mr
 done
