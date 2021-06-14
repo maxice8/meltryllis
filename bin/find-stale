@@ -1,24 +1,29 @@
 #!/bin/sh
-for path in "$@"; do
-	if ! [ -f "$path"/APKBUILD ]; then
-		continue
-	fi
+for repository; do
+    for dir in "$repository"/*; do
+    (
+	    if ! [ -f "$dir"/APKBUILD ]; then
+	    	exit
+	    fi
 
-	. "$path"/APKBUILD
+        # shellcheck disable=SC1090
+	    . "$dir"/APKBUILD
 
-	(
-		for file in "$path"/*; do
-			if [ ! -f "$file" ] || [ "${file##*/}" = APKBUILD ]; then
-				continue
-			fi
-			if echo "$source" | grep -q "${file##*/}"; then
-				continue
-			fi
-			if echo "${file##*/}" | grep -Eq ".((post|pre)-(upgrade|(de|)install)|.trigger)$"; then
-				continue
-			fi
-			printf "%s\\n" "$file"
-		done
-	) &
+		    for file in "$dir"/*; do
+			    if [ ! -f "$file" ] || [ "${file##*/}" = APKBUILD ]; then
+				    continue
+			    fi
+                # shellcheck disable=SC2154
+			    if echo "$source" | grep -q "${file##*/}"; then
+				    continue
+			    fi
+			    if echo "${file##*/}" | grep -Eq ".((post|pre)-(upgrade|(de|)install)|.trigger)$"; then
+				    continue
+			    fi
+			    printf "%s\\n" "$file"
+		    done
+	    
+    ) &
+    done
 done
 wait
