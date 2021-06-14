@@ -47,7 +47,7 @@ isupdate() {
 
 repomv() {
 	# Try to guess from which repo a package has been moved FROM and TO
-	git diff-index --name-status --cached HEAD -- '**/APKBUILD' | paste -sd '\t' | while read -r _ from _ to; do
+	git diff-index --name-status --cached HEAD -- '**/APKBUILD' | paste -sd '\t' | while read -r _ from _ _; do
 		printf 'move from %s' "$(printf "%s" "$from" | cut -d / -f1)"
 	done
 }
@@ -71,7 +71,7 @@ context() {
 lcp=$(git diff-index --name-only --cached HEAD | longest_common_prefix)
 
 case "$lcp" in
-	[^.]*/*) prepend_msg "$(printf "%s" "$lcp" | cut -d/ -f1-2): $(context)";;
+	[!.]*/*) prepend_msg "$(printf "%s" "$lcp" | cut -d/ -f1-2): $(context)";;
 	*)
 		pkgname="$(git diff-index --name-only --cached HEAD --diff-filter=ACMR -- '**/APKBUILD')"
 		pkgname="${pkgname%/*}"
