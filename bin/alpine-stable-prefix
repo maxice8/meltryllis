@@ -8,5 +8,6 @@ for branch; do
         3.11*) echo 3.11 ;; 
         3.12*) echo 3.12 ;;
         3.13*) echo 3.13 ;;
+        3.14*) echo 3.14 ;;
     esac
 done
