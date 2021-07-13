@@ -1,3 +1,4 @@
 #!/bin/sh
 branch="$(tracking-branch)"
-DLBR_LOCAL=y dlbr $(git branch --merged $branch | grep -v -E "(master|$branch)" | sed 's/^..//;s/ .*//')
+# DLBR_LOCAL=y
+dlbr $(git branch --merged $branch | grep -v -E "(master|$branch)" | sed 's/^..//;s/ .*//')
