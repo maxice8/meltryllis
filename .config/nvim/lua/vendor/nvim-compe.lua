@@ -39,7 +39,7 @@ vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
 -- The below is copied directly from github readme of nvim-compe - https://github.com/hrsh7th/nvim-compe
 -- I guess those are the default values. But if i don't put there in my init.lua file, the autocompletion doesn't
 -- trigger without me pressing Ctrl-n
-require "compe".setup {
+require('compe').setup {
   enabled = true,
   autocomplete = true,
   debug = false,
@@ -60,7 +60,8 @@ require "compe".setup {
     nvim_lsp = false,
     nvim_lua = true,
     vsnip = false,
-    ultisnips = false
+    ultisnips = false,
+	nvim_treesitter = true
   }
 }
 

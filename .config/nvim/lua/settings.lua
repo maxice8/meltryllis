@@ -1,9 +1,5 @@
 -- Set colorscheme (order is important here)
 vim.o.termguicolors = true
-vim.o.background = 'dark'
-vim.g.gruvbox_italic = true
-vim.g.gruvbox_contrast_dark = 'hard'
-vim.cmd([[colorscheme gruvbox]])
 
 -- Automatically read the file when it is changed from the outside
 vim.o.autoread = true
@@ -14,6 +10,19 @@ vim.o.clipboard = vim.o.clipboard .. 'unnamedplus'
 
 -- Use cursor from the terminal
 vim.g.guicursor = ''
+
+-- Enable mouse mode
+vim.o.mouse = 'a'
+
+-- Enable break indent
+vim.o.breakindent = true
+
+-- Save undo history
+vim.cmd [[set undofile]]
+
+-- Decrease update time
+vim.o.updatetime = 250
+vim.wo.signcolumn = 'yes'
 
 -- doing vim.o.tabstop does not work. tabstop only works as a buffer option when
 -- trying to set with meta accessors ideally, i guess they should be set per buffer
