@@ -43,13 +43,13 @@ packer.startup(function()
         ft = {'apkbuild'}
     }
     
-    -- Shows + - ~ signs on the left-side corner based on git differences
-    use {
-		'airblade/vim-gitgutter',
-		setup = function()
-			vim.g.gitgutter_realtime = 1
-			vim.g.gitgutter_eager = 0
-			vim.g.gitgutter_override_sign_column_highlight = 0
+	use {
+		'lewis6991/gitsigns.nvim',
+		requires = {
+			'nvim-lua/plenary.nvim'
+		},
+		config = function()
+			require('gitsigns').setup()
 		end
 	}
     
@@ -76,16 +76,12 @@ packer.startup(function()
 
 	-- Colorscheme
 	use {
-		'sainnhe/gruvbox-material',
-		setup = function()
+		'navarasu/onedark.nvim',
+		config = function()
 			vim.o.termguicolors = true
 			vim.o.background = 'dark'
-			vim.g.gruvbox_material_palette = 'material'
-			vim.g.gruvbox_material_background = 'hard'
-			vim.g.gruvbox_material_enable_italic = true
-		end,
-		config = function()
-			vim.cmd([[colorscheme gruvbox-material]])
+			vim.g.onedark_style = 'darker'
+			require('onedark').setup()
 		end
 	}
 
@@ -97,7 +93,7 @@ packer.startup(function()
 			require('lualine').setup{
 				options = {
 					icons_enabled = false,
-					theme = 'gruvbox'
+					theme = 'onedark'
 				}
 			}
 		end
