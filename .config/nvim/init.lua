@@ -1,8 +1,14 @@
--- Install packer
-local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
-
 -- Set a sane leader here
 vim.g.mapleader = ' '
+
+-- Sensible defaults
+require('settings')
+
+-- Keymaps
+require('keymaps')
+
+-- Install packer
+local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
@@ -16,8 +22,14 @@ autocmd BufWritePost init.lua PackerCompile
 augroup end
 ]], false)
 
-local use = require('packer').use
-require('packer').startup(function()
+vim.cmd [[packadd packer.nvim]]
+
+local packer = require('packer')
+local use = packer.use
+packer.startup(function()
+	-- Packer itself
+	use 'wbthomason/packer.nvim'
+
     -- Support for scdoc, used to write manapges
     use {
         'gpanders/vim-scdoc',
@@ -59,21 +71,21 @@ require('packer').startup(function()
 	-- Completion
 	use {
 		'hrsh7th/nvim-compe',
-		setup = function() require('vendor.nvim-compe') end -- Use the file we vendor from upstream
+		config = function() require('vendor.nvim-compe') end -- Use the file we vendor from upstream
 	}
 
 	-- Colorscheme
 	use {
-		'npxbr/gruvbox.nvim',
-		requires = { 'rktjmp/lush.nvim' },
+		'sainnhe/gruvbox-material',
 		setup = function()
 			vim.o.termguicolors = true
 			vim.o.background = 'dark'
-			vim.g.gruvbox_italic = true
-			vim.g.gruvbox_contrast_dark = 'hard'
+			vim.g.gruvbox_material_palette = 'material'
+			vim.g.gruvbox_material_background = 'hard'
+			vim.g.gruvbox_material_enable_italic = true
 		end,
 		config = function()
-			vim.cmd([[colorscheme gruvbox]])
+			vim.cmd([[colorscheme gruvbox-material]])
 		end
 	}
 
@@ -81,7 +93,7 @@ require('packer').startup(function()
 	use {
   		'hoob3rt/lualine.nvim',
   		requires = {'kyazdani42/nvim-web-devicons', opt = true},
-		setup = function()
+		config = function()
 			require('lualine').setup{
 				options = {
 					icons_enabled = false,
@@ -90,28 +102,4 @@ require('packer').startup(function()
 			}
 		end
 	}
-
-	-- Highlight, edit, and navigate code using a fast incremental parsing library
-	use { 
-		'nvim-treesitter/nvim-treesitter',
-		run = ':TSUpdate',
-		setup = function()
-			require('nvim-treesitter.configs').setup {
-				indent = {
-					enable = true,
-				},
-				highlight = {
-					enable = true,
-				}
-			}
-		end
-	}
-	-- Additional textobjects for treesitter
-	use 'nvim-treesitter/nvim-treesitter-textobjects'
 end)
-
--- Sensible defaults
-require('settings')
-
--- Keymaps
-require('keymaps')
