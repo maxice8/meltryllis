@@ -49,7 +49,13 @@ packer.startup(function()
 			'nvim-lua/plenary.nvim'
 		},
 		config = function()
-			require('gitsigns').setup()
+			require('gitsigns').setup{
+				sign_priority = 6,
+				use_decoration_api = true,
+				use_internal_diff = true,
+				linehl = false,
+				numhl = false
+			}
 		end
 	}
     
@@ -68,14 +74,17 @@ packer.startup(function()
 		end
     }
 
-	-- Completion
-	use {
+	use { -- Completion
 		'hrsh7th/nvim-compe',
-		config = function() require('vendor.nvim-compe') end -- Use the file we vendor from upstream
+		config = function() 
+			vim.o.completeopt = "menuone,noselect"
+			require('vendor.nvim-compe')
+		end -- Use the file we vendor from upstream
 	}
 
-	-- Colorscheme
-	use {
+	use "hrsh7th/vim-vsnip" -- Snippets framework
+
+	use { -- Colorscheme
 		'navarasu/onedark.nvim',
 		config = function()
 			vim.o.termguicolors = true
@@ -85,8 +94,7 @@ packer.startup(function()
 		end
 	}
 
-	-- Lualine
-	use {
+	use { -- Nice bar
   		'hoob3rt/lualine.nvim',
   		requires = {'kyazdani42/nvim-web-devicons', opt = true},
 		config = function()
@@ -97,5 +105,37 @@ packer.startup(function()
 				}
 			}
 		end
+	}
+
+	use { -- Unified highlight for all filetypes
+        'nvim-treesitter/nvim-treesitter',
+        run = ':TSUpdate',
+		config = function()
+			require('nvim-treesitter.configs').setup{
+				ensure_installed = {
+					'bash',
+					'fish',
+					'yaml',
+					'toml',
+					'python',
+					'go',
+					'c',
+					'cpp',
+					'cmake',
+					'lua',
+					'json'
+				},
+				highlight = {
+					enable = true
+				},
+				indent = {
+					enable = true
+				}
+			}
+		end
+    }
+
+	use { -- LSP configurations for builtin LSP client
+		'neovim/nvim-lspconfig'
 	}
 end)
