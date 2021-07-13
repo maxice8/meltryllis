@@ -28,6 +28,3 @@ end
 if test -n "$TOOLBOX_PATH"
     set --global --export BROWSER 'flatpak-spawn --host flatpak --user run org.mozilla.firefox'
 end
-
-# Set gruvbox
-theme_gruvbox dark hard
