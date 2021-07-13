@@ -58,16 +58,23 @@ packer.startup(function()
 			}
 		end
 	}
-    
-    use {
+
+	use { -- Make the background of a string representing a color with the color it represents
+		'norcalli/nvim-colorizer.lua',
+		config = function()
+			require('colorizer').setup{
+				'*', -- highlight all filetypes
+			}
+		end
+	}
+
+    use { -- Linting and Fixing of source code
         'dense-analysis/ale',
         ft = {'sh', 'bash', 'markdown', 'apkbuild', 'vim', 'cpp', 'lua', 'go'},
         cmd = 'ALEEnable',
         setup = function() 
-			vim.g.ale_completion_enabled = 1
-			vim.g.ale_linters = {
-				['apkbuild'] = {'apkbuild_lint', 'secfixes_check'}
-			}
+			vim.g.ale_completion_enabled = false
+			vim.g.ale_fix_on_save = true
 		end,
 		config = function()
 			vim.cmd[[ALEEnable]]
@@ -81,28 +88,67 @@ packer.startup(function()
 			require('vendor.nvim-compe')
 		end -- Use the file we vendor from upstream
 	}
-
+    use "rafamadriz/friendly-snippets" -- Some nice snippets
 	use "hrsh7th/vim-vsnip" -- Snippets framework
 
 	use { -- Colorscheme
-		'navarasu/onedark.nvim',
+		'sainnhe/gruvbox-material',
+		requires = { 'rktjmp/lush.nvim' },
 		config = function()
 			vim.o.termguicolors = true
-			vim.o.background = 'dark'
-			vim.g.onedark_style = 'darker'
-			require('onedark').setup()
+			vim.g.gruvbox_material_background = 'hard'
+			vim.g.gruvbox_material_enable_italic = true
+			vim.g.gruvbox_material_enable_bold = false
+			vim.g.gruvbox_material_better_performance = true
+			vim.g.gruvbox_material_palette = 'material'
+			vim.cmd[[colorscheme gruvbox-material]]
+		end
+	}
+
+	use { -- Autopairing support
+		'windwp/nvim-autopairs',
+		config = function()
+			require('nvim-autopairs').setup()
+			require("nvim-autopairs.completion.compe").setup({
+				map_cr = true, -- map <CR> on insert mode
+				map_complete = true -- it will auto insert `(` after select function or method buffer
+			})
 		end
 	}
 
 	use { -- Nice bar
   		'hoob3rt/lualine.nvim',
+		after = 'gruvbox-material',
   		requires = {'kyazdani42/nvim-web-devicons', opt = true},
 		config = function()
 			require('lualine').setup{
 				options = {
 					icons_enabled = false,
-					theme = 'onedark'
-				}
+					theme = 'gruvbox_material',
+				},
+				sections = {
+					lualine_a = {'mode'},
+					lualine_b = {'branch'},
+					lualine_c = {
+						'filename',
+						{
+							'diagnostics',
+							sources = { 'nvim_lsp', 'ale' }, -- Only 2 sources we use
+						}
+					},
+					lualine_x = {'encoding', 'fileformat', 'filetype'},
+					lualine_y = {'diff', 'progress'},
+					lualine_z = {'location'}
+				},
+				inactive_sections = {
+					lualine_a = {},
+					lualine_b = {},
+					lualine_c = {'filename'},
+					lualine_x = {'location'},
+					lualine_y = {},
+					lualine_z = {}
+				},
+				tabline = {}
 			}
 		end
 	}
@@ -136,6 +182,23 @@ packer.startup(function()
     }
 
 	use { -- LSP configurations for builtin LSP client
-		'neovim/nvim-lspconfig'
+		'neovim/nvim-lspconfig',
+		config = function()
+			local golang_setup = {
+				on_attach = function(client, bufnr)
+					require('lsp_signature').on_attach({
+						bind = true,
+						handler_opts = {
+							border = "single"
+						}
+					})
+				end,
+			}
+			require('lspconfig').gopls.setup(golang_setup)
+		end
+	}
+
+	use { -- Show signature of a function as you write its arguments
+		'ray-x/lsp_signature.nvim'
 	}
 end)

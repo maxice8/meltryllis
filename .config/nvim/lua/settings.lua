@@ -1,6 +1,8 @@
 -- Set colorscheme (order is important here)
 vim.o.termguicolors = true
 
+-- autoindent is not very smart in general
+vim.o.autoindent = false
 -- Automatically read the file when it is changed from the outside
 vim.o.autoread = true
 -- Sets how many lines of history NEOVIM has to remember
