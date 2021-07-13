@@ -1,13 +1,9 @@
 -- Set colorscheme (order is important here)
 vim.o.termguicolors = true
-vim.g.material_style = 'darker'
-vim.g.material_italic_comments = true
-vim.g.material_italic_keywords = true
-vim.g.material_italic_functions = true
-vim.g.material_italic_variables = false
-vim.g.material_contrast = true
-vim.g.material_borders = false
-require('material').set()
+vim.o.background = 'dark'
+vim.g.gruvbox_italic = true
+vim.g.gruvbox_contrast_dark = 'hard'
+vim.cmd([[colorscheme gruvbox]])
 
 -- Automatically read the file when it is changed from the outside
 vim.o.autoread = true

@@ -45,7 +45,7 @@ require('packer').startup(function()
 	use 'hrsh7th/nvim-compe'
 
 	-- Colorscheme
-	use 'marko-cerovac/material.nvim'
+	use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
 
 	-- Lualine
 	use {
@@ -59,6 +59,9 @@ require('packer').startup(function()
 		requires = 'nvim-lua/plenary.nvim'
 	}
 end)
+
+-- Initialize neogit
+local neogit = require('neogit')
 
 -- Set a sane leader here
 vim.g.mapleader = ' '
