@@ -201,4 +201,9 @@ packer.startup(function()
 	use { -- Show signature of a function as you write its arguments
 		'ray-x/lsp_signature.nvim'
 	}
+
+	use { -- automatically create missing directories when saving files, like `mkdir -p` 
+		'jghauser/mkdir.nvim',
+		config = function() require('mkdir') end
+	}
 end)
