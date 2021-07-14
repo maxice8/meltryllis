@@ -206,4 +206,11 @@ packer.startup(function()
 		'jghauser/mkdir.nvim',
 		config = function() require('mkdir') end
 	}
+
+	use { -- Automatically change working directory to the root of the repo
+		'airblade/vim-rooter',
+		config = function() 
+			vim.g.rooter_patterns = {'.venv', '.git/', '.nvim/'}
+		end
+	}
 end)
