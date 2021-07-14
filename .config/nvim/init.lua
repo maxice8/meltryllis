@@ -113,13 +113,12 @@ packer.startup(function()
 
 	use { -- Completion
 		'hrsh7th/nvim-compe',
+		event = 'InsertEnter',
 		config = function() 
 			vim.o.completeopt = "menuone,noselect"
 			require('vendor.nvim-compe')
 		end -- Use the file we vendor from upstream
 	}
-    use "rafamadriz/friendly-snippets" -- Some nice snippets
-	use "hrsh7th/vim-vsnip" -- Snippets framework
 
 	use { -- Colorscheme
 		'sainnhe/gruvbox-material',
@@ -137,6 +136,7 @@ packer.startup(function()
 
 	use { -- Autopairing support
 		'windwp/nvim-autopairs',
+		after = 'nvim-compe',
 		config = function()
 			require('nvim-autopairs').setup()
 			require("nvim-autopairs.completion.compe").setup({
