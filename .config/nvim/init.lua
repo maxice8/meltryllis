@@ -229,4 +229,16 @@ packer.startup(function()
 			vim.g.nvim_tree_hijack_netrw = true
 		end
 	}
+
+	use { -- tabline
+		'romgrk/barbar.nvim',
+		requires = { 'kyazdani42/nvim-web-devicons' },
+		config = function()
+			local map = vim.api.nvim_set_keymap
+			local opts = { noremap = true, silent = true }
+			map('n', '<C-j>', ':BufferPrevious<CR>', opts)
+			map('n', '<C-l>', ':BufferNext<CR>', opts)
+			map('n', '<C-d>', ':BufferClose<CR>', opts)
+		end
+	}
 end)
