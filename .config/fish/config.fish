@@ -7,6 +7,9 @@ fish_add_path --global --prepend ~/bin ~/.local/share/flatpak/exports/bin
 # Add go tools
 fish_add_path --global --append ~/go/bin
 
+# For Node
+fish_add_path --global --append ./node_modules/.bin
+
 # If we have nvim then use it
 if hash nvim &>/dev/null
     set --global --export EDITOR nvim
