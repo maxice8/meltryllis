@@ -320,4 +320,8 @@ packer.startup(function()
 			return vim.g.auto_save == true
 		end
 	}
+
+	use { -- Best shell
+		'dag/vim-fish',
+	}
 end)
