@@ -195,11 +195,15 @@ packer.startup(function()
 		'toml',
 		'python',
 		'go',
+		'gomod',
 		'c',
 		'cpp',
 		'cmake',
 		'lua',
-		'json'
+		'json',
+		'dockerfile',
+		'regex',
+		'comment'
 	}
 
 	use { -- Unified highlight for all filetypes
