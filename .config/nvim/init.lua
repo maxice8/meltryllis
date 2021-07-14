@@ -212,8 +212,14 @@ packer.startup(function()
 		end
     }
 
+	use {
+		'kabouzeid/nvim-lspinstall',
+		event = 'BufRead'
+	}
+
 	use { -- LSP configurations for builtin LSP client
 		'neovim/nvim-lspconfig',
+		after = 'nvim-lspinstall',
 		config = function()
 			local golang_setup = {
 				on_attach = function(client, bufnr)
