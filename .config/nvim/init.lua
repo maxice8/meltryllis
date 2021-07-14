@@ -45,6 +45,7 @@ packer.startup(function()
     
 	use {
 		'lewis6991/gitsigns.nvim',
+		event = 'BufRead',
 		requires = {
 			'nvim-lua/plenary.nvim'
 		},
@@ -89,6 +90,7 @@ packer.startup(function()
 
 	use { -- Make the background of a string representing a color with the color it represents
 		'norcalli/nvim-colorizer.lua',
+		event = 'BufRead',
 		config = function()
 			require('colorizer').setup{
 				'*', -- highlight all filetypes
@@ -183,6 +185,7 @@ packer.startup(function()
 
 	use { -- Unified highlight for all filetypes
         'nvim-treesitter/nvim-treesitter',
+		event = 'BufRead',
         run = ':TSUpdate',
 		config = function()
 			require('nvim-treesitter.configs').setup{
@@ -267,6 +270,21 @@ packer.startup(function()
 			map('n', '<C-j>', ':BufferPrevious<CR>', opts)
 			map('n', '<C-l>', ':BufferNext<CR>', opts)
 			map('n', '<C-d>', ':BufferClose<CR>', opts)
+		end
+	}
+
+	use { -- Show indentation levels
+		'lukas-reineke/indent-blankline.nvim',
+		event = 'BufRead',
+		setup = function()
+			vim.g.indentLine_enabled = true
+			vim.g.indent_blankline_char = "▏"
+			
+			vim.g.indent_blankline_filetype_exclude = {"help", "terminal", "dashboard"}
+			vim.g.indent_blankline_buftype_exclude = {"terminal"}
+			
+			vim.g.indent_blankline_show_trailing_blankline_indent = false
+			vim.g.indent_blankline_show_first_indent_level = false
 		end
 	}
 end)
