@@ -235,6 +235,7 @@ packer.startup(function()
 
 	use { -- automatically create missing directories when saving files, like `mkdir -p` 
 		'jghauser/mkdir.nvim',
+		event = 'BufWrite',
 		config = function() require('mkdir') end
 	}
 
