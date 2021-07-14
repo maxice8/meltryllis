@@ -11,7 +11,7 @@ vim.o.history = 20
 vim.o.clipboard = vim.o.clipboard .. 'unnamedplus'
 
 -- Use cursor from the terminal
-vim.g.guicursor = ''
+vim.o.guicursor = ''
 
 -- Enable mouse mode
 vim.o.mouse = 'a'
@@ -32,17 +32,14 @@ vim.wo.signcolumn = 'yes'
 -- vim.cmd [[set tabstop=4]]
 -- vim.cmd [[set shiftwidth=4]]
 -- vim.cmd [[set smarttab]]
--- vim.cmd [[autocmd FileType javascript setlocal ts=4 sts=4 sw=4]]
-vim.o.tabstop = 4
-vim.o.shiftwidth = 4
+vim.o.tabstop = 2
+vim.o.shiftwidth = 2
 vim.o.smarttab = true
 -- don't want case sensitive searches
 vim.o.ignorecase = true
 -- but still want search to be smart. If i type a upper case thing, do a case
 -- sensitive search
 vim.o.smartcase = true
--- Use the cursor from the terminal
-vim.o.guicursor = ''
 
 -- relative line numbering, yo
 -- number and relativenumber are window options. So doing vim.o.relativenumber = true
@@ -57,7 +54,7 @@ if (vim.fn.executable('rg') ~= 0) then
 	vim.g.grepformat = '%f:%l:%c:%m,%f:%l:%m'
 end
 
-vim.g.is_posix = 1
+-- vim.g.is_posix = 1
 
 -- highlight yanked stuff. Done with native neovim api. No plugin.
 -- augroup command didn't work with vim.cmd.
