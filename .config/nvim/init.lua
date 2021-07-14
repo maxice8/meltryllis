@@ -189,8 +189,20 @@ packer.startup(function()
 
 	use { -- Unified highlight for all filetypes
         'nvim-treesitter/nvim-treesitter',
-		event = 'BufRead',
         run = ':TSUpdate',
+		ft = {
+			'bash',
+			'fish',
+			'yaml',
+			'toml',
+			'python',
+			'go',
+			'c',
+			'cpp',
+			'cmake',
+			'lua',
+			'json'
+		},
 		config = function()
 			require('nvim-treesitter.configs').setup{
 				ensure_installed = {
@@ -213,6 +225,18 @@ packer.startup(function()
 					enable = true
 				}
 			}
+			---
+			-- In the future I might learn Javascript and the grammar.js needed to make
+			-- a treesitter for this, in the meantime leave this commented
+			---
+			-- local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
+			-- parser_config.apkbuild = {
+			-- 	install_info = {
+			-- 		url = '~/Repositories/tree-sitter-apkbuild', -- local path or git repo
+			-- 		files = {'src/parser.c'}
+			-- 	},
+			-- 	filetype = 'apkbuild'
+			-- }
 		end
     }
 
