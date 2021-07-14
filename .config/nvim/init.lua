@@ -203,12 +203,13 @@ packer.startup(function()
 		'json',
 		'dockerfile',
 		'regex',
-		'comment'
+		'comment',
+		'query'
 	}
 
 	use { -- Unified highlight for all filetypes
-        'nvim-treesitter/nvim-treesitter',
-        run = ':TSUpdate',
+		'nvim-treesitter/nvim-treesitter',
+		run = ':TSUpdate',
 		ft = filetypes,
 		config = function()
 			require('nvim-treesitter.configs').setup{
