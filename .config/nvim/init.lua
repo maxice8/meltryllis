@@ -24,6 +24,15 @@ augroup end
 
 local packer = require('packer')
 local use = packer.use
+
+packer.init {
+	display = {
+		open_fn = function()
+			return require('packer.util').float {border = 'single'}
+		end
+	}
+}
+
 packer.startup(function()
     -- Support for scdoc, used to write manapges
     use {
@@ -287,6 +296,13 @@ packer.startup(function()
 			
 			vim.g.indent_blankline_show_trailing_blankline_indent = false
 			vim.g.indent_blankline_show_first_indent_level = false
+		end
+	}
+
+	use { -- Load autosave only if it is globally enabled
+		'Pocco81/AutoSave.nvim',
+		cond = function()
+			return vim.g.auto_save == true
 		end
 	}
 end)
