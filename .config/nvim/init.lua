@@ -213,4 +213,20 @@ packer.startup(function()
 			vim.g.rooter_patterns = {'.venv', '.git/', '.nvim/'}
 		end
 	}
+
+	use { -- file manager
+		'kyazdani42/nvim-tree.lua',
+		requires = { 'kyazdani42/nvim-web-devicons' },
+		cmd = 'NvimTreeToggle',
+		setup = function()
+			vim.api.nvim_set_keymap('n', '<C-f>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+		end,
+		config = function()
+			vim.g.nvim_tree_ignore = {'.git', '.cache'}
+			vim.g.nvim_tree_gitignore = true
+			vim.g.nvim_tree_quit_on_open = false
+			vim.g.nvim_tree_disable_netrw = true
+			vim.g.nvim_tree_hijack_netrw = true
+		end
+	}
 end)
