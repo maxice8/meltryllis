@@ -187,37 +187,28 @@ packer.startup(function()
 		end
 	}
 
+	-- List of filetypes that we want to enable nvim-treesitter in
+	local filetypes = {
+		'bash',
+		'fish',
+		'yaml',
+		'toml',
+		'python',
+		'go',
+		'c',
+		'cpp',
+		'cmake',
+		'lua',
+		'json'
+	}
+
 	use { -- Unified highlight for all filetypes
         'nvim-treesitter/nvim-treesitter',
         run = ':TSUpdate',
-		ft = {
-			'bash',
-			'fish',
-			'yaml',
-			'toml',
-			'python',
-			'go',
-			'c',
-			'cpp',
-			'cmake',
-			'lua',
-			'json'
-		},
+		ft = filetypes,
 		config = function()
 			require('nvim-treesitter.configs').setup{
-				ensure_installed = {
-					'bash',
-					'fish',
-					'yaml',
-					'toml',
-					'python',
-					'go',
-					'c',
-					'cpp',
-					'cmake',
-					'lua',
-					'json'
-				},
+				ensure_installed = filetypes,
 				highlight = {
 					enable = true
 				},
