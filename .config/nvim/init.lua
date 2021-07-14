@@ -22,14 +22,9 @@ autocmd BufWritePost init.lua PackerCompile
 augroup end
 ]], false)
 
-vim.cmd [[packadd packer.nvim]]
-
 local packer = require('packer')
 local use = packer.use
 packer.startup(function()
-	-- Packer itself
-	use 'wbthomason/packer.nvim'
-
     -- Support for scdoc, used to write manapges
     use {
         'gpanders/vim-scdoc',
