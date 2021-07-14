@@ -1,14 +1,18 @@
 require'compe'.setup {
-  enabled = true;
+  enabled = true,
+  autocomplete = true,
+  documentation = true,
 
   source = {
-    path = true;
-    buffer = true;
-    vsnip = true;
-    nvim_lsp = true;
-    emoji = false;
-    spell = true;
-    nvim_treesitter = true;
+    path = true,
+	buffer = true,
+    vsnip = true,
+    nvim_lsp = true,
+	nvim_lua = true,
+    emoji = false,
+    spell = false,
+	calc = false,
+    nvim_treesitter = true
   }
 }
 
