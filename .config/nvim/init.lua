@@ -50,11 +50,39 @@ packer.startup(function()
 		},
 		config = function()
 			require('gitsigns').setup{
-				sign_priority = 6,
-				use_decoration_api = true,
-				use_internal_diff = true,
-				linehl = false,
-				numhl = false
+				signs = {
+					add = {
+						hl = 'DiffAdd',
+						text = '▌',
+						numhl = 'GitSignsAddNr'
+					},
+					change = {
+						hl = 'DiffChange',
+						text = '▌',
+						numhl = 'GitSignsChangeNr'
+					},
+					delete = {
+						hl = 'DiffDelete',
+						text = '_',
+						numhl = 'GitSignsDeleteNr'
+					},
+					topdelete = {
+						hl = 'DiffDelete',
+						text = '‾',
+						numhl = 'GitSignsDeleteNr'
+					},
+					changedelete = {
+						hl = 'DiffChange',
+						text = '~',
+						numhl = 'GitSignsChangeNr'
+					}
+				},
+				numhl = false,
+				watch_index = {
+					interval = 100
+				},
+				sign_priority = 5,
+				status_formatter = nil
 			}
 		end
 	}
