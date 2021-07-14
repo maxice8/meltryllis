@@ -221,18 +221,6 @@ packer.startup(function()
 					enable = true
 				}
 			}
-			---
-			-- In the future I might learn Javascript and the grammar.js needed to make
-			-- a treesitter for this, in the meantime leave this commented
-			---
-			-- local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
-			-- parser_config.apkbuild = {
-			-- 	install_info = {
-			-- 		url = '~/Repositories/tree-sitter-apkbuild', -- local path or git repo
-			-- 		files = {'src/parser.c'}
-			-- 	},
-			-- 	filetype = 'apkbuild'
-			-- }
 		end
     }
 
