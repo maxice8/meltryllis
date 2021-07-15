@@ -73,4 +73,4 @@ vim.api.nvim_exec(
 [[
 augroup reopen
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-]], false) 
+]], false)

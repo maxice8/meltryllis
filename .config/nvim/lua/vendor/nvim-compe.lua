@@ -1,17 +1,17 @@
-require'compe'.setup {
+require('compe').setup {
   enabled = true,
   autocomplete = true,
   documentation = true,
 
   source = {
     path = true,
-	buffer = true,
+		buffer = false,
     vsnip = false,
     nvim_lsp = true,
-	nvim_lua = true,
+		nvim_lua = true,
     emoji = false,
     spell = false,
-	calc = false,
+		calc = true,
     nvim_treesitter = true
   }
 }
