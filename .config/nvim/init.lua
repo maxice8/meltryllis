@@ -289,6 +289,18 @@ packer.startup(function()
 			map('n', '<C-j>', ':BufferPrevious<CR>', opts)
 			map('n', '<C-l>', ':BufferNext<CR>', opts)
 			map('n', '<C-d>', ':BufferClose<CR>', opts)
+			-- use vim.api.nvim_exec because I can't get this to work with pure lua
+			vim.api.nvim_exec(
+				[[
+				let bufferline = get(g:, 'bufferline', {})
+				" no animations, they are choppy
+				let bufferline.animation = v:false 
+				" don't show tabs when there is only one buffer
+				let bufferline.auto_hide = v:true
+				" Don't use icons, just show the number of the buffer
+				let bufferline.icons = v:"numbers"
+				]],
+			false)
 		end
 	}
 
