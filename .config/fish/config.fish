@@ -10,6 +10,9 @@ fish_add_path --global --append ~/go/bin
 # For Node
 fish_add_path --global --append ./node_modules/.bin
 
+# For other tools
+fish_add_path --global --append ~/.local/bin
+
 # If we have nvim then use it
 if hash nvim &>/dev/null
     set --global --export EDITOR nvim
