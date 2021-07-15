@@ -34,19 +34,19 @@ packer.init {
 }
 
 packer.startup(function()
-    -- Support for scdoc, used to write manapges
-    use {
-        'gpanders/vim-scdoc',
-        ft = {'scdoc'}
-    }
+  -- Support for scdoc, used to write manapges
+  use {
+      'gpanders/vim-scdoc',
+      ft = {'scdoc'}
+  }
 
-    -- It is not on GitHub so we need full path, also there is no 'for'
-    -- because it is the ftype required
-    use {
-        'https://gitlab.alpinelinux.org/Leo/apkbuild.vim.git',
-        ft = {'apkbuild'}
-    }
-    
+  -- It is not on GitHub so we need full path, also there is no 'for'
+  -- because it is the ftype required
+  use {
+      'https://gitlab.alpinelinux.org/Leo/apkbuild.vim.git',
+      ft = {'apkbuild'}
+  }
+
 	use {
 		'lewis6991/gitsigns.nvim',
 		event = 'BufRead',
@@ -106,7 +106,7 @@ packer.startup(function()
         'dense-analysis/ale',
         ft = {'sh', 'bash', 'markdown', 'apkbuild', 'vim', 'cpp', 'lua', 'go'},
         cmd = 'ALEEnable',
-        setup = function() 
+        setup = function()
 			vim.g.ale_completion_enabled = false
 			vim.g.ale_fix_on_save = true
 		end,
@@ -118,7 +118,7 @@ packer.startup(function()
 	use { -- Completion
 		'hrsh7th/nvim-compe',
 		event = 'InsertEnter',
-		config = function() 
+		config = function()
 			vim.o.completeopt = "menuone,noselect"
 			require('vendor.nvim-compe')
 		end -- Use the file we vendor from upstream
@@ -352,7 +352,7 @@ packer.startup(function()
 		'ray-x/lsp_signature.nvim'
 	}
 
-	use { -- automatically create missing directories when saving files, like `mkdir -p` 
+	use { -- automatically create missing directories when saving files, like `mkdir -p`
 		'jghauser/mkdir.nvim',
 		event = 'BufWrite',
 		config = function() require('mkdir') end
@@ -360,7 +360,7 @@ packer.startup(function()
 
 	use { -- Automatically change working directory to the root of the repo
 		'airblade/vim-rooter',
-		config = function() 
+		config = function()
 			vim.g.rooter_patterns = {'.venv', '.git/', '.nvim/'}
 		end
 	}
@@ -376,7 +376,6 @@ packer.startup(function()
 			-- of luck
 			_G._helperfuncs = {}
 			_G._helperfuncs.toggle_tree = function()
-				local view = require'nvim-tree.view'
 				if require('nvim-tree.view').win_open() then
 				  require('nvim-tree').close()
 				  require('bufferline.state').set_offset(0)
@@ -430,10 +429,10 @@ packer.startup(function()
 		setup = function()
 			vim.g.indentLine_enabled = true
 			vim.g.indent_blankline_char = "▏"
-			
+
 			vim.g.indent_blankline_filetype_exclude = {"help", "terminal", "dashboard"}
 			vim.g.indent_blankline_buftype_exclude = {"terminal"}
-			
+
 			vim.g.indent_blankline_show_trailing_blankline_indent = false
 			vim.g.indent_blankline_show_first_indent_level = false
 		end
