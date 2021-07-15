@@ -233,7 +233,10 @@ packer.startup(function()
 		'neovim/nvim-lspconfig',
 		after = 'nvim-lspinstall',
 		config = function()
-			local golang_setup = {
+			---
+			-- function that makes use of lsp_signature
+			---
+			local lsp_signature = {
 				on_attach = function(client, bufnr)
 					require('lsp_signature').on_attach({
 						bind = true,
@@ -243,7 +246,10 @@ packer.startup(function()
 					})
 				end,
 			}
-			require('lspconfig').gopls.setup(golang_setup)
+			---
+			-- go
+			---
+			require('lspconfig').gopls.setup(lsp_signature)
 		end
 	}
 
