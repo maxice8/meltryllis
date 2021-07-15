@@ -333,25 +333,6 @@ packer.startup(function()
 	use { -- LSP configurations for builtin LSP client
 		'neovim/nvim-lspconfig',
 		wants = 'nvim-lspinstall',
-		config = function()
-			---
-			-- function that makes use of lsp_signature
-			---
-			local lsp_signature = {
-				on_attach = function(client, bufnr)
-					require('lsp_signature').on_attach({
-						bind = true,
-						handler_opts = {
-							border = "single"
-						}
-					})
-				end,
-			}
-			---
-			-- go
-			---
-			require('lspconfig').gopls.setup(lsp_signature)
-		end
 	}
 
 	use { -- Show signature of a function as you write its arguments
