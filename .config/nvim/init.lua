@@ -267,9 +267,28 @@ packer.startup(function()
 	use { -- file manager
 		'kyazdani42/nvim-tree.lua',
 		requires = { 'kyazdani42/nvim-web-devicons' },
-		cmd = 'NvimTreeToggle',
+		after = 'barbar.nvim',
 		setup = function()
-			vim.api.nvim_set_keymap('n', '<C-f>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+			-- Store the function in our global (_G) table, put it inside
+			-- a table called '_helperfuncs', this is done so the keybind
+			-- can be called, if we define the function locally we are out
+			-- of luck
+			_G._helperfuncs = {}
+			_G._helperfuncs.toggle_tree = function()
+				local view = require'nvim-tree.view'
+				if require('nvim-tree.view').win_open() then
+				  require('nvim-tree').close()
+				  require('bufferline.state').set_offset(0)
+				else
+				  require('bufferline.state').set_offset(31, 'File Explorer')
+				  require('nvim-tree').find_file(true)
+				end
+			end,
+			vim.api.nvim_set_keymap(
+				'n',
+				'<C-f>',
+				":lua _G._helperfuncs.toggle_tree()<CR>",
+				{ noremap = true, silent = true })
 		end,
 		config = function()
 			vim.g.nvim_tree_ignore = {'.git', '.cache'}
